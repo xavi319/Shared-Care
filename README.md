@@ -26,11 +26,13 @@ SharedCare is a secure, user-friendly portal that helps nursing home caregivers 
    npm run dev
 
 2. **Create new branch**
+    ```bash
     git checkout -b feature/<short-name>
 
 3. **Make changes + test locally**
 
 4. **Commit and push**
+    ```bash
     git add .
     git commit -m "Add family timeline view"
     git push -u origin feature/<short-name>
