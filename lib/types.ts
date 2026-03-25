@@ -1,13 +1,14 @@
 export type NavItemId = "dashboard" | "scheduling" | "residents" | "messages";
 
+export type NavIconKey = "home" | "calendar" | "residents" | "messages";
+
 export type StatIconKey = "logs" | "residents" | "visits" | "messages";
 
 export interface NavItem {
   id: NavItemId;
   label: string;
-  href: string;
-  icon: string;
-  isCurrent?: boolean;
+  href?: string;
+  icon: NavIconKey;
 }
 
 export interface StatItem {
@@ -19,10 +20,11 @@ export interface StatItem {
 
 export interface Resident {
   id: string;
+  slug?: string;
   name: string;
   room: string;
   lastUpdate: string;
-  image: string;
+  image?: string;
   detailPath: string;
   lastUpdateLabel?: string;
   accent?: string;
@@ -38,7 +40,7 @@ export interface ChecklistItem {
 }
 
 export interface DashboardData {
-  title: string;
+  userName: string;
   subtitle: string;
   checklistDate: string;
   navItems: NavItem[];
@@ -52,4 +54,24 @@ export interface ResidentsPageData {
   subtitle: string;
   searchPlaceholder: string;
   residents: Resident[];
+}
+
+export interface ResidentDetailAction {
+  label: string;
+  tone: "neutral" | "dark";
+}
+
+export interface ResidentDetailData {
+  title: string;
+  subtitle: string;
+  searchValue: string;
+  resident: Resident;
+  residentId: string;
+  age: string;
+  dob: string;
+  admissionDate: string;
+  diagnoses: string[];
+  medications: string[];
+  personalNotes: string[];
+  actions: ResidentDetailAction[];
 }
