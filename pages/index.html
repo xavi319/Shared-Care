@@ -176,6 +176,11 @@
       outline: none;
     }
 
+    .nav-link.is-active {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
     .content {
       padding: 46px 58px 52px;
     }
@@ -193,6 +198,14 @@
       line-height: 1;
       letter-spacing: -0.055em;
       font-weight: 700;
+    }
+
+    .status-message {
+      margin: -26px 0 28px;
+      min-height: 1.25rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
     }
 
     .stats-grid {
@@ -213,6 +226,39 @@
       border: 1px solid #e5e2e2;
       border-radius: 20px;
       box-shadow: var(--shadow);
+      transform-origin: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .stat-card:hover,
+    .stat-card:focus-within {
+      border-color: #e5e2e2;
+      transform: scale(1.03);
+      box-shadow: 0 4px 4px 0 #a5a5a5;
+    }
+
+    .stat-card--logs:hover,
+    .stat-card--logs:focus-within {
+      background: rgba(255, 230, 202, 0.5);
+      box-shadow: 0 4px 4px 0 #ff8400;
+    }
+
+    .stat-card--residents:hover,
+    .stat-card--residents:focus-within {
+      background: rgba(170, 224, 255, 0.57);
+      box-shadow: 0 4px 4px 0 #22a9f1;
+    }
+
+    .stat-card--visits:hover,
+    .stat-card--visits:focus-within {
+      background: rgba(255, 189, 189, 0.42);
+      box-shadow: 0 4px 4px 0 rgba(255, 42, 42, 0.48);
+    }
+
+    .stat-card--messages:hover,
+    .stat-card--messages:focus-within {
+      background: rgba(224, 255, 223, 0.53);
+      box-shadow: 0 4px 4px 0 #38c418;
     }
 
     .stat-card .card-icon {
@@ -289,14 +335,29 @@
       margin: 0;
     }
 
+    .resident-row-item {
+      border-top: 1px solid var(--line);
+    }
+
     .resident-row {
       display: grid;
       grid-template-columns: 68px minmax(0, 1fr) auto auto auto;
       align-items: center;
       gap: 14px;
       min-height: 95px;
+      width: 100%;
       padding: 18px 18px 18px 18px;
-      border-top: 1px solid var(--line);
+      background: transparent;
+      border: 0;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 0.18s ease;
+    }
+
+    .resident-row:hover,
+    .resident-row:focus-visible {
+      background: rgba(51, 102, 255, 0.06);
+      outline: none;
     }
 
     .resident-avatar {
@@ -339,12 +400,15 @@
     .chart-icon {
       width: 40px;
       height: 40px;
+      position: relative;
       color: var(--logs);
     }
 
     .chevron {
       width: 22px;
       height: 22px;
+      display: grid;
+      place-items: center;
       color: #111111;
     }
 
@@ -354,11 +418,22 @@
       justify-content: center;
       gap: 8px;
       min-height: 56px;
+      width: 100%;
       border-top: 1px solid var(--line);
+      background: transparent;
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0;
       color: var(--muted);
-      text-decoration: none;
       font-size: var(--text-button-3);
       font-weight: 600;
+      cursor: pointer;
+    }
+
+    .view-all:hover,
+    .view-all:focus-visible {
+      color: var(--brand);
+      outline: none;
     }
 
     .tasks-header {
@@ -385,8 +460,21 @@
       display: flex;
       justify-content: flex-end;
       padding: 8px 14px 4px;
-      font-size: 0.9rem;
+    }
+
+    .add-task-button {
+      padding: 0;
+      background: transparent;
+      border: 0;
       color: var(--muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .add-task-button:hover,
+    .add-task-button:focus-visible {
+      color: var(--brand);
+      outline: none;
     }
 
     .task-list {
@@ -403,11 +491,34 @@
       padding: 12px 4px;
     }
 
+    .task-toggle {
+      padding: 0;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .task-toggle:focus-visible {
+      outline: 2px solid rgba(51, 102, 255, 0.45);
+      outline-offset: 2px;
+      border-radius: 999px;
+    }
+
     .task-circle {
       width: 24px;
       height: 24px;
+      display: grid;
+      place-items: center;
       border-radius: 999px;
       border: 1px solid rgba(0, 0, 0, 0.45);
+      color: #ffffff;
+      font-size: 0.8rem;
+      line-height: 1;
+    }
+
+    .task-circle.is-checked {
+      background: var(--brand);
+      border-color: var(--brand);
     }
 
     .task-time {
@@ -421,6 +532,13 @@
       margin: 1px 0 0;
       font-size: 1rem;
       color: #575757;
+    }
+
+    .task-item.is-complete .task-time,
+    .task-item.is-complete .task-desc {
+      color: #8f8f8f;
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
     }
 
     .room-pill {
@@ -543,7 +661,7 @@
   <div class="app-shell">
     <header class="topbar">
       <a class="brand" href="#" aria-label="SharedCare home">
-        <img class="brand-wordmark" src="./images/sharedcare-logo-blue.png" alt="SharedCare" />
+        <img class="brand-wordmark" src="../images/sharedcare-logo-blue.png" alt="SharedCare" />
       </a>
 
       <div class="topbar-actions">
@@ -555,239 +673,57 @@
           </svg>
         </button>
         <div class="avatar">
-          <img src="./images/sarah-profile.jpg" alt="Sarah profile photo" />
+          <img src="../images/sarah-profile.jpg" alt="Sarah profile photo" />
         </div>
       </div>
     </header>
 
     <div class="dashboard-shell">
       <aside class="sidebar">
-        <nav class="nav" aria-label="Primary">
-          <a class="nav-link" href="#" aria-current="page">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 10.5L12 4L20 10.5V19C20 19.5523 19.5523 20 19 20H5C4.44772 20 4 19.5523 4 19V10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
-            </svg>
-            <span>Dashboard</span>
-          </a>
-          <a class="nav-link" href="#">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M7 4.5V7.5M17 4.5V7.5M4 9.5H20M6 20H18C19.1046 20 20 19.1046 20 18V8C20 6.89543 19.1046 6 18 6H6C4.89543 6 4 6.89543 4 8V18C4 19.1046 4.89543 20 6 20Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <span>Scheduling</span>
-          </a>
-          <a class="nav-link" href="#">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M8 11C10.2091 11 12 9.20914 12 7C12 4.79086 10.2091 3 8 3C5.79086 3 4 4.79086 4 7C4 9.20914 5.79086 11 8 11Z" stroke="currentColor" stroke-width="1.8"></path>
-              <path d="M4.5 20C4.5 16.9624 6.96243 14.5 10 14.5C13.0376 14.5 15.5 16.9624 15.5 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
-            </svg>
-            <span>Residents</span>
-          </a>
-          <a class="nav-link" href="#">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M7 7H18C19.1046 7 20 7.89543 20 9V15C20 16.1046 19.1046 17 18 17H10L6 20V8C6 7.44772 6.44772 7 7 7Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
-            </svg>
-            <span>Messages</span>
-          </a>
-        </nav>
+        <nav class="nav" id="sidebar-nav" aria-label="Primary"></nav>
       </aside>
 
       <main class="content">
         <p class="eyebrow">Dashboard</p>
-        <h1 class="page-title">Good morning, Sarah</h1>
+        <h1 class="page-title" id="dashboard-greeting">Good morning, Sarah</h1>
+        <p class="status-message" id="app-status" role="status" aria-live="polite" hidden></p>
 
-        <section class="stats-grid" aria-label="Dashboard summary">
-          <article class="stat-card">
-            <svg class="card-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-              <path d="M18 4.5V18H31.5" stroke="var(--logs)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M30 19.5C29.1256 25.1834 24.211 29 18.1875 29C11.5431 29 6.15625 23.6132 6.15625 16.9688C6.15625 10.9453 9.97282 6.03068 15.6562 5.15625" stroke="var(--logs)" stroke-width="2.2" stroke-linecap="round"></path>
-            </svg>
-            <p class="stat-value"><strong>5</strong></p>
-            <p class="stat-label">Pending Daily Logs</p>
-          </article>
-
-          <article class="stat-card">
-            <svg class="card-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-              <circle cx="18" cy="11" r="5.2" stroke="var(--residents)" stroke-width="2.1"></circle>
-              <path d="M10.5 27V24.8C10.5 22.0386 12.7386 19.8 15.5 19.8H20.5C23.2614 19.8 25.5 22.0386 25.5 24.8V27" stroke="var(--residents)" stroke-width="2.1" stroke-linecap="round"></path>
-            </svg>
-            <p class="stat-value"><strong>32</strong></p>
-            <p class="stat-label">Residents</p>
-          </article>
-
-          <article class="stat-card">
-            <svg class="card-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-              <path d="M11 7V10M25 7V10M8 13H28M10 29H26C27.1046 29 28 28.1046 28 27V10C28 8.89543 27.1046 8 26 8H10C8.89543 8 8 8.89543 8 10V27C8 28.1046 8.89543 29 10 29Z" stroke="var(--visits)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <p class="stat-value"><strong>3</strong></p>
-            <p class="stat-label">Today&apos;s Visits</p>
-          </article>
-
-          <article class="stat-card">
-            <svg class="card-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-              <path d="M10 9.5H26C27.1046 9.5 28 10.3954 28 11.5V22C28 23.1046 27.1046 24 26 24H13L9 27.5V11.5C9 10.3954 9.89543 9.5 11 9.5" stroke="var(--messages)" stroke-width="2.1" stroke-linejoin="round"></path>
-            </svg>
-            <p class="stat-value"><strong>1</strong></p>
-            <p class="stat-label">Messages</p>
-          </article>
-        </section>
+        <section class="stats-grid" id="stats-grid" aria-label="Dashboard summary"></section>
 
         <section class="panels" aria-label="Residents and tasks">
           <article class="panel">
             <div class="resident-panel-header">
-              <p class="resident-count"><strong>8</strong></p>
+              <p class="resident-count"><strong id="resident-count-value">0</strong></p>
               <p class="resident-heading">Today&apos;s Assigned Residents</p>
             </div>
 
-            <ul class="resident-list">
-              <li class="resident-row">
-                <div class="resident-avatar">
-                  <img src="./images/beth-adams.jpg" alt="Beth Adams" />
-                </div>
-                <div>
-                  <p class="resident-name">Beth Adams</p>
-                  <p class="resident-room">Room 123</p>
-                </div>
-                <div class="resident-update"><strong>Last Update</strong>10:05 AM</div>
-                <svg class="chart-icon" viewBox="0 0 42 42" fill="none" aria-hidden="true">
-                  <path d="M21 6V21H36" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M35 23C33.9824 29.6157 28.262 34 21.25 34C13.518 34 7.25 27.732 7.25 20C7.25 12.988 11.6343 7.26764 18.25 6.25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
-                  <path d="M26.5 13.5H31.5V18.5" stroke="#8a4d08" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-                <svg class="chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-              </li>
+            <ul class="resident-list" id="resident-list"></ul>
 
-              <li class="resident-row">
-                <div class="resident-avatar">
-                  <img src="./images/ronald-perry.jpg" alt="Ronald Perry" />
-                </div>
-                <div>
-                  <p class="resident-name">Ronald Perry</p>
-                  <p class="resident-room">Room 278</p>
-                </div>
-                <div class="resident-update"><strong>Last Update</strong>10:05 AM</div>
-                <svg class="chart-icon" viewBox="0 0 42 42" fill="none" aria-hidden="true">
-                  <path d="M21 6V21H36" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M35 23C33.9824 29.6157 28.262 34 21.25 34C13.518 34 7.25 27.732 7.25 20C7.25 12.988 11.6343 7.26764 18.25 6.25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
-                  <path d="M26.5 13.5H31.5V18.5" stroke="#8a4d08" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-                <svg class="chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-              </li>
-
-              <li class="resident-row">
-                <div class="resident-avatar">
-                  <img src="./images/harold-bennet.jpg" alt="Harold Bennet" />
-                </div>
-                <div>
-                  <p class="resident-name">Harold Bennet</p>
-                  <p class="resident-room">Room 123</p>
-                </div>
-                <div class="resident-update"><strong>Last Update</strong>10:05 AM</div>
-                <svg class="chart-icon" viewBox="0 0 42 42" fill="none" aria-hidden="true">
-                  <path d="M21 6V21H36" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M35 23C33.9824 29.6157 28.262 34 21.25 34C13.518 34 7.25 27.732 7.25 20C7.25 12.988 11.6343 7.26764 18.25 6.25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
-                  <path d="M26.5 13.5H31.5V18.5" stroke="#8a4d08" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-                <svg class="chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-              </li>
-            </ul>
-
-            <a class="view-all" href="#">
+            <button class="view-all" id="view-all-button" type="button">
               View All
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M13 6L9 10L13 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
-            </a>
+            </button>
           </article>
 
           <article class="panel">
             <div class="tasks-header">
-              <p class="tasks-date">February 15, 2026</p>
+              <p class="tasks-date" id="tasks-date">February 15, 2026</p>
               <h2 class="tasks-title">Daily Checklist</h2>
             </div>
 
-            <div class="tasks-meta">+ Add Task</div>
+            <div class="tasks-meta">
+              <button class="add-task-button" id="add-task-button" type="button">+ Add Task</button>
+            </div>
 
-            <ul class="task-list">
-              <li class="task-item">
-                <span class="task-circle" aria-hidden="true"></span>
-                <div>
-                  <p class="task-time">9:00 AM</p>
-                  <p class="task-desc">Check Beth A. Vitals</p>
-                </div>
-                <span class="room-pill">Room 123</span>
-              </li>
-              <li class="task-item">
-                <span class="task-circle" aria-hidden="true"></span>
-                <div>
-                  <p class="task-time">9:50 AM</p>
-                  <p class="task-desc">Beth&apos;s Son Visiting</p>
-                </div>
-                <span class="room-pill">Room 123</span>
-              </li>
-              <li class="task-item">
-                <span class="task-circle" aria-hidden="true"></span>
-                <div>
-                  <p class="task-time">9:00 AM</p>
-                  <p class="task-desc">Check Beth&apos;s Vitals</p>
-                </div>
-                <span class="room-pill">Room 123</span>
-              </li>
-              <li class="task-item">
-                <span class="task-circle" aria-hidden="true"></span>
-                <div>
-                  <p class="task-time">9:00 AM</p>
-                  <p class="task-desc">Check Beth&apos;s Vitals</p>
-                </div>
-                <span class="room-pill">Room 123</span>
-              </li>
-              <li class="task-item">
-                <span class="task-circle" aria-hidden="true"></span>
-                <div>
-                  <p class="task-time">9:00 AM</p>
-                  <p class="task-desc">Check Beth&apos;s Vitals</p>
-                </div>
-                <span class="room-pill">Room 123</span>
-              </li>
-              <li class="task-item">
-                <span class="task-circle" aria-hidden="true"></span>
-                <div>
-                  <p class="task-time">9:00 AM</p>
-                  <p class="task-desc">Check Beth&apos;s Vitals</p>
-                </div>
-                <span class="room-pill">Room 123</span>
-              </li>
-            </ul>
+            <ul class="task-list" id="task-list"></ul>
           </article>
         </section>
       </main>
     </div>
   </div>
 
-  <script>
-    (function updateClock() {
-      var timeNode = document.getElementById("current-time");
-      if (!timeNode) {
-        return;
-      }
-
-      var formatter = new Intl.DateTimeFormat("en-US", {
-        hour: "numeric",
-        minute: "2-digit"
-      });
-
-      function render() {
-        timeNode.textContent = formatter.format(new Date());
-      }
-
-      render();
-      setInterval(render, 60000);
-    }());
-  </script>
+  <script type="module" src="../dashboard-app.js"></script>
 </body>
 </html>

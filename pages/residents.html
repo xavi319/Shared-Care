@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SharedCare Residents</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+    :root {
+      --page-bg: #edf4fb;
+      --surface: #ffffff;
+      --surface-accent: #c7a47f;
+      --brand: #3366ff;
+      --text: #111111;
+      --muted: #696969;
+      --muted-soft: #a6a6a6;
+      --line: #d9d9d9;
+      --shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+      --text-h2: 3.5rem;
+      --text-h5: 1.875rem;
+      --text-p2: 1.5rem;
+      --text-p3: 1.25rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+      background: var(--page-bg);
+      color: var(--text);
+    }
+
+    body {
+      min-width: 320px;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.92) 0, rgba(255, 255, 255, 0) 22rem), var(--page-bg);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 76px;
+      padding: 0 18px 0 20px;
+      background: rgba(255, 255, 255, 0.97);
+      border-bottom: 1px solid #bfbfbf;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    .brand-wordmark {
+      width: 223px;
+      height: 37px;
+      object-fit: contain;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .current-time {
+      margin: 0;
+      font-size: var(--text-h5);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .icon-button {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      color: #1e1e1e;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #1e1e1e;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .dashboard-shell {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      min-height: calc(100vh - 76px);
+    }
+
+    .sidebar {
+      padding: 22px 18px;
+      background: rgba(255, 255, 255, 0.62);
+      border-right: 1px solid rgba(191, 191, 191, 0.9);
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav {
+      display: grid;
+      gap: 20px;
+      padding-top: 6px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #111111;
+      text-decoration: none;
+      font-size: var(--text-p3);
+      font-weight: 500;
+      line-height: 1;
+      padding: 6px 4px;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible,
+    .nav-link.is-active {
+      color: var(--brand);
+      outline: none;
+    }
+
+    .content {
+      padding: 44px 48px 56px;
+    }
+
+    .hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 2px;
+      color: var(--muted-soft);
+      font-size: var(--text-p2);
+      font-weight: 600;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: clamp(2.9rem, 5vw, var(--text-h2));
+      line-height: 1;
+      letter-spacing: -0.055em;
+      font-weight: 700;
+    }
+
+    .search-shell {
+      flex: 0 1 740px;
+      margin-top: 46px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 64px 0 22px;
+      border: 1px solid #d0d0d0;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      font-size: var(--text-p2);
+      font-weight: 600;
+      color: #111111;
+    }
+
+    .search-input::placeholder {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .search-input:focus-visible {
+      outline: 2px solid rgba(51, 102, 255, 0.35);
+      outline-offset: 2px;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      color: #7d7d7d;
+      pointer-events: none;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .sort-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #6c6c6c;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .sort-button:hover,
+    .sort-button:focus-visible {
+      color: var(--brand);
+      outline: none;
+    }
+
+    .sort-button svg {
+      transition: transform 0.18s ease;
+    }
+
+    .sort-button[aria-pressed="true"] svg {
+      transform: rotate(180deg);
+    }
+
+    .status-message {
+      margin: 0;
+      min-height: 1.25rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .directory-panel {
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .directory-header {
+      min-height: 108px;
+      display: flex;
+      align-items: center;
+      padding: 0 38px;
+      background: var(--surface-accent);
+      color: #ffffff;
+      font-size: 2.18rem;
+      font-weight: 600;
+      text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .directory-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    .resident-directory-row {
+      border-top: 1px solid #d2d2d2;
+    }
+
+    .resident-directory-row:first-child {
+      border-top: 1px solid #d2d2d2;
+    }
+
+    .resident-directory-button {
+      width: 100%;
+      min-height: 112px;
+      display: grid;
+      grid-template-columns: minmax(320px, 1.15fr) minmax(220px, 0.7fr) auto;
+      align-items: center;
+      gap: 24px;
+      padding: 18px 32px;
+      border: 0;
+      background: #ffffff;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 0.18s ease;
+    }
+
+    .resident-directory-button:hover,
+    .resident-directory-button:focus-visible {
+      background: rgba(51, 102, 255, 0.04);
+      outline: none;
+    }
+
+    .directory-identity {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      min-width: 0;
+    }
+
+    .directory-avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 999px;
+      overflow: hidden;
+      flex: none;
+      border: 1px solid #8c8c8c;
+      background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 38%), var(--avatar-accent, #bdd4e8);
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .directory-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .directory-name {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.05;
+    }
+
+    .directory-room {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .directory-update {
+      text-align: center;
+      color: #7d7d7d;
+      justify-self: center;
+    }
+
+    .directory-update-label,
+    .directory-update-time {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .directory-link {
+      color: #1e1e1e;
+      font-size: 1.05rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .directory-empty {
+      padding: 28px 32px;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    @media (max-width: 1180px) {
+      .hero {
+        flex-direction: column;
+      }
+
+      .search-shell {
+        width: 100%;
+        margin-top: 0;
+      }
+
+      .resident-directory-button {
+        grid-template-columns: 1fr auto;
+      }
+
+      .directory-update {
+        grid-column: 1;
+        justify-self: start;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .dashboard-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        padding: 14px 18px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(191, 191, 191, 0.9);
+      }
+
+      .nav {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .nav-link {
+        justify-content: center;
+        font-size: 0.95rem;
+      }
+
+      .nav-link span {
+        display: none;
+      }
+
+      .content {
+        padding: 28px 20px 40px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .resident-directory-button {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .directory-link,
+      .directory-update {
+        justify-self: start;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .brand-wordmark {
+        width: 176px;
+        height: 30px;
+      }
+
+      .current-time {
+        display: none;
+      }
+
+      .directory-header {
+        padding: 0 24px;
+        font-size: 1.75rem;
+      }
+
+      .resident-directory-button {
+        padding: 18px 20px;
+      }
+
+      .directory-identity {
+        gap: 18px;
+      }
+
+      .directory-avatar {
+        width: 62px;
+        height: 62px;
+      }
+
+      .directory-name {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./index.html" aria-label="SharedCare home">
+        <img class="brand-wordmark" src="../images/sharedcare-logo-blue.png" alt="SharedCare" />
+      </a>
+
+      <div class="topbar-actions">
+        <p class="current-time" id="current-time">11:57 AM</p>
+        <button class="icon-button" type="button" aria-label="Open inbox">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 6.5H20C20.5523 6.5 21 6.94772 21 7.5V18C21 18.5523 20.5523 19 20 19H4C3.44772 19 3 18.5523 3 18V7.5C3 6.94772 3.44772 6.5 4 6.5Z" stroke="currentColor" stroke-width="1.5"></path>
+            <path d="M3.5 13.5H8.25L10 16H14L15.75 13.5H20.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+        <div class="avatar">
+          <img src="../images/sarah-profile.jpg" alt="Sarah profile photo" />
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <nav class="nav" id="sidebar-nav" aria-label="Primary"></nav>
+      </aside>
+
+      <main class="content">
+        <section class="hero" aria-label="Residents page header">
+          <div>
+            <p class="eyebrow" id="residents-subtitle">Search</p>
+            <h1 class="page-title" id="residents-title">Residents</h1>
+          </div>
+
+          <div class="search-shell">
+            <input class="search-input" id="resident-search-input" type="search" placeholder="Type to search..." aria-label="Search residents" />
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8"></circle>
+              <path d="M16 16L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </section>
+
+        <section class="toolbar" aria-label="Residents controls">
+          <button class="sort-button" id="sort-button" type="button" aria-pressed="false">
+            <span class="sort-label">Sort A-Z</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5 7L10 12L15 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <p class="status-message" id="residents-status" role="status" aria-live="polite" hidden></p>
+        </section>
+
+        <section class="directory-panel" aria-label="Residents directory">
+          <div class="directory-header">Resident</div>
+          <ul class="directory-list" id="residents-list"></ul>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="../residents-app.js"></script>
+</body>
+</html>
