@@ -30,6 +30,19 @@ export function SidebarNav({ items, onStubNavigate }: SidebarNavProps) {
     <nav className="nav" aria-label="Primary">
       {items.map((item) => {
         const active = isActivePath(pathname, item.href);
+        const content = (
+          <>
+            <span className="nav-link-icon" aria-hidden="true">
+              <NavIcon icon={item.icon} />
+            </span>
+            <span className="nav-link-label">{item.label}</span>
+            {typeof item.badgeCount === "number" && item.badgeCount > 0 ? (
+              <span className="nav-link-badge" aria-label={`${item.badgeCount} unread`}>
+                {item.badgeCount}
+              </span>
+            ) : null}
+          </>
+        );
 
         if (item.href) {
           return (
@@ -39,8 +52,7 @@ export function SidebarNav({ items, onStubNavigate }: SidebarNavProps) {
               href={item.href}
               aria-current={active ? "page" : undefined}
             >
-              <NavIcon icon={item.icon} />
-              <span>{item.label}</span>
+              {content}
             </Link>
           );
         }
@@ -52,8 +64,7 @@ export function SidebarNav({ items, onStubNavigate }: SidebarNavProps) {
             type="button"
             onClick={() => onStubNavigate?.(item.id)}
           >
-            <NavIcon icon={item.icon} />
-            <span>{item.label}</span>
+            {content}
           </button>
         );
       })}

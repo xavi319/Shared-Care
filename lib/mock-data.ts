@@ -13,7 +13,7 @@ export const dashboardData: DashboardData = {
     { id: "dashboard", label: "Dashboard", href: "/", icon: "home" },
     { id: "scheduling", label: "Scheduling", icon: "calendar" },
     { id: "residents", label: "Residents", href: "/residents", icon: "residents" },
-    { id: "messages", label: "Messages", icon: "messages" }
+    { id: "messages", label: "Messages", icon: "messages", badgeCount: 2 }
   ],
   stats: [
     { id: "pending-daily-logs", label: "Pending Daily Logs", value: 5, icon: "logs" },

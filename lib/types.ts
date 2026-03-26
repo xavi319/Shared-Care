@@ -9,6 +9,7 @@ export interface NavItem {
   label: string;
   href?: string;
   icon: NavIconKey;
+  badgeCount?: number;
 }
 
 export interface StatItem {
