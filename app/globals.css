@@ -11,7 +11,7 @@
   --muted: #696969;
   --muted-soft: #a6a6a6;
   --line: #d9d9d9;
-  --shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   --pill: #b7cbf8;
   --logs: #fa971e;
   --residents: #219cf0;
@@ -83,7 +83,7 @@ a {
   padding: 0 18px 0 20px;
   background: rgba(255, 255, 255, 0.97);
   border-bottom: 1px solid #bfbfbf;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
 }
 
 .brand {
@@ -144,7 +144,7 @@ a {
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid #1e1e1e;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
+  box-shadow: none;
 }
 
 .avatar img,
@@ -304,9 +304,9 @@ a {
   min-height: 150px;
   padding: 22px 18px 18px;
   background: var(--surface);
-  border: 1px solid #d5d5d5;
+  border: 1px solid #dbe3ee;
   border-radius: 18px;
-  box-shadow: var(--shadow);
+  box-shadow: none;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -335,28 +335,28 @@ a {
 .stat-card--logs:focus-within {
   background: var(--logs-bg);
   border-color: rgba(250, 151, 30, 0.42);
-  box-shadow: 0 4px 4px 0 rgba(250, 151, 30, 0.35);
+  box-shadow: 0 10px 24px rgba(250, 151, 30, 0.14);
 }
 
 .stat-card--residents:hover,
 .stat-card--residents:focus-within {
   background: var(--residents-bg);
   border-color: rgba(33, 156, 240, 0.42);
-  box-shadow: 0 4px 4px 0 rgba(33, 156, 240, 0.32);
+  box-shadow: 0 10px 24px rgba(33, 156, 240, 0.13);
 }
 
 .stat-card--visits:hover,
 .stat-card--visits:focus-within {
   background: var(--visits-bg);
   border-color: rgba(208, 75, 69, 0.38);
-  box-shadow: 0 4px 4px 0 rgba(208, 75, 69, 0.28);
+  box-shadow: 0 10px 24px rgba(208, 75, 69, 0.12);
 }
 
 .stat-card--messages:hover,
 .stat-card--messages:focus-within {
   background: var(--messages-bg);
   border-color: rgba(67, 180, 47, 0.38);
-  box-shadow: 0 4px 4px 0 rgba(67, 180, 47, 0.28);
+  box-shadow: 0 10px 24px rgba(67, 180, 47, 0.12);
 }
 
 .stat-value {
@@ -381,7 +381,8 @@ a {
 .panel {
   border-radius: 20px;
   background: var(--surface);
-  box-shadow: var(--shadow);
+  border: 1px solid #dbe3ee;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -492,7 +493,8 @@ a {
   height: 54px;
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: var(--shadow);
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: none;
 }
 
 .resident-name,
@@ -649,10 +651,10 @@ a {
   width: 100%;
   height: 52px;
   padding: 0 64px 0 22px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid #d6dee9;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: var(--shadow);
+  box-shadow: none;
   font-size: var(--font-paragraph-2);
   font-weight: 600;
   color: #111111;
@@ -714,7 +716,8 @@ a {
 .detail-panel {
   background: var(--surface);
   border-radius: 20px 20px 0 0;
-  box-shadow: var(--shadow);
+  border: 1px solid #dbe3ee;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -756,7 +759,7 @@ a {
   font-size: 1.15rem;
   font-weight: 700;
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: none;
 }
 
 .directory-update {
@@ -822,7 +825,6 @@ a {
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid #7b5a3c;
-  box-shadow: var(--shadow);
   background: #d6c1a5;
 }
 
@@ -853,10 +855,15 @@ a {
   min-height: 88px;
   padding: 22px;
   border-radius: 18px;
-  border: 0;
-  box-shadow: var(--shadow);
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: none;
   cursor: pointer;
   text-align: left;
+}
+
+.detail-action-card:hover,
+.detail-action-card:focus-visible {
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .detail-action-card--neutral {
@@ -887,8 +894,8 @@ a {
 .detail-card {
   border-radius: 18px;
   background: #ffffff;
-  border: 1px solid #dddddd;
-  box-shadow: var(--shadow);
+  border: 1px solid #dbe3ee;
+  box-shadow: none;
   padding: 22px 24px;
 }
 
