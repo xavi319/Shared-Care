@@ -10,10 +10,12 @@ interface StatCardProps {
 export function StatCard({ item }: StatCardProps) {
   const cardContent = (
     <>
-      <StatIcon icon={item.icon} />
-      <p className="stat-value">
-        <strong>{item.value}</strong>
-      </p>
+      <div className="stat-card-header">
+        <StatIcon icon={item.icon} />
+        <p className="stat-value">
+          <strong>{item.value}</strong>
+        </p>
+      </div>
       <p className="stat-label">{item.label}</p>
     </>
   );
