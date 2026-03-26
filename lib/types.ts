@@ -16,6 +16,7 @@ export interface StatItem {
   label: string;
   value: number;
   icon: StatIconKey;
+  href?: string;
 }
 
 export interface Resident {

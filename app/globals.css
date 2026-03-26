@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
 :root {
   --page-bg: #edf4fb;
   --surface: #ffffff;
@@ -19,11 +21,17 @@
   --residents-bg: #e6f4ff;
   --visits-bg: #ffe8e8;
   --messages-bg: #e9f8e5;
-  --text-h2: 3.5rem;
-  --text-h4: 2.5rem;
-  --text-h5: 1.875rem;
-  --text-p2: 1.5rem;
-  --text-p3: 1.25rem;
+  --font-heading-1: 4rem;
+  --font-heading-2: 3.5rem;
+  --font-heading-3: 3rem;
+  --font-heading-4: 2.5rem;
+  --font-heading-5: 1.875rem;
+  --font-paragraph-1: 1.75rem;
+  --font-paragraph-2: 1.5rem;
+  --font-paragraph-3: 1.25rem;
+  --font-button-1: 2rem;
+  --font-button-2: 1.5rem;
+  --font-button-3: 1.25rem;
 }
 
 * {
@@ -99,7 +107,7 @@ a {
 
 .current-time {
   margin: 0;
-  font-size: var(--text-h5);
+  font-size: var(--font-heading-5);
   font-weight: 600;
   letter-spacing: -0.03em;
 }
@@ -159,7 +167,7 @@ a {
   gap: 12px;
   color: #111111;
   text-decoration: none;
-  font-size: var(--text-p3);
+  font-size: var(--font-paragraph-3);
   font-weight: 500;
   line-height: 1;
   padding: 6px 4px;
@@ -186,13 +194,13 @@ a {
 .eyebrow {
   margin: 0 0 2px;
   color: var(--muted-soft);
-  font-size: var(--text-p2);
+  font-size: var(--font-paragraph-2);
   font-weight: 600;
 }
 
 .page-title {
   margin: 6px 0 44px;
-  font-size: clamp(2.9rem, 5vw, var(--text-h2));
+  font-size: clamp(2.9rem, 5vw, var(--font-heading-2));
   line-height: 1;
   letter-spacing: -0.055em;
   font-weight: 700;
@@ -236,8 +244,15 @@ a {
     border-color 0.2s ease;
 }
 
+.stat-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
 .stat-card:hover,
-.stat-card:focus-within {
+.stat-card:focus-within,
+.stat-card-link:focus-visible {
   transform: scale(1.03);
 }
 
@@ -271,14 +286,14 @@ a {
 
 .stat-value {
   margin: 18px 0 10px;
-  font-size: 2.9rem;
+  font-size: var(--font-heading-4);
   line-height: 1;
 }
 
 .stat-label {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: var(--font-paragraph-3);
+  font-weight: 500;
   color: #383838;
 }
 
@@ -327,8 +342,8 @@ a {
 
 .panel-title {
   margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: var(--font-heading-5);
+  font-weight: 600;
 }
 
 .panel-title--light {
@@ -408,15 +423,15 @@ a {
 .resident-name,
 .directory-name {
   margin: 0 0 5px;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: var(--font-paragraph-3);
+  font-weight: 500;
 }
 
 .resident-room,
 .directory-room,
 .detail-room {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--font-paragraph-3);
   font-weight: 500;
   color: #4f4f4f;
 }
@@ -441,8 +456,8 @@ a {
   border: 0;
   background: transparent;
   color: var(--brand);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: var(--font-button-3);
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -515,8 +530,8 @@ a {
 }
 
 .task-desc {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--font-paragraph-3);
+  font-weight: 500;
 }
 
 .room-pill {
@@ -536,6 +551,8 @@ a {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.14);
   color: #ffffff;
+  font-size: var(--font-button-3);
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -561,7 +578,7 @@ a {
   border-radius: 12px;
   background: #ffffff;
   box-shadow: var(--shadow);
-  font-size: var(--text-p2);
+  font-size: var(--font-paragraph-2);
   font-weight: 600;
   color: #111111;
 }
@@ -606,8 +623,8 @@ a {
   border: 0;
   background: transparent;
   color: #6c6c6c;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: var(--font-button-3);
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -735,7 +752,7 @@ a {
 
 .detail-name {
   margin: 0 0 8px;
-  font-size: clamp(2.1rem, 3vw, var(--text-h4));
+  font-size: clamp(2.1rem, 3vw, var(--font-heading-4));
   font-weight: 700;
   line-height: 1.05;
   text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
@@ -771,8 +788,8 @@ a {
 }
 
 .detail-action-label {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: var(--font-paragraph-3);
+  font-weight: 500;
 }
 
 .detail-action-arrow {
@@ -809,8 +826,8 @@ a {
 
 .detail-card-title {
   margin: 0 0 16px;
-  font-size: 1.28rem;
-  font-weight: 700;
+  font-size: var(--font-paragraph-3);
+  font-weight: 500;
 }
 
 .detail-meta {
@@ -847,7 +864,7 @@ a {
 
 .detail-list li {
   color: #353535;
-  font-size: 1rem;
+  font-size: var(--font-paragraph-3);
   font-weight: 500;
   line-height: 1.45;
 }

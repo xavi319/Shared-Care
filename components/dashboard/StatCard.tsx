@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { StatIcon } from "@/components/layout/icons";
 import type { StatItem } from "@/lib/types";
 
@@ -6,13 +8,27 @@ interface StatCardProps {
 }
 
 export function StatCard({ item }: StatCardProps) {
-  return (
-    <article className={`stat-card stat-card--${item.icon}`}>
+  const cardContent = (
+    <>
       <StatIcon icon={item.icon} />
       <p className="stat-value">
         <strong>{item.value}</strong>
       </p>
       <p className="stat-label">{item.label}</p>
+    </>
+  );
+
+  if (item.href) {
+    return (
+      <Link className={`stat-card stat-card--${item.icon} stat-card-link`} href={item.href}>
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return (
+    <article className={`stat-card stat-card--${item.icon}`}>
+      {cardContent}
     </article>
   );
 }

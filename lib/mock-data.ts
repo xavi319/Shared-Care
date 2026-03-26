@@ -17,7 +17,7 @@ export const dashboardData: DashboardData = {
   ],
   stats: [
     { id: "pending-daily-logs", label: "Pending Daily Logs", value: 5, icon: "logs" },
-    { id: "residents", label: "Residents", value: 32, icon: "residents" },
+    { id: "residents", label: "Residents", value: 32, icon: "residents", href: "/residents" },
     { id: "todays-visits", label: "Today's Visits", value: 3, icon: "visits" },
     { id: "messages", label: "Messages", value: 1, icon: "messages" }
   ],
