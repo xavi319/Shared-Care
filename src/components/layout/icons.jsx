@@ -13,41 +13,35 @@ import {
   UsersIcon
 } from "@heroicons/react/24/outline";
 
-import type { NavIconKey, StatIconKey } from "@/lib/types";
-
-interface IconProps {
-  className?: string;
-}
-
-function withDefaultClassName(className?: string) {
+function withDefaultClassName(className) {
   return className ? `sharedcare-icon ${className}` : "sharedcare-icon";
 }
 
-export function InboxIcon({ className }: IconProps) {
+export function InboxIcon({ className }) {
   return <EnvelopeIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
-export function SearchIcon({ className }: IconProps) {
+export function SearchIcon({ className }) {
   return <MagnifyingGlassIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
-export function ChevronRightIcon({ className }: IconProps) {
+export function ChevronRightIcon({ className }) {
   return <HeroChevronRightIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
-export function ChevronLeftIcon({ className }: IconProps) {
+export function ChevronLeftIcon({ className }) {
   return <HeroChevronLeftIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
-export function ChartIcon({ className }: IconProps) {
+export function ChartIcon({ className }) {
   return <HeroChartBarIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
-export function SortIcon({ className }: IconProps) {
+export function SortIcon({ className }) {
   return <HeroArrowsUpDownIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
-export function NavIcon({ icon, className }: { icon: NavIconKey; className?: string }) {
+export function NavIcon({ icon, className }) {
   const iconClassName = withDefaultClassName(className);
 
   switch (icon) {
@@ -59,10 +53,12 @@ export function NavIcon({ icon, className }: { icon: NavIconKey; className?: str
       return <UsersIcon className={iconClassName} aria-hidden="true" />;
     case "messages":
       return <ChatBubbleLeftRightIcon className={iconClassName} aria-hidden="true" />;
+    default:
+      return null;
   }
 }
 
-export function StatIcon({ icon, className }: { icon: StatIconKey; className?: string }) {
+export function StatIcon({ icon, className }) {
   const iconClassName = withDefaultClassName(className);
 
   switch (icon) {
@@ -74,5 +70,7 @@ export function StatIcon({ icon, className }: { icon: StatIconKey; className?: s
       return <HeartIcon className={iconClassName} aria-hidden="true" />;
     case "messages":
       return <ChatBubbleLeftRightIcon className={iconClassName} aria-hidden="true" />;
+    default:
+      return null;
   }
 }

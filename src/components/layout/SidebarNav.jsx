@@ -1,35 +1,15 @@
-"use client";
+import { NavLink } from "react-router-dom";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { NavIcon } from "./icons";
 
-import { NavIcon } from "@/components/layout/icons";
-import type { NavItem } from "@/lib/types";
-
-interface SidebarNavProps {
-  items: NavItem[];
-  onStubNavigate?: (navId: string) => void;
+function getNavLinkClassName(isActive) {
+  return `nav-link${isActive ? " is-active" : ""}`;
 }
 
-function isActivePath(pathname: string, href?: string) {
-  if (!href) {
-    return false;
-  }
-
-  if (href === "/") {
-    return pathname === "/";
-  }
-
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-export function SidebarNav({ items, onStubNavigate }: SidebarNavProps) {
-  const pathname = usePathname();
-
+export function SidebarNav({ items, onStubNavigate }) {
   return (
     <nav className="nav" aria-label="Primary">
       {items.map((item) => {
-        const active = isActivePath(pathname, item.href);
         const content = (
           <>
             <span className="nav-link-icon" aria-hidden="true">
@@ -46,21 +26,21 @@ export function SidebarNav({ items, onStubNavigate }: SidebarNavProps) {
 
         if (item.href) {
           return (
-            <Link
+            <NavLink
               key={item.id}
-              className={`nav-link${active ? " is-active" : ""}`}
-              href={item.href}
-              aria-current={active ? "page" : undefined}
+              className={({ isActive }) => getNavLinkClassName(isActive)}
+              end={item.href === "/"}
+              to={item.href}
             >
               {content}
-            </Link>
+            </NavLink>
           );
         }
 
         return (
           <button
             key={item.id}
-            className={`nav-link nav-link-button${active ? " is-active" : ""}`}
+            className="nav-link nav-link-button"
             type="button"
             onClick={() => onStubNavigate?.(item.id)}
           >

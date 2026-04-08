@@ -1,15 +1,18 @@
-"use client";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { StatCard } from "../components/dashboard/StatCard";
+import { ChartIcon, ChevronRightIcon } from "../components/layout/icons";
+import { StaffAppShell } from "../components/layout/StaffAppShell";
+import {
+  checklistStorageKey,
+  dashboardData,
+  getResidentDetailBySlug,
+  getResidentSlug,
+  initialChecklistItems
+} from "../data/mockData";
 
-import { StatCard } from "@/components/dashboard/StatCard";
-import { ChartIcon, ChevronRightIcon } from "@/components/layout/icons";
-import { StaffAppShell } from "@/components/layout/StaffAppShell";
-import { checklistStorageKey, dashboardData, initialChecklistItems } from "@/lib/mock-data";
-import type { ChecklistItem } from "@/lib/types";
-
-function getGreetingForTime(date: Date, userName: string) {
+function getGreetingForTime(date, userName) {
   const hour = date.getHours();
   let greetingPrefix = "Good evening";
 
@@ -23,27 +26,24 @@ function getGreetingForTime(date: Date, userName: string) {
 }
 
 function loadChecklistItems() {
-  if (typeof window === "undefined") {
-    return initialChecklistItems;
-  }
-
   const storedValue = window.sessionStorage.getItem(checklistStorageKey);
+
   if (!storedValue) {
     return initialChecklistItems;
   }
 
   try {
-    return JSON.parse(storedValue) as ChecklistItem[];
+    return JSON.parse(storedValue);
   } catch {
     return initialChecklistItems;
   }
 }
 
-export function DashboardPage() {
-  const router = useRouter();
+export default function DashboardPage() {
+  const navigate = useNavigate();
   const [statusMessage, setStatusMessage] = useState("");
   const [greeting, setGreeting] = useState("");
-  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(initialChecklistItems);
+  const [checklistItems, setChecklistItems] = useState(initialChecklistItems);
 
   useEffect(() => {
     setChecklistItems(loadChecklistItems());
@@ -57,29 +57,25 @@ export function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
     window.sessionStorage.setItem(checklistStorageKey, JSON.stringify(checklistItems));
   }, [checklistItems]);
 
-  const residentCount = useMemo(() => dashboardData.residents.length, []);
-
-  function handleStubNavigate(navId: string) {
-    setStatusMessage(`Stub navigation only for ${navId}. The layout is now routed through Next.js.`);
+  function handleStubNavigate(navId) {
+    setStatusMessage(`Stub navigation only for ${navId}. This item is still mock-only in the React app.`);
   }
 
-  function handleResidentOpen(residentId: string, detailPath: string) {
-    if (residentId === "lilian-mendoza") {
-      router.push(detailPath);
+  function handleResidentOpen(detailPath) {
+    const residentSlug = getResidentSlug(detailPath);
+
+    if (residentSlug && getResidentDetailBySlug(residentSlug)) {
+      navigate(detailPath);
       return;
     }
 
     setStatusMessage(`TODO: wire resident detail route ${detailPath}`);
   }
 
-  function handleToggleTask(taskId: string) {
+  function handleToggleTask(taskId) {
     setChecklistItems((currentItems) =>
       currentItems.map((item) =>
         item.id === taskId ? { ...item, completed: !item.completed } : item
@@ -89,7 +85,7 @@ export function DashboardPage() {
 
   function handleAddTask() {
     const nextTaskNumber = checklistItems.length + 1;
-    const nextTask: ChecklistItem = {
+    const nextTask = {
       id: `temporary-task-${Date.now()}`,
       time: "11:30 AM",
       label: `Temporary Task ${nextTaskNumber}`,
@@ -105,9 +101,7 @@ export function DashboardPage() {
   return (
     <StaffAppShell onStubNavigate={handleStubNavigate}>
       <p className="eyebrow">{dashboardData.subtitle}</p>
-      <h1 className="page-title" suppressHydrationWarning>
-        {greeting}
-      </h1>
+      <h1 className="page-title">{greeting}</h1>
       <p className="status-message" aria-live="polite">
         {statusMessage}
       </p>
@@ -126,7 +120,7 @@ export function DashboardPage() {
               <h2 className="panel-title">Residents</h2>
             </div>
             <div className="resident-count-badge">
-              <span id="resident-count-value">{residentCount}</span>
+              <span id="resident-count-value">{dashboardData.residents.length}</span>
             </div>
           </div>
 
@@ -136,7 +130,7 @@ export function DashboardPage() {
                 <button
                   className="resident-row"
                   type="button"
-                  onClick={() => handleResidentOpen(resident.id, resident.detailPath)}
+                  onClick={() => handleResidentOpen(resident.detailPath)}
                   aria-label={`Open resident profile for ${resident.name}`}
                 >
                   <div className="resident-avatar">
@@ -157,11 +151,7 @@ export function DashboardPage() {
             ))}
           </ul>
 
-          <button
-            className="view-all-button"
-            type="button"
-            onClick={() => router.push("/residents")}
-          >
+          <button className="view-all-button" type="button" onClick={() => navigate("/residents")}>
             View All
           </button>
         </article>

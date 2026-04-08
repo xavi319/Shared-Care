@@ -1,14 +1,17 @@
-import { FlatCompat } from "@eslint/eslintrc";
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname
-});
-
 const config = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
-    rules: {
-      "@next/next/no-img-element": "off"
+    ignores: [".next", "dist"]
+  },
+  {
+    files: ["**/*.{js,jsx}"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        }
+      }
     }
   }
 ];

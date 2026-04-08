@@ -1,14 +1,11 @@
-"use client";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { SearchIcon, SortIcon } from "../components/layout/icons";
+import { StaffAppShell } from "../components/layout/StaffAppShell";
+import { getResidentDetailBySlug, getResidentSlug, residentsPageData } from "../data/mockData";
 
-import { SearchIcon, SortIcon } from "@/components/layout/icons";
-import { StaffAppShell } from "@/components/layout/StaffAppShell";
-import { residentsPageData } from "@/lib/mock-data";
-import type { Resident } from "@/lib/types";
-
-function getInitials(name: string) {
+function getInitials(name) {
   return name
     .split(" ")
     .filter(Boolean)
@@ -17,39 +14,43 @@ function getInitials(name: string) {
     .join("");
 }
 
-export function ResidentsPage() {
-  const router = useRouter();
+function getVisibleResidents(query, sortAscending) {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  return residentsPageData.residents
+    .filter((resident) => {
+      if (!normalizedQuery) {
+        return true;
+      }
+
+      return (
+        resident.name.toLowerCase().includes(normalizedQuery) ||
+        resident.room.toLowerCase().includes(normalizedQuery)
+      );
+    })
+    .sort((firstResident, secondResident) => {
+      const comparison = firstResident.name.localeCompare(secondResident.name);
+      return sortAscending ? comparison : -comparison;
+    });
+}
+
+export default function ResidentsPage() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
 
-  const residents = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+  const residents = getVisibleResidents(query, sortAscending);
 
-    return residentsPageData.residents
-      .filter((resident) => {
-        if (!normalizedQuery) {
-          return true;
-        }
-
-        return (
-          resident.name.toLowerCase().includes(normalizedQuery) ||
-          resident.room.toLowerCase().includes(normalizedQuery)
-        );
-      })
-      .sort((firstResident, secondResident) => {
-        const comparison = firstResident.name.localeCompare(secondResident.name);
-        return sortAscending ? comparison : -comparison;
-      });
-  }, [query, sortAscending]);
-
-  function handleStubNavigate(navId: string) {
-    setStatusMessage(`Stub navigation only for ${navId}. This route is now part of the Next.js app shell.`);
+  function handleStubNavigate(navId) {
+    setStatusMessage(`Stub navigation only for ${navId}. This route now lives in the React app shell.`);
   }
 
-  function handleResidentOpen(resident: Resident) {
-    if (resident.slug) {
-      router.push(`/residents/${resident.slug}`);
+  function handleResidentOpen(resident) {
+    const residentSlug = getResidentSlug(resident.detailPath, resident.slug);
+
+    if (residentSlug && getResidentDetailBySlug(residentSlug)) {
+      navigate(`/residents/${residentSlug}`);
       return;
     }
 
@@ -109,7 +110,7 @@ export function ResidentsPage() {
                     <div className="directory-identity">
                       <div
                         className="directory-avatar"
-                        style={{ ["--avatar-accent" as string]: resident.accent ?? "#aaccee" }}
+                        style={{ "--avatar-accent": resident.accent ?? "#aaccee" }}
                       >
                         {resident.image ? <img src={resident.image} alt={resident.name} /> : <span>{initials}</span>}
                       </div>

@@ -1,11 +1,9 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
-import { InboxIcon } from "@/components/layout/icons";
+import { InboxIcon } from "./icons";
 
-function formatTime(date: Date) {
+function formatTime(date) {
   return new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "2-digit"
@@ -27,14 +25,12 @@ export function TopBar() {
 
   return (
     <header className="topbar">
-      <Link className="brand" href="/" aria-label="SharedCare dashboard">
+      <Link className="brand" to="/" aria-label="SharedCare dashboard">
         <img className="brand-wordmark" src="/images/sharedcare-logo-blue.png" alt="SharedCare" />
       </Link>
 
       <div className="topbar-actions">
-        <p className="current-time" suppressHydrationWarning>
-          {currentTime}
-        </p>
+        <p className="current-time">{currentTime}</p>
         <button className="icon-button" type="button" aria-label="Inbox">
           <InboxIcon />
         </button>

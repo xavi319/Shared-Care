@@ -1,25 +1,33 @@
-"use client";
-
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { ChevronLeftIcon, SearchIcon, SortIcon } from "@/components/layout/icons";
-import { StaffAppShell } from "@/components/layout/StaffAppShell";
-import type { ResidentDetailData } from "@/lib/types";
+import { StaffAppShell } from "../components/layout/StaffAppShell";
+import { ChevronLeftIcon, SearchIcon, SortIcon } from "../components/layout/icons";
+import { getResidentDetailBySlug } from "../data/mockData";
+import NotFoundPage from "./NotFoundPage";
 
-interface ResidentDetailPageProps {
-  resident: ResidentDetailData;
-}
-
-export function ResidentDetailPage({ resident }: ResidentDetailPageProps) {
-  const router = useRouter();
+export default function ResidentDetailPage() {
+  const navigate = useNavigate();
+  const { residentId } = useParams();
+  const resident = getResidentDetailBySlug(residentId ?? "");
   const [statusMessage, setStatusMessage] = useState("");
 
-  function handleStubNavigate(navId: string) {
-    setStatusMessage(`Stub navigation only for ${navId}. This mock route stays in the shared app shell.`);
+  if (!resident) {
+    return (
+      <NotFoundPage
+        title="Resident Not Found"
+        description="That resident detail view has not been mocked in SharedCare yet."
+        actionLabel="Back to residents"
+        actionTo="/residents"
+      />
+    );
   }
 
-  function handleAction(label: string) {
+  function handleStubNavigate(navId) {
+    setStatusMessage(`Stub navigation only for ${navId}. This mock route stays inside the shared React shell.`);
+  }
+
+  function handleAction(label) {
     setStatusMessage(`TODO: wire ${label} for ${resident.resident.name}.`);
   }
 
@@ -44,7 +52,11 @@ export function ResidentDetailPage({ resident }: ResidentDetailPageProps) {
       </section>
 
       <div className="toolbar">
-        <button className="sort-button" type="button" onClick={() => setStatusMessage("Sort controls are stubbed on the detail page for now.")}>
+        <button
+          className="sort-button"
+          type="button"
+          onClick={() => setStatusMessage("Sort controls are stubbed on the detail page for now.")}
+        >
           <span className="sort-label">Sort A-Z</span>
           <SortIcon />
         </button>
@@ -53,7 +65,12 @@ export function ResidentDetailPage({ resident }: ResidentDetailPageProps) {
           <p className="status-message status-message--toolbar" aria-live="polite">
             {statusMessage}
           </p>
-          <button className="back-button" type="button" onClick={() => router.push("/residents")} aria-label="Back to residents">
+          <button
+            className="back-button"
+            type="button"
+            onClick={() => navigate("/residents")}
+            aria-label="Back to residents"
+          >
             <ChevronLeftIcon />
           </button>
         </div>

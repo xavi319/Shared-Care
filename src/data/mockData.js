@@ -1,11 +1,4 @@
-import type {
-  ChecklistItem,
-  DashboardData,
-  ResidentDetailData,
-  ResidentsPageData
-} from "@/lib/types";
-
-export const dashboardData: DashboardData = {
+export const dashboardData = {
   userName: "Sarah",
   subtitle: "Dashboard",
   checklistDate: "February 15, 2026",
@@ -63,7 +56,7 @@ export const dashboardData: DashboardData = {
   ]
 };
 
-export const residentsPageData: ResidentsPageData = {
+export const residentsPageData = {
   title: "Residents",
   subtitle: "Search",
   searchPlaceholder: "Type to search...",
@@ -138,7 +131,7 @@ export const residentsPageData: ResidentsPageData = {
   ]
 };
 
-export const lilianMendozaDetailData: ResidentDetailData = {
+export const lilianMendozaDetailData = {
   title: "Residents",
   subtitle: "Search",
   searchValue: "Lilian Mendoza",
@@ -176,12 +169,21 @@ export const lilianMendozaDetailData: ResidentDetailData = {
 
 export const checklistStorageKey = "sharedcare-dashboard-checklist";
 
-export const initialChecklistItems: ChecklistItem[] = dashboardData.checklistItems;
+export const initialChecklistItems = dashboardData.checklistItems;
 
-const residentDetailsBySlug: Record<string, ResidentDetailData> = {
+const residentDetailsBySlug = {
   "lilian-mendoza": lilianMendozaDetailData
 };
 
-export function getResidentDetailBySlug(slug: string) {
+export function getResidentDetailBySlug(slug) {
   return residentDetailsBySlug[slug];
+}
+
+export function getResidentSlug(detailPath, explicitSlug) {
+  if (explicitSlug) {
+    return explicitSlug;
+  }
+
+  const pathSegments = detailPath.split("/").filter(Boolean);
+  return pathSegments[pathSegments.length - 1];
 }

@@ -9,33 +9,41 @@ SharedCare is a secure, user-friendly portal that helps nursing home caregivers 
 - Resident-authorized access controls (who can see what)
 - Plain-language explanations of care information
 
-## Codebase
+## Current Frontend Structure
 
-- The web app (caregiver UI, family UI, auth + roles, database models)
-- Core project files including dependencies
-- README + LICENSE
-- A document folder for MVP scope, requirements, user flow and hand off steps.
+- `src/main.jsx` boots the app and wraps it in React Router.
+- `src/App.jsx` defines the client-side routes.
+- `src/pages/` holds route-level screens like dashboard, residents, resident detail, login, and not found.
+- `src/components/` holds reusable UI like the shared shell, top bar, sidebar, icons, and stat cards.
+- `src/data/mockData.js` contains the capstone prototype mock data only.
+- `src/styles/globals.css` preserves the existing SharedCare styling.
 
 ## Contributing
 
 1. **Clone the repo**
+
    ```bash
    git clone <repo-url>
    cd <repo-folder>
    npm install
    npm run dev
+   ```
 
 2. **Create new branch**
-    ```bash
-    git checkout -b feature/<short-name>
+
+   ```bash
+   git checkout -b feature/<short-name>
+   ```
 
 3. **Make changes + test locally**
 
 4. **Commit and push**
-    ```bash
-    git add .
-    git commit -m "Add family timeline view"
-    git push -u origin feature/<short-name>
+
+   ```bash
+   git add .
+   git commit -m "Add family timeline view"
+   git push -u origin feature/<short-name>
+   ```
 
 5. **Open a pull request**
     - Describe what changed
@@ -43,3 +51,9 @@ SharedCare is a secure, user-friendly portal that helps nursing home caregivers 
     - Add screenshots for UI changes
 
     - Request review from a teammate before merging
+
+## Notes
+
+- This project now uses plain React + JSX with Vite instead of Next.js.
+- Routing is handled with React Router.
+- The current caregiver flow is still mock-only, with no backend, database, or real authentication attached.
