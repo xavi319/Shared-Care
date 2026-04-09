@@ -6,7 +6,7 @@ export const dashboardData = {
     { id: "dashboard", label: "Dashboard", href: "/", icon: "home" },
     { id: "scheduling", label: "Scheduling", icon: "calendar" },
     { id: "residents", label: "Residents", href: "/residents", icon: "residents" },
-    { id: "messages", label: "Messages", icon: "messages", badgeCount: 2 }
+    { id: "messages", label: "Messages", href: "/messages", icon: "messages"}
   ],
   stats: [
     { id: "pending-daily-logs", label: "Pending Daily Logs", value: 5, icon: "logs" },
@@ -165,6 +165,93 @@ export const lilianMendozaDetailData = {
     { label: "Daily Log Summaries", tone: "neutral" },
     { label: "Medical Charts", tone: "dark" }
   ]
+};
+
+export const messagesData = {
+  contacts: [
+    {
+      id: "contact-maria-gomez",
+      name: "Maria Gomez",
+      relation: "Daughter of Alex Gomez",
+      room: "Room 498",
+      lastMessage: "Hello Nurse Clara, how was Alex's morning today?",
+      unreadCount: 2,
+      image: "https://randomuser.me/api/portraits/women/44.jpg"
+    },
+    {
+      id: "contact-robert-adams",
+      name: "Robert Adams",
+      relation: "Son of Beth Adams",
+      room: "Room 123",
+      lastMessage: "Yes, she is doing well. She just finished her breakfast.",
+      unreadCount: 0,
+      image: "https://randomuser.me/api/portraits/men/32.jpg"
+    },
+    {
+      id: "contact-david-langley",
+      name: "David Langley",
+      relation: "Brother of Beatrice Langley",
+      room: "Room 678",
+      lastMessage: "Hello Nurse Clara, how was Alex's morning today?",
+      unreadCount: 0,
+      image: "https://randomuser.me/api/portraits/men/75.jpg"
+    },
+    {
+      id: "contact-lillian-pembroke",
+      name: "Lillian Pembroke",
+      relation: "Daughter of Dorothy",
+      room: "Room 418",
+      lastMessage: "Thanks for the update!",
+      unreadCount: 0,
+      image: "https://randomuser.me/api/portraits/women/68.jpg"
+    }
+  ],
+
+  conversations: {
+    "contact-maria-gomez": [
+      { id: "d1", type: "divider", label: "Today 9:00 AM" },
+      {
+        id: "m1",
+        type: "message",
+        text: "Hello Nurse Clara, how was Alex's morning today?",
+        direction: "incoming"
+      }
+    ],
+    "contact-robert-adams": [
+      { id: "d1", type: "divider", label: "Yesterday 5:07 PM" },
+      { id: "m1", type: "message", text: "Sarah just won her bingo game!", direction: "outgoing" },
+      { id: "m2", type: "message", text: "She's super happy!", direction: "outgoing" },
+      { id: "m3", type: "message", text: "Haha good to hear!", direction: "incoming" },
+      { id: "d2", type: "divider", label: "Today 8:23 AM" },
+      { id: "m4", type: "message", text: "Hi, How is my mom doing?", direction: "incoming" },
+      { id: "m5", type: "message", text: "Has she been eating?", direction: "incoming" },
+      {
+        id: "m6",
+        type: "message",
+        text: "Yes, she is doing well. She just finished her breakfast.",
+        direction: "outgoing"
+      }
+    ],
+    "contact-david-langley": [
+      { id: "d1", type: "divider", label: "Today 8:00 AM" },
+      {
+        id: "m1",
+        type: "message",
+        text: "Hello Nurse Clara, how was Alex's morning today?",
+        direction: "incoming"
+      }
+    ],
+    "contact-lillian-pembroke": [
+      { id: "d1", type: "divider", label: "Yesterday 3:15 PM" },
+      {
+        id: "m1",
+        type: "message",
+        text: "Dorothy had a great physical therapy session!",
+        direction: "outgoing"
+      },
+      { id: "m2", type: "message", text: "Thanks for the update!", direction: "incoming" }
+    ]
+  }
 };
 
 export const checklistStorageKey = "sharedcare-dashboard-checklist";
