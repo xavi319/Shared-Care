@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
+import { useAuth } from "../auth/AuthProvider";
 import { InboxIcon } from "./icons";
 
 function formatTime(date) {
@@ -11,6 +12,8 @@ function formatTime(date) {
 }
 
 export function TopBar() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [currentTime, setCurrentTime] = useState("");
 
   useEffect(() => {
@@ -23,6 +26,11 @@ export function TopBar() {
     return () => window.clearInterval(intervalId);
   }, []);
 
+  function handleLogout() {
+    logout();
+    navigate("/login", { replace: true });
+  }
+
   return (
     <header className="topbar">
       <Link className="brand" to="/" aria-label="SharedCare dashboard">
@@ -33,6 +41,9 @@ export function TopBar() {
         <p className="current-time">{currentTime}</p>
         <button className="icon-button" type="button" aria-label="Inbox">
           <InboxIcon />
+        </button>
+        <button className="topbar-action-button" type="button" onClick={handleLogout}>
+          Log Out
         </button>
         <div className="avatar">
           <img src="/images/sarah-profile.jpg" alt="Sarah profile" />
