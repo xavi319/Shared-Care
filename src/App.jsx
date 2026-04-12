@@ -6,6 +6,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ResidentDetailPage from "./pages/ResidentDetailPage";
 import ResidentsPage from "./pages/ResidentsPage";
 import MessagesPage from "./pages/MessagesPage";
+import SchedulingPage from "./pages/SchedulingPage";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Route path="/residents" element={<ResidentsPage />} />
       <Route path="/residents/:residentId" element={<ResidentDetailPage />} />
       <Route path="/messages" element={<MessagesPage />} />
+      <Route path="/scheduling" element={<SchedulingPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

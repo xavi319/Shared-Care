@@ -1555,6 +1555,325 @@ a {
   stroke-width: 1.8;
 }
 
+/* ============================================================
+   SchedulingPage.css
+   Uses SharedCare design tokens from globals.css.
+   ============================================================ */
+
+/* ── Page header ─────────────────────────────────────────── */
+
+.scheduling-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+/* ── Two-column layout ───────────────────────────────────── */
+
+.scheduling-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Calendar panel ──────────────────────────────────────── */
+
+.cal-panel {
+  background: var(--surface);
+  border: 1px solid #dbe3ee;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Date navigation header — uses surface-accent like .panel--accent */
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--surface-accent); /* #c08d52 */
+  border-radius: 20px 20px 0 0;
+}
+
+.cal-nav-button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #ffffff;
+  border-radius: 6px;
+  transition: background 0.18s ease;
+  flex-shrink: 0;
+}
+
+.cal-nav-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cal-nav-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cal-header-date {
+  flex: 1;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+/* Grid wrapper — scrollable if content overflows */
+
+.cal-grid-wrapper {
+  overflow-y: auto;
+  background: #f7f9fc;
+}
+
+.cal-grid {
+  position: relative;
+  padding-left: 80px; /* room for hour labels */
+}
+
+/* Hour rows */
+
+.cal-hour-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.cal-hour-label {
+  position: absolute;
+  left: 12px;
+  top: -10px;
+  width: 64px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.cal-hour-line {
+  position: absolute;
+  left: 80px;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+/* Current time indicator */
+
+.cal-now-line {
+  position: absolute;
+  left: 80px;
+  right: 0;
+  height: 2px;
+  background: var(--visits); /* #d04b45 */
+  z-index: 2;
+}
+
+.cal-now-line::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--visits);
+}
+
+/* Events column — sits on top of the grid */
+
+.cal-events-column {
+  position: absolute;
+  top: 0;
+  left: 80px;
+  right: 16px;
+  bottom: 0;
+}
+
+/* Individual event block */
+
+.cal-event {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #7fa8c4; /* steel blue as in screenshot */
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  cursor: default;
+}
+
+.cal-event-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cal-event-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-event-room-pill {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-accent); /* #c08d52 — tan pill */
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cal-event-subtitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cal-event-time {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: auto;
+}
+
+/* ── Pending appointments panel ──────────────────────────── */
+
+.pending-panel {
+  background: var(--surface-muted); /* #f5e6ce — warm sand */
+  border-radius: 20px;
+  padding: 20px 18px;
+}
+
+.pending-panel-title {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.pending-panel-empty {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 0;
+}
+
+.pending-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+/* Pending card */
+
+.pending-card {
+  background: var(--surface);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #dbe3ee;
+}
+
+.pending-card-body {
+  padding: 16px 16px 12px;
+  text-align: center;
+}
+
+.pending-card-name {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pending-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.pending-card-date,
+.pending-card-time {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.pending-card-details {
+  border: 0;
+  background: transparent;
+  color: var(--brand);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.18s ease;
+}
+
+.pending-card-details:hover {
+  opacity: 0.75;
+}
+
+/* Accept / Decline buttons */
+
+.pending-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.pending-action-button {
+  padding: 14px 0;
+  border: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.18s ease;
+}
+
+.pending-action-button:hover {
+  filter: brightness(0.92);
+}
+
+.pending-action-button--accept {
+  background: #3aaa5c;
+  color: #ffffff;
+}
+
+.pending-action-button--decline {
+  background: #d94f4f;
+  color: #ffffff;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
 
 @media (max-width: 1200px) {
   .stats-grid,
@@ -1576,6 +1895,14 @@ a {
   .detail-actions {
     grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scheduling-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pending-panel {
+    order: -1; /* show pending above calendar on narrow screens */
   }
 }
 
@@ -1666,5 +1993,20 @@ a {
 
   .chat-bubble {
     max-width: 80%;
+  }
+
+  .cal-grid {
+    padding-left: 60px;
+  }
+
+  .cal-hour-label {
+    width: 48px;
+    font-size: 0.72rem;
+  }
+
+  .cal-hour-line,
+  .cal-now-line,
+  .cal-events-column {
+    left: 60px;
   }
 }
