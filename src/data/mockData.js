@@ -9,7 +9,7 @@ export const dashboardData = {
     { id: "messages", label: "Messages", href: "/messages", icon: "messages"}
   ],
   stats: [
-    { id: "pending-daily-logs", label: "Pending Daily Logs", value: 5, icon: "logs" },
+    { id: "pending-daily-logs", label: "Pending Daily Logs", value: 5, icon: "logs", href: "/daily-logs" },
     { id: "residents", label: "Residents", value: 32, icon: "residents", href: "/residents" },
     { id: "todays-visits", label: "Today's Visits", value: 3, icon: "visits" },
     { id: "messages", label: "Messages", value: 1, icon: "messages", href: "/messages" }
@@ -127,6 +127,70 @@ export const residentsPageData = {
       image: "/images/lilian-mendoza.jpg",
       detailPath: "/residents/lilian-mendoza",
       accent: "#b88b72"
+    }
+  ]
+};
+
+export const dailyLogsPageData = {
+  title: "Daily Logs",
+  subtitle: "Care Documentation",
+  entries: [
+    {
+      residentId: "beth-adams",
+      caregiver: "Sarah Allen",
+      mood: "Good",
+      date: "2026-03-15",
+      status: "pending"
+    },
+    {
+      residentId: "clarence-doyle",
+      caregiver: "Andy Smith",
+      mood: "Neutral",
+      date: "2026-03-15",
+      status: "pending"
+    },
+    {
+      residentId: "ronald-perry",
+      caregiver: "Andy Smith",
+      mood: "Good",
+      date: "2026-03-15",
+      status: "pending"
+    },
+    {
+      residentId: "franklin-dempsey",
+      caregiver: "Georgia Doe",
+      mood: "Calm",
+      date: "2026-03-15",
+      status: "pending"
+    },
+    {
+      residentId: "lilian-mendoza",
+      caregiver: "Sarah Allen",
+      mood: "",
+      date: "2026-03-15",
+      status: "pending",
+      actionTone: "attention"
+    },
+    {
+      residentId: "harold-bennett",
+      caregiver: "Terry Nguyen",
+      mood: "Irritable",
+      date: "2026-03-14 19:47",
+      status: "completed"
+    },
+    {
+      residentId: "edgar-callahan",
+      caregiver: "Sarah Allen",
+      mood: "Good",
+      date: "2026-03-14 11:27",
+      status: "completed"
+    },
+    {
+      residentId: "june-sinclair",
+      caregiver: "Andy Smith",
+      mood: "Withdrawn",
+      date: "2026-03-14 14:09",
+      status: "completed"
     }
   ]
 };

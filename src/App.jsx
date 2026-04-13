@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
+import DailyLogsPage from "./pages/DailyLogsPage";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ResidentDetailPage from "./pages/ResidentDetailPage";
@@ -15,6 +16,7 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/daily-logs" element={<DailyLogsPage />} />
         <Route path="/residents" element={<ResidentsPage />} />
         <Route path="/residents/:residentId" element={<ResidentDetailPage />} />
         <Route path="/messages" element={<MessagesPage />} />
