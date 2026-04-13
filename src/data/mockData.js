@@ -169,7 +169,13 @@ export const dailyLogsPageData = {
       mood: "",
       date: "2026-03-15",
       status: "pending",
-      actionTone: "attention"
+      actionTone: "attention",
+      reportStatus: "missing",
+      meals: "",
+      activityEngagement: "",
+      assistanceLevel: "",
+      safety: "",
+      notes: ""
     },
     {
       residentId: "harold-bennett",
@@ -193,6 +199,21 @@ export const dailyLogsPageData = {
       status: "completed"
     }
   ]
+};
+
+export const dailyLogStorageKey = "sharedcare-daily-logs";
+
+export const dailyLogFormOptions = {
+  mood: ["Good", "Neutral", "Irritable", "Withdrawn", "Confused"],
+  meals: ["Ate well", "Ate moderately", "Ate poorly", "Refused meals"],
+  activityEngagement: [
+    "Fully Engaged",
+    "Moderately Engaged",
+    "Disinterested",
+    "Did Not Engage"
+  ],
+  assistanceLevel: ["Independent", "Partial Assist", "Full Assist", "Declined Assistance"],
+  safety: ["Fall", "Near Fall", "Injury Observed", "Medication Refused"]
 };
 
 export const lilianMendozaDetailData = {
@@ -372,6 +393,7 @@ export const schedulingPageData = {
 export const checklistStorageKey = "sharedcare-dashboard-checklist";
 
 export const initialChecklistItems = dashboardData.checklistItems;
+export const initialDailyLogEntries = dailyLogsPageData.entries;
 
 const residentDetailsBySlug = {
   "lilian-mendoza": lilianMendozaDetailData
@@ -388,4 +410,56 @@ export function getResidentSlug(detailPath, explicitSlug) {
 
   const pathSegments = detailPath.split("/").filter(Boolean);
   return pathSegments[pathSegments.length - 1];
+}
+
+export function loadDailyLogEntries() {
+  if (typeof window === "undefined") {
+    return initialDailyLogEntries;
+  }
+
+  const storedValue = window.sessionStorage.getItem(dailyLogStorageKey);
+
+  if (!storedValue) {
+    return initialDailyLogEntries;
+  }
+
+  try {
+    const parsedEntries = JSON.parse(storedValue);
+
+    if (!Array.isArray(parsedEntries)) {
+      return initialDailyLogEntries;
+    }
+
+    const parsedEntriesByResidentId = new Map(
+      parsedEntries.map((entry) => [entry.residentId, entry])
+    );
+
+    return initialDailyLogEntries.map((entry) => ({
+      ...entry,
+      ...(parsedEntriesByResidentId.get(entry.residentId) ?? {})
+    }));
+  } catch {
+    return initialDailyLogEntries;
+  }
+}
+
+export function saveDailyLogEntries(entries) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.sessionStorage.setItem(dailyLogStorageKey, JSON.stringify(entries));
+}
+
+export function getDailyLogEntryByResidentId(residentId) {
+  return loadDailyLogEntries().find((entry) => entry.residentId === residentId) ?? null;
+}
+
+export function updateDailyLogEntry(residentId, updates) {
+  const nextEntries = loadDailyLogEntries().map((entry) =>
+    entry.residentId === residentId ? { ...entry, ...updates } : entry
+  );
+
+  saveDailyLogEntries(nextEntries);
+  return nextEntries.find((entry) => entry.residentId === residentId) ?? null;
 }

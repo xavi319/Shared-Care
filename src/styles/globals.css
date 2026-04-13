@@ -1385,12 +1385,254 @@ a {
   border-radius: 10px;
 }
 
+.daily-logs-clear-action {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #5d6b7d;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.daily-logs-clear-action:hover {
+  color: var(--brand);
+}
+
+.daily-logs-clear-action:focus-visible {
+  outline: 2px solid rgba(51, 102, 255, 0.35);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
 .daily-logs-empty-state {
   padding: 28px 18px;
   color: #6f6f6f;
   font-size: 0.95rem;
   font-weight: 500;
   text-align: center;
+}
+
+.daily-log-submit-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.daily-log-submit-title-block {
+  max-width: 760px;
+}
+
+.daily-log-submit-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.daily-log-room-card {
+  min-width: 160px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid #dbe3ee;
+  color: #2a3f68;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.daily-log-submit-date {
+  margin: 10px 0 0;
+  color: #121212;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.daily-log-submit-context {
+  margin: 10px 0 0;
+  color: #6b7a8d;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.daily-log-submit-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.daily-log-submit-main,
+.daily-log-submit-sidebar {
+  background: #f5ebdb;
+  border: 1px solid #e5d8c4;
+  border-radius: 24px;
+}
+
+.daily-log-submit-main {
+  padding: 24px 28px;
+}
+
+.daily-log-submit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 34px;
+}
+
+.daily-log-form-group {
+  min-width: 0;
+}
+
+.daily-log-form-group.has-error {
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  background: rgba(243, 91, 79, 0.06);
+}
+
+.daily-log-form-section {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.daily-log-form-title,
+.daily-log-sidebar-title {
+  margin: 0 0 14px;
+  color: #111111;
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.daily-log-option-list {
+  display: grid;
+  gap: 10px;
+}
+
+.daily-log-option {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 4px 0;
+  color: #171717;
+  cursor: pointer;
+}
+
+.daily-log-option-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.daily-log-option-indicator {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid #d8d8d8;
+  background: #e7e7e7;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.daily-log-option-input:focus-visible + .daily-log-option-indicator {
+  outline: 2px solid rgba(51, 102, 255, 0.35);
+  outline-offset: 2px;
+}
+
+.daily-log-option.is-selected .daily-log-option-indicator {
+  background: var(--brand);
+  border-color: rgba(51, 102, 255, 0.32);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.82);
+}
+
+.daily-log-option-label {
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.daily-log-field-error {
+  margin: 10px 0 0;
+  color: #c3493f;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.daily-log-submit-sidebar {
+  padding: 24px 24px 22px;
+}
+
+.daily-log-notes-label {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #23385e;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.daily-log-notes-help {
+  margin: 0 0 12px;
+  color: #667487;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.daily-log-notes-input {
+  width: 100%;
+  min-height: 360px;
+  padding: 16px 18px;
+  border: 1px solid #2b2b2b;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.daily-log-notes-input:focus-visible {
+  outline: 2px solid rgba(51, 102, 255, 0.35);
+  outline-offset: 2px;
+}
+
+.daily-log-submit-button {
+  width: 100%;
+  margin-top: 18px;
+  min-height: 58px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.18s ease, opacity 0.18s ease;
+}
+
+.daily-log-submit-button:hover {
+  filter: brightness(0.96);
+}
+
+.daily-log-submit-button:focus-visible {
+  outline: 2px solid rgba(51, 102, 255, 0.35);
+  outline-offset: 3px;
+}
+
+.daily-log-submit-button:disabled {
+  cursor: default;
+  opacity: 0.65;
+  filter: none;
 }
 
 /* ============================================================
@@ -2335,6 +2577,17 @@ a {
   .daily-logs-table {
     min-width: 760px;
   }
+
+  .daily-log-submit-layout,
+  .daily-log-submit-grid,
+  .daily-log-submit-header {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .daily-log-room-card {
+    min-width: 0;
+  }
 }
 
 @media (max-width: 720px) {
@@ -2405,5 +2658,18 @@ a {
   .daily-logs-table thead th,
   .daily-logs-table tbody td {
     padding: 10px 14px;
+  }
+
+  .daily-log-submit-main,
+  .daily-log-submit-sidebar {
+    padding: 20px;
+  }
+
+  .daily-log-form-group.has-error {
+    padding: 12px;
+  }
+
+  .daily-log-notes-input {
+    min-height: 280px;
   }
 }
