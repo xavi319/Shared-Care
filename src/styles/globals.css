@@ -2147,6 +2147,43 @@ a {
   color: var(--muted);
 }
 
+.pending-card-relation {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.pending-card-relation strong {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.pending-card-notes {
+  margin-top: 16px;
+  text-align: left;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.pending-card-notes-label {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pending-card-notes-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .pending-card-details {
   border: 0;
   background: transparent;
@@ -2154,13 +2191,22 @@ a {
   font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  padding: 10px 0 0;
+  display: block;
+  width: 100%;
+  text-align: center;
   transition: opacity 0.18s ease;
 }
 
 .pending-card-details:hover {
   opacity: 0.75;
 }
+
+.pending-card-body {
+  padding: 20px 16px 14px;
+  text-align: center;
+}
+
 
 /* Accept / Decline buttons */
 .pending-card-actions {

@@ -350,14 +350,20 @@ export const schedulingPageData = {
     {
       id: "pending-1",
       name: "Maria Gomez",
+      relation: "Daughter of Alex Gomez",
+      room: "Room 498",
       date: "Feb 20, 2026",
       time: "11:00 AM",
+      notes: "Wants to come visit her mother for lunch, around 11AM to 12PM.",
     },
     {
       id: "pending-2",
       name: "David Langley",
+      relation: "Brother of Beatrice Langley",
+      room: "Room 678",
       date: "Feb 21, 2026",
       time: "4:00 PM",
+      notes: "Wants to come visit his sister just to check up on her, from 4PM to 7PM-ish.",
     },
   ],
 };

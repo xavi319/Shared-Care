@@ -95,20 +95,35 @@ function CalendarEvent({ event }) {
 }
 
 function PendingCard({ appointment, onAccept, onDecline, onSeeDetails }) {
+  const [expanded, setExpanded] = useState(false);
+  console.log(appointment);
+
   return (
     <article className="pending-card">
       <div className="pending-card-body">
         <p className="pending-card-name">{appointment.name}</p>
+        {expanded && (
+          <p className="pending-card-relation">
+            {appointment.relation}<br />
+            <strong>{appointment.room}</strong>
+          </p>
+        )}
         <div className="pending-card-meta">
           <span className="pending-card-date">{appointment.date}</span>
           <span className="pending-card-time">{appointment.time}</span>
         </div>
+        {expanded && appointment.notes && (
+          <div className="pending-card-notes">
+            <p className="pending-card-notes-label">Notes:</p>
+            <p className="pending-card-notes-text">{appointment.notes}</p>
+          </div>
+        )}
         <button
           className="pending-card-details"
           type="button"
-          onClick={() => onSeeDetails(appointment.id)}
+          onClick={() => setExpanded((v) => !v)}
         >
-          See Details
+          {expanded ? "Hide Details" : "See Details"}
         </button>
       </div>
       <div className="pending-card-actions">
