@@ -33,6 +33,16 @@ function addDays(date, n) {
   return d;
 }
 
+function addOneHour(timeStr) {
+  const [time, period] = timeStr.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+  if (period === "PM" && hours !== 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+  hours += 1;
+  const newPeriod = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+  return `${displayHour}:${String(minutes).padStart(2, "0")} ${newPeriod}`;
+}
 
 function ChevronLeftIcon() {
   return (
@@ -127,6 +137,7 @@ export default function SchedulingPage() {
   const [currentDate, setCurrentDate] = useState(schedulingPageData.initialDate);
   const [pendingList, setPendingList] = useState(schedulingPageData.pendingAppointments);
   const [statusMessage, setStatusMessage] = useState("");
+  const [events, setEvents] = useState(schedulingPageData.events);
 
   const hours = Array.from(
     { length: schedulingPageData.hoursShown },
@@ -148,8 +159,36 @@ export default function SchedulingPage() {
   }
 
   function handleAccept(id) {
+    const accepted = pendingList.find((a) => a.id === id);
+ 
+    if (accepted) {
+      const newStart = timeToMinutes(accepted.time);
+      const newEnd = timeToMinutes(addOneHour(accepted.time));
+
+      const hasConflict = events.some((e) => {
+      const eStart = timeToMinutes(e.startTime);
+      const eEnd = timeToMinutes(e.endTime);
+      return newStart < eEnd && newEnd > eStart;
+      });
+
+      if (hasConflict) {
+        setStatusMessage(`Time conflict: ${accepted.name}'s appointment overlaps an existing event. Please decline or reschedule.`);
+        return;
+      }
+
+      const newEvent = {
+        id: `event-${accepted.id}`,
+        title: `${accepted.name} Visiting`,
+        subtitle: accepted.date,
+        room: "TBD",
+        startTime: accepted.time,
+        endTime: addOneHour(accepted.time),
+      };
+      setEvents((prev) => [...prev, newEvent]);
+    }
+ 
     setPendingList((list) => list.filter((a) => a.id !== id));
-    setStatusMessage("Appointment accepted.");
+    setStatusMessage("Appointment accepted and added to calendar.");
   }
 
   function handleDecline(id) {
@@ -232,7 +271,7 @@ export default function SchedulingPage() {
 
               {/* Events */}
               <div className="cal-events-column">
-                {schedulingPageData.events.map((event) => (
+                {events.map((event) => (
                   <CalendarEvent key={event.id} event={event} />
                 ))}
               </div>
