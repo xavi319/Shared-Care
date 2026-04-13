@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { SearchIcon, SortIcon } from "../components/layout/icons";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import {
   dailyLogsPageData,
   dashboardData,
-  getResidentDetailBySlug,
-  getResidentSlug,
-  residentsPageData
+  loadDailyLogEntries,
+  residentsPageData,
+  updateDailyLogEntry
 } from "../data/mockData";
 
 const residentsById = new Map(
@@ -24,8 +24,8 @@ const moodToneByValue = {
   Irritable: "alert"
 };
 
-function getLogRows() {
-  return dailyLogsPageData.entries
+function getLogRows(entries) {
+  return entries
     .map((entry) => {
       const resident = residentsById.get(entry.residentId);
 
@@ -33,13 +33,10 @@ function getLogRows() {
         return null;
       }
 
-      const residentSlug = getResidentSlug(resident.detailPath, resident.slug);
-      const hasDetailRoute = residentSlug && getResidentDetailBySlug(residentSlug);
-
       return {
         ...entry,
         resident,
-        detailHref: hasDetailRoute ? `/residents/${residentSlug}` : null,
+        detailHref: `/daily-logs/${entry.residentId}/submit`,
         moodTone: entry.mood ? (moodToneByValue[entry.mood] ?? "neutral") : "",
         actionTone: entry.actionTone ?? "default"
       };
@@ -48,6 +45,10 @@ function getLogRows() {
 }
 
 function getTimestamp(value) {
+  if (!value) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
   return new Date(value.replace(" ", "T")).getTime();
 }
 
@@ -103,13 +104,45 @@ function ViewAction({ row }) {
 }
 
 export default function DailyLogsPage() {
-  const allRows = getLogRows();
+  const location = useLocation();
+  const [entries, setEntries] = useState(() => loadDailyLogEntries());
   const [query, setQuery] = useState("");
   const [moodFilter, setMoodFilter] = useState("all");
   const [caregiverFilter, setCaregiverFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("newest");
+  const [statusMessage, setStatusMessage] = useState("");
 
-  const moodOptions = Array.from(new Set(allRows.map((row) => row.mood)));
+  useEffect(() => {
+    setEntries(loadDailyLogEntries());
+  }, [location.key]);
+
+  useEffect(() => {
+    if (location.state?.statusMessage) {
+      setStatusMessage(location.state.statusMessage);
+    }
+  }, [location.state]);
+
+  function handleClearLog(row) {
+    updateDailyLogEntry(row.residentId, {
+      mood: "",
+      date: "",
+      status: "pending",
+      actionTone: "attention",
+      reportStatus: "missing",
+      meals: "",
+      activityEngagement: "",
+      assistanceLevel: "",
+      safety: "",
+      notes: ""
+    });
+
+    setEntries(loadDailyLogEntries());
+    setStatusMessage(`Cleared daily log for ${row.resident.name}.`);
+  }
+
+  const allRows = getLogRows(entries);
+
+  const moodOptions = Array.from(new Set(allRows.map((row) => row.mood).filter(Boolean)));
   const caregiverOptions = Array.from(new Set(allRows.map((row) => row.caregiver)));
   const visibleRows = getVisibleRows(allRows, {
     query,
@@ -202,6 +235,9 @@ export default function DailyLogsPage() {
           <p className="daily-logs-results-copy">
             Showing {visibleRows.length} of {allRows.length} logs
           </p>
+          <p className="status-message status-message--toolbar" aria-live="polite">
+            {statusMessage}
+          </p>
         </div>
       </section>
 
@@ -218,7 +254,8 @@ export default function DailyLogsPage() {
                 <th scope="col">Caregiver</th>
                 <th scope="col">Mood</th>
                 <th scope="col">Last Updated</th>
-                <th scope="col">Actions</th>
+                <th scope="col">View</th>
+                <th scope="col">Clear</th>
               </tr>
             </thead>
             <tbody>
@@ -244,14 +281,23 @@ export default function DailyLogsPage() {
                       </span>
                     ) : null}
                   </td>
-                  <td data-label="Date">{row.date}</td>
-                  <td data-label="Actions">
+                  <td data-label="Date">{row.date || "—"}</td>
+                  <td data-label="View">
                     <ViewAction row={row} />
+                  </td>
+                  <td data-label="Clear">
+                    <button
+                      className="daily-logs-clear-action"
+                      type="button"
+                      onClick={() => handleClearLog(row)}
+                    >
+                      Clear
+                    </button>
                   </td>
                 </tr>
               )) : (
                 <tr>
-                  <td className="daily-logs-empty-state" colSpan="6">
+                  <td className="daily-logs-empty-state" colSpan="7">
                     No daily logs match the current filters.
                   </td>
                 </tr>
