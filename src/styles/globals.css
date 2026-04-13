@@ -1615,42 +1615,37 @@ a {
    Uses SharedCare design tokens from globals.css.
    ============================================================ */
 
-/* ── Page header ─────────────────────────────────────────── */
-
-.scheduling-page-header {
+.visits-page-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 0;
 }
 
-/* ── Two-column layout ───────────────────────────────────── */
-
-.scheduling-layout {
+.visits-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
   gap: 24px;
   align-items: start;
 }
 
-/* ── Calendar panel ──────────────────────────────────────── */
-
 .cal-panel {
-  background: var(--surface);
+  background: #f7f9fc;
   border: 1px solid #dbe3ee;
   border-radius: 20px;
   overflow: hidden;
 }
-
-/* Date navigation header — uses surface-accent like .panel--accent */
 
 .cal-header {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  background: var(--surface-accent); /* #c08d52 */
+  background: var(--surface-accent);
   border-radius: 20px 20px 0 0;
+  width: fit-content;
+  min-width: 280px;
+  margin-bottom: -1px;
 }
 
 .cal-nav-button {
@@ -1677,27 +1672,24 @@ a {
 }
 
 .cal-header-date {
-  flex: 1;
-  text-align: center;
   font-size: 1.05rem;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
-
-/* Grid wrapper — scrollable if content overflows */
 
 .cal-grid-wrapper {
   overflow-y: auto;
   background: #f7f9fc;
+  padding-top: 16px;
+  max-height: 520px;
 }
 
 .cal-grid {
   position: relative;
-  padding-left: 80px; /* room for hour labels */
+  padding-left: 80px; 
 }
-
-/* Hour rows */
 
 .cal-hour-row {
   position: absolute;
@@ -1728,14 +1720,12 @@ a {
   background: #e2e8f0;
 }
 
-/* Current time indicator */
-
 .cal-now-line {
   position: absolute;
   left: 80px;
   right: 0;
   height: 2px;
-  background: var(--visits); /* #d04b45 */
+  background: var(--visits);
   z-index: 2;
 }
 
@@ -1750,8 +1740,6 @@ a {
   background: var(--visits);
 }
 
-/* Events column — sits on top of the grid */
-
 .cal-events-column {
   position: absolute;
   top: 0;
@@ -1760,13 +1748,11 @@ a {
   bottom: 0;
 }
 
-/* Individual event block */
-
 .cal-event {
   position: absolute;
   left: 0;
   right: 0;
-  background: #7fa8c4; /* steel blue as in screenshot */
+  background: #7fa8c4;
   border-radius: 10px;
   padding: 10px 12px;
   display: flex;
@@ -1796,7 +1782,7 @@ a {
   flex-shrink: 0;
   padding: 3px 10px;
   border-radius: 999px;
-  background: var(--surface-accent); /* #c08d52 — tan pill */
+  background: var(--surface-accent);
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
@@ -1816,9 +1802,8 @@ a {
 }
 
 /* ── Pending appointments panel ──────────────────────────── */
-
 .pending-panel {
-  background: var(--surface-muted); /* #f5e6ce — warm sand */
+  background: var(--surface-muted);
   border-radius: 20px;
   padding: 20px 18px;
 }
@@ -1845,8 +1830,6 @@ a {
   display: grid;
   gap: 16px;
 }
-
-/* Pending card */
 
 .pending-card {
   background: var(--surface);
@@ -1898,7 +1881,6 @@ a {
 }
 
 /* Accept / Decline buttons */
-
 .pending-card-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1957,7 +1939,7 @@ a {
   }
 
   .pending-panel {
-    order: -1; /* show pending above calendar on narrow screens */
+    order: -1;
   }
 }
 

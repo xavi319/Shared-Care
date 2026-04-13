@@ -206,7 +206,7 @@ export default function SchedulingPage() {
 
           {/* Time grid */}
           <div className="cal-grid-wrapper">
-            <div className="cal-grid" style={{ height: totalGridHeight }}>
+            <div className="cal-grid" style={{ height: totalGridHeight, maxHeight: 600}}>
               {/* Hour rows */}
               {hours.map((hour) => (
                 <div
