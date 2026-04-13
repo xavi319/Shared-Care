@@ -2120,6 +2120,11 @@ a {
   border: 1px solid #dbe3ee;
 }
 
+.pending-car--declining {
+  border: 2px solid var(--visits);
+  background: var(--visits-bg);
+}
+
 .pending-card-body {
   padding: 16px 16px 12px;
   text-align: center;
@@ -2207,6 +2212,45 @@ a {
   text-align: center;
 }
 
+.decline-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.decline-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.decline-textarea {
+  width: 100%;
+  height: 72px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+  resize: none;
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+
+.decline-textarea:focus {
+  border-color: var(--visits);
+  box-shadow: 0 0 0 2px rgba(208, 75, 69, 0.12);
+}
+
+.decline-textarea::placeholder {
+  color: var(--muted-soft);
+}
 
 /* Accept / Decline buttons */
 .pending-card-actions {
@@ -2235,6 +2279,20 @@ a {
 .pending-action-button--decline {
   background: #d94f4f;
   color: #ffffff;
+}
+
+.pending-action-button--cancel {
+  background: #e2e8f0;
+  color: var(--text);
+}
+
+.pending-action-button--confirm-decline {
+  background: var(--visits);
+  color: #ffffff;
+}
+
+.pending-action-button--confirm-decline:hover {
+  filter: brightness(0.92);
 }
 
 /* ── Responsive ──────────────────────────────────────────── */

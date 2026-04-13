@@ -94,15 +94,21 @@ function CalendarEvent({ event }) {
   );
 }
 
-function PendingCard({ appointment, onAccept, onDecline, onSeeDetails }) {
+function PendingCard({ appointment, onAccept, onDecline}) {
   const [expanded, setExpanded] = useState(false);
-  console.log(appointment);
+  const [declining, setDeclining] = useState(false);
+  const [reason, setReason] = useState("");
+  const [notes, setNotes] = useState("");
+
+  function handleConfirmDecline() {
+    onDecline(appointment.id, reason, notes);
+  }
 
   return (
-    <article className="pending-card">
+    <article className={`pending-card${declining ? " pending-card--declining" : ""}`}>
       <div className="pending-card-body">
         <p className="pending-card-name">{appointment.name}</p>
-        {expanded && (
+        {(expanded || declining)&& (
           <p className="pending-card-relation">
             {appointment.relation}<br />
             <strong>{appointment.room}</strong>
@@ -112,36 +118,79 @@ function PendingCard({ appointment, onAccept, onDecline, onSeeDetails }) {
           <span className="pending-card-date">{appointment.date}</span>
           <span className="pending-card-time">{appointment.time}</span>
         </div>
-        {expanded && appointment.notes && (
+        {expanded && !declining && appointment.notes && (
           <div className="pending-card-notes">
             <p className="pending-card-notes-label">Notes:</p>
             <p className="pending-card-notes-text">{appointment.notes}</p>
           </div>
         )}
-        <button
-          className="pending-card-details"
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-        >
-          {expanded ? "Hide Details" : "See Details"}
-        </button>
+        {declining && (
+          <div className="decline-form">
+            <label className="decline-label">
+              Reason for Decline:
+              <textarea
+                className="decline-textarea"
+                placeholder="type here..."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </label>
+            <label className="decline-label">
+              Additional Notes:
+              <textarea
+                className="decline-textarea"
+                placeholder="type here..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </label>
+          </div>
+        )}
+        {!declining && (
+          <button
+            className="pending-card-details"
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+          >
+            {expanded ? "Hide Details" : "See Details"}
+          </button>
+        )}
       </div>
-      <div className="pending-card-actions">
-        <button
-          className="pending-action-button pending-action-button--accept"
-          type="button"
-          onClick={() => onAccept(appointment.id)}
-        >
-          Accept
-        </button>
-        <button
-          className="pending-action-button pending-action-button--decline"
-          type="button"
-          onClick={() => onDecline(appointment.id)}
-        >
-          Decline
-        </button>
-      </div>
+      {!declining ? (
+        <div className="pending-card-actions">
+          <button
+            className="pending-action-button pending-action-button--accept"
+            type="button"
+            onClick={() => onAccept(appointment.id)}
+          >
+            Accept
+          </button>
+          <button
+            className="pending-action-button pending-action-button--decline"
+            type="button"
+            onClick={() => { setDeclining(true); setExpanded(false); }}
+          >
+            Decline
+          </button>
+        </div>
+      ) : (
+        <div className="pending-card-actions">
+          <button
+            className="pending-action-button pending-action-button--cancel"
+            type="button"
+            onClick={() => { setDeclining(false); setReason(""); setNotes(""); }}
+          >
+            Cancel
+          </button>
+          <button
+            className="pending-action-button pending-action-button--confirm-decline"
+            type="button"
+            onClick={handleConfirmDecline}
+          >
+            Confirm Decline
+          </button>
+        </div>
+      )}
     </article>
   );
 }
@@ -208,7 +257,7 @@ export default function SchedulingPage() {
 
   function handleDecline(id) {
     setPendingList((list) => list.filter((a) => a.id !== id));
-    setStatusMessage("Appointment declined.");
+    setStatusMessage(`Appointment declined${reason ? `: ${reason}` : "."}`);
   }
 
   function handleSeeDetails(id) {
