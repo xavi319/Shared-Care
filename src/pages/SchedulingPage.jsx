@@ -6,6 +6,10 @@ import { schedulingPageData } from "../data/mockData";
 
 const HOUR_HEIGHT = 80; // px per hour in the calendar grid
 const DAY_START_HOUR = 8; // first hour shown
+const DAY_END_HOUR = DAY_START_HOUR + schedulingPageData.hoursShown;
+const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+const clampledNowMins = Math.min(Math.max(nowMins, DAY_START_HOUR * 60), DAY_END_HOUR * 60);
+const nowTop = ((clampledNowMins - DAY_START_HOUR * 60) / 60) * HOUR_HEIGHT;
 
 function timeToMinutes(timeStr) {
   const [time, period] = timeStr.split(" ");
@@ -206,7 +210,7 @@ export default function SchedulingPage() {
 
           {/* Time grid */}
           <div className="cal-grid-wrapper">
-            <div className="cal-grid" style={{ height: totalGridHeight, maxHeight: 600}}>
+            <div className="cal-grid" style={{ height: totalGridHeight}}>
               {/* Hour rows */}
               {hours.map((hour) => (
                 <div
@@ -222,14 +226,7 @@ export default function SchedulingPage() {
               {/* Current time indicator */}
               <div
                 className="cal-now-line"
-                style={{
-                  top:
-                    ((new Date().getHours() * 60 +
-                      new Date().getMinutes() -
-                      DAY_START_HOUR * 60) /
-                      60) *
-                    HOUR_HEIGHT,
-                }}
+                style={{ top: nowTop}}
                 aria-hidden="true"
               />
 
