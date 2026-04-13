@@ -55,7 +55,7 @@ function ComposeIcon() {
 
 function BackIcon() {
   return (
-    <svg className="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+    <svg className="messages-back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
     </svg>
   );
@@ -89,8 +89,6 @@ function SendIcon() {
   );
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function getInitials(name) {
   return name
     .split(" ")
@@ -100,7 +98,6 @@ function getInitials(name) {
     .toUpperCase();
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
 
 function ContactRow({ contact, isActive, onClick }) {
   return (
@@ -155,7 +152,6 @@ function ChatDateDivider({ label }) {
   );
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function MessagesPage() {
   const navigate = useNavigate();

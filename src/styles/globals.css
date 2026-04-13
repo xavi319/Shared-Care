@@ -248,9 +248,9 @@ a {
   height: 30px;
   display: grid;
   place-items: center;
-  background: transparent;
+  background: none;
   color: #1e1e1e;
-  border: 0;
+  border: none;
   padding: 0;
   cursor: pointer;
 }
@@ -1116,7 +1116,6 @@ a {
    Uses SharedCare design tokens from globals.css.
    ============================================================ */
 
-/* ── Page header ─────────────────────────────────────────── */
 
 .messages-page-header {
   display: flex;
@@ -1125,32 +1124,39 @@ a {
   margin-bottom: 1.5rem;
 }
 
-/* .back-button is already defined in globals.css — reused as-is */
+.messages-back-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.18s ease;
+}
 
-.back-icon {
-  width: 24px;
-  height: 24px;
+.messages-back-button:hover {
+  color: var(--text);
 }
 
 /* ── Two-column layout ───────────────────────────────────── */
-
 .messages-layout {
   display: grid;
   grid-template-columns: 22rem minmax(0, 1fr);
   border-radius: 20px;
-  overflow: hidden;
   border: 1px solid #dbe3ee;
   min-height: 620px;
   background: var(--surface);
 }
 
 /* ── Sidebar ─────────────────────────────────────────────── */
-
 .messages-sidebar {
-  background: var(--surface-muted); /* #f5e6ce — same warm sand as panel--accent */
+  background: var(--surface-muted);
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--line);
+  border-radius: 20px 0 0 20px;
   overflow: hidden;
 }
 
@@ -1183,8 +1189,6 @@ a {
   height: 18px;
   stroke-width: 1.9;
 }
-
-/* Search — mirrors .search-input pattern from globals.css */
 
 .messages-search-wrapper {
   position: relative;
@@ -1227,13 +1231,15 @@ a {
 }
 
 /* Contact list */
-
 .contact-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 4px 10px 4px 12px;
   overflow-y: auto;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .contact-list-empty {
@@ -1244,7 +1250,11 @@ a {
 }
 
 .contact-row-item {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .contact-row {
@@ -1252,34 +1262,42 @@ a {
   align-items: flex-start;
   gap: 12px;
   width: 100%;
-  padding: 14px 16px;
+  padding: 12px;
   border: 0;
-  background: transparent;
+  border-radius: 12px;
+  background: var(--surface);
   text-align: left;
   cursor: pointer;
   transition: background 0.18s ease;
+  margin: 0 8px;
+}
+
+.contact-row-item.is-active {
+  background: rgba(51, 102, 255, 0.2);
 }
 
 .contact-row:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.contact-row-item:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
 .contact-row-item.is-active .contact-row {
-  background: rgba(51, 102, 255, 0.08);
+  background: transparent;
 }
-
-/* Avatar — mirrors .directory-avatar sizing from globals.css */
 
 .contact-avatar {
   position: relative;
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
 }
 
 .contact-avatar img {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 999px;
   object-fit: cover;
   display: block;
@@ -1288,8 +1306,8 @@ a {
 .contact-avatar-initials {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 452px;
   border-radius: 999px;
   background: var(--surface-accent);
   color: #ffffff;
@@ -1301,11 +1319,11 @@ a {
   position: absolute;
   top: -3px;
   right: -3px;
-  min-width: 18px;
+  min-width: 18px; 
   height: 18px;
   padding: 0 4px;
   border-radius: 999px;
-  background: #f35b4f; /* matches .nav-link-badge */
+  background: #f35b4f;
   color: #ffffff;
   font-size: 0.6rem;
   font-weight: 700;
@@ -1313,10 +1331,10 @@ a {
   place-items: center;
   line-height: 1;
   border: 2px solid var(--surface-muted);
+  box-shadow: 0 6px 12px rgba(243, 91, 79, 0.2);
 }
 
 /* Contact text */
-
 .contact-info {
   flex: 1;
   min-width: 0;
@@ -1355,12 +1373,12 @@ a {
 }
 
 /* ── Chat panel ──────────────────────────────────────────── */
-
 .chat-panel {
   display: flex;
   flex-direction: column;
   background: var(--surface);
   overflow: hidden;
+  border-radius: 0 20px 20px 0;
 }
 
 .chat-panel--empty {
@@ -1370,14 +1388,12 @@ a {
   font-size: 0.9375rem;
 }
 
-/* Chat header — uses surface-accent-soft like .detail-header */
-
 .chat-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: var(--surface-accent-soft); /* #c7a47f */
+  background: #7fa8c4;
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;
 }
@@ -1389,12 +1405,12 @@ a {
 }
 
 .chat-header-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 999px;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .chat-header-avatar img {
@@ -1428,8 +1444,6 @@ a {
   gap: 8px;
 }
 
-/* Mirrors .icon-button from globals.css with white tint for the colored header */
-
 .chat-action-button {
   display: grid;
   place-items: center;
@@ -1453,8 +1467,6 @@ a {
   stroke-width: 1.8;
 }
 
-/* Thread */
-
 .chat-thread {
   flex: 1;
   overflow-y: auto;
@@ -1463,9 +1475,6 @@ a {
   flex-direction: column;
   gap: 6px;
 }
-
-/* Date divider */
-
 .chat-date-divider {
   display: flex;
   align-items: center;
@@ -1475,12 +1484,10 @@ a {
 
 .chat-date-divider span {
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted-soft);
   letter-spacing: 0.02em;
 }
-
-/* Bubbles */
 
 .chat-bubble-wrapper {
   display: flex;
@@ -1504,18 +1511,16 @@ a {
 }
 
 .bubble--outgoing {
-  background: var(--brand); /* #3366ff */
+  background: var(--brand);
   color: #ffffff;
   border-bottom-right-radius: 4px;
 }
 
 .bubble--incoming {
-  background: #ececec;
+  background: #d0dde8;
   color: var(--text);
   border-bottom-left-radius: 4px;
 }
-
-/* Reply bar — mirrors .search-input sizing from globals.css */
 
 .chat-reply-bar {
   display: flex;
@@ -1556,12 +1561,12 @@ a {
   flex: 1;
   height: 42px;
   padding: 0 16px;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: 999px;
   font-size: 0.9375rem;
   font-weight: 500;
   color: var(--text);
-  background: #f9fafb;
+  background: var(--surface);
   outline: none;
   transition: border-color 0.18s ease;
 }
@@ -1570,7 +1575,6 @@ a {
   border-color: rgba(51, 102, 255, 0.35);
   outline: 2px solid rgba(51, 102, 255, 0.1);
   outline-offset: 2px;
-  background: var(--surface);
 }
 
 .reply-input::placeholder {
@@ -1584,8 +1588,8 @@ a {
   height: 36px;
   border: 0;
   border-radius: 999px;
-  background: #ececec;
-  color: var(--muted-soft);
+  background: #e2e8f0;
+  color: var(--muted);
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.18s ease, color 0.18s ease;

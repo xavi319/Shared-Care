@@ -4,7 +4,7 @@ export const dashboardData = {
   checklistDate: "February 15, 2026",
   navItems: [
     { id: "dashboard", label: "Dashboard", href: "/", icon: "home" },
-    { id: "scheduling", label: "Scheduling", icon: "calendar" },
+    { id: "scheduling", label: "Scheduling", href: "/scheduling", icon: "calendar" },
     { id: "residents", label: "Residents", href: "/residents", icon: "residents" },
     { id: "messages", label: "Messages", href: "/messages", icon: "messages"}
   ],
@@ -253,6 +253,51 @@ export const messagesData = {
     ]
   }
 };
+
+export const schedulingPageData = {
+  // The date shown when the page first loads
+  initialDate: new Date(2026, 1, 15), // February 15, 2026
+ 
+  // How many hours to render in the calendar grid (starts at 8 am)
+  hoursShown: 10, // 8 am – 5 pm
+ 
+  // Scheduled events shown on the calendar
+  events: [
+    {
+      id: "visit-1",
+      title: "Robert Adam Visiting",
+      subtitle: "Beth Adam's son",
+      room: "Room 123",
+      startTime: "9:50 AM",
+      endTime: "11:40 AM",
+    },
+    {
+      id: "visit-2",
+      title: "Lillian Pembroke Visiting",
+      subtitle: "Daughter of Dorothy",
+      room: "Room 418",
+      startTime: "12:30 PM",
+      endTime: "1:40 PM",
+    },
+  ],
+ 
+  // Requests awaiting staff approval shown in the right panel
+  pendingAppointments: [
+    {
+      id: "pending-1",
+      name: "Maria Gomez",
+      date: "Feb 20, 2026",
+      time: "11:00 AM",
+    },
+    {
+      id: "pending-2",
+      name: "David Langley",
+      date: "Feb 21, 2026",
+      time: "4:00 PM",
+    },
+  ],
+};
+ 
 
 export const checklistStorageKey = "sharedcare-dashboard-checklist";
 
