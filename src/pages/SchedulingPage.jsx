@@ -44,6 +44,10 @@ function addOneHour(timeStr) {
   return `${displayHour}:${String(minutes).padStart(2, "0")} ${newPeriod}`;
 }
 
+function toDateString(date) {
+  return date.toISOString().split("T")[0];
+}
+
 function ChevronLeftIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
@@ -230,9 +234,10 @@ export default function SchedulingPage() {
       const newEnd = timeToMinutes(addOneHour(accepted.time));
 
       const hasConflict = events.some((e) => {
-      const eStart = timeToMinutes(e.startTime);
-      const eEnd = timeToMinutes(e.endTime);
-      return newStart < eEnd && newEnd > eStart;
+        if (e.date !== toDateString(new Date(accepted.date))) return false;
+        const eStart = timeToMinutes(e.startTime);
+        const eEnd = timeToMinutes(e.endTime);
+        return newStart < eEnd && newEnd > eStart;
       });
 
       if (hasConflict) {
@@ -247,6 +252,7 @@ export default function SchedulingPage() {
         room: "TBD",
         startTime: accepted.time,
         endTime: addOneHour(accepted.time),
+        date: toDateString(new Date(accepted.date))
       };
       setEvents((prev) => [...prev, newEvent]);
     }
@@ -263,6 +269,10 @@ export default function SchedulingPage() {
   function handleSeeDetails(id) {
     setStatusMessage(`Stub: details for appointment ${id}.`);
   }
+
+   const visibleEvents = events.filter(
+    (e) => e.date === toDateString(currentDate)
+  );
 
   const totalGridHeight = schedulingPageData.hoursShown * HOUR_HEIGHT;
 
@@ -335,7 +345,7 @@ export default function SchedulingPage() {
 
               {/* Events */}
               <div className="cal-events-column">
-                {events.map((event) => (
+                {visibleEvents.map((event) => (
                   <CalendarEvent key={event.id} event={event} />
                 ))}
               </div>

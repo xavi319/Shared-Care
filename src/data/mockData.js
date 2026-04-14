@@ -355,6 +355,7 @@ export const schedulingPageData = {
       room: "Room 123",
       startTime: "9:50 AM",
       endTime: "11:40 AM",
+      date: "2026-02-15",
     },
     {
       id: "visit-2",
@@ -363,6 +364,25 @@ export const schedulingPageData = {
       room: "Room 418",
       startTime: "12:30 PM",
       endTime: "1:40 PM",
+      date: "2026-02-15",
+    },
+    {
+      id: "visit-3",
+      title: "Maria Gomez Visiting",
+      subtitle: "Daughter of Alex Gomez",
+      room: "Room 498",
+      startTime: "11:00 AM",
+      endTime: "12:00 PM",
+      date: "2026-02-14",
+    },
+    {
+      id: "visit-4",
+      title: "David Langley Visiting",
+      subtitle: "Brother of Beatrice Langley",
+      room: "Room 678",
+      startTime: "4:00 PM",
+      endTime: "5:00 PM",
+      date: "2026-02-16",
     },
   ],
  
@@ -386,10 +406,18 @@ export const schedulingPageData = {
       time: "4:00 PM",
       notes: "Wants to come visit his sister just to check up on her, from 4PM to 7PM-ish.",
     },
+    {
+      id: "pending-3",
+      name: "James Bennett",
+      relation: "Son of Harold Bennett",
+      room: "Room 127",
+      date: "Feb 15, 2026",
+      time: "10:30 AM",
+      notes: "Wants to stop by and visit his father in the morning.",
+    },
   ],
 };
  
-
 export const checklistStorageKey = "sharedcare-dashboard-checklist";
 
 export const initialChecklistItems = dashboardData.checklistItems;
