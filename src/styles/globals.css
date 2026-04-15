@@ -2148,7 +2148,7 @@ a {
 
 .visits-layout {
   display: grid;
-  grid-template-columns:1fr;
+  grid-template-columns:minmax(0, 1fr) 320px;
   gap: 24px;
   align-items: start;
 }
@@ -2665,6 +2665,14 @@ a {
 
   .daily-log-room-card {
     min-width: 0;
+  }
+
+  .visits-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pending-panel {
+    order: 1; /* pending goes below calendar on small screens */
   }
 }
 
