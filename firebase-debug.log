@@ -1,0 +1,56 @@
+[debug] [2026-04-15T03:48:32.655Z] ----------------------------------------------------------------------
+[debug] [2026-04-15T03:48:32.660Z] Command:       /Users/xavierbarragan/.nvm/versions/node/v24.2.0/bin/node /Users/xavierbarragan/.nvm/versions/node/v24.2.0/bin/firebase deploy
+[debug] [2026-04-15T03:48:32.660Z] CLI Version:   15.14.0
+[debug] [2026-04-15T03:48:32.660Z] Platform:      darwin
+[debug] [2026-04-15T03:48:32.660Z] Node Version:  v24.2.0
+[debug] [2026-04-15T03:48:32.660Z] Time:          Tue Apr 14 2026 20:48:32 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-04-15T03:48:32.660Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-15T03:48:32.661Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-04-15T03:48:33.375Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-15T03:48:33.375Z] > authorizing via signed-in user (xbar319@uw.edu)
+[debug] [2026-04-15T03:48:33.375Z] [iam] checking project sharedcare-portal for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-04-15T03:48:33.375Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.375Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.375Z] > refreshing access token with scopes: []
+[debug] [2026-04-15T03:48:33.376Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-15T03:48:33.376Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:33.498Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-04-15T03:48:33.498Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:33.499Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/sharedcare-portal:testIamPermissions [none]
+[debug] [2026-04-15T03:48:33.499Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/sharedcare-portal:testIamPermissions  x-goog-user-project=sharedcare-portal
+[debug] [2026-04-15T03:48:33.499Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sharedcare-portal:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-15T03:48:33.543Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-04-15T03:48:33.544Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-04-15T03:48:33.653Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/sharedcare-portal:testIamPermissions 401
+[debug] [2026-04-15T03:48:33.653Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sharedcare-portal:testIamPermissions {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"ACCESS_TOKEN_TYPE_UNSUPPORTED","metadata":{"service":"cloudresourcemanager.googleapis.com","method":"google.cloudresourcemanager.v1.Projects.TestIamPermissions"}}]}}
+[debug] [2026-04-15T03:48:33.653Z] Got a 401 Unauthenticated error for a call that required authentication. Refreshing tokens.
+[debug] [2026-04-15T03:48:33.653Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.654Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.654Z] > refreshing access token with scopes: []
+[debug] [2026-04-15T03:48:33.654Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-15T03:48:33.654Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:33.698Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-04-15T03:48:33.698Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:33.699Z] [iam] error while checking permissions, command may fail: Request to https://cloudresourcemanager.googleapis.com/v1/projects/sharedcare-portal:testIamPermissions had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[debug] [2026-04-15T03:48:33.700Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.700Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.700Z] > refreshing access token with scopes: []
+[debug] [2026-04-15T03:48:33.700Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-15T03:48:33.700Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:33.743Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-04-15T03:48:33.743Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:33.743Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sharedcare-portal [none]
+[debug] [2026-04-15T03:48:33.990Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sharedcare-portal 401
+[debug] [2026-04-15T03:48:33.991Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sharedcare-portal {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED"}}
+[debug] [2026-04-15T03:48:33.991Z] Got a 401 Unauthenticated error for a call that required authentication. Refreshing tokens.
+[debug] [2026-04-15T03:48:33.991Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.991Z] Checked if tokens are valid: false, expires at: 1756009223313
+[debug] [2026-04-15T03:48:33.991Z] > refreshing access token with scopes: []
+[debug] [2026-04-15T03:48:33.992Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-15T03:48:33.992Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:34.029Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-04-15T03:48:34.029Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-15T03:48:34.030Z] Request to https://firebase.googleapis.com/v1beta1/projects/sharedcare-portal had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[error] 
+[error] Error: Assertion failed: resolving hosting target of a site with no site name or target name. This should have caused an error earlier
