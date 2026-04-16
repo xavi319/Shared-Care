@@ -6,6 +6,15 @@ import { ChevronLeftIcon, SearchIcon, SortIcon } from "../components/layout/icon
 import { getResidentDetailBySlug } from "../data/mockData";
 import NotFoundPage from "./NotFoundPage";
 
+function getInitials(name) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+}
+
 export default function ResidentDetailPage() {
   const navigate = useNavigate();
   const { residentId } = useParams();
@@ -81,8 +90,15 @@ export default function ResidentDetailPage() {
 
         <div className="detail-body">
           <div className="detail-summary">
-            <div className="detail-avatar">
-              <img src={resident.resident.image ?? "/images/lilian-mendoza.jpg"} alt={resident.resident.name} />
+            <div
+              className="detail-avatar"
+              style={{ "--avatar-accent": resident.resident.accent ?? "#d6c1a5" }}
+            >
+              {resident.resident.image ? (
+                <img src={resident.resident.image} alt={resident.resident.name} />
+              ) : (
+                <span>{getInitials(resident.resident.name)}</span>
+              )}
             </div>
 
             <div>

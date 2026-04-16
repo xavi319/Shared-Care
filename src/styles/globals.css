@@ -964,10 +964,15 @@ a {
 .detail-avatar {
   width: 164px;
   height: 164px;
+  display: grid;
+  place-items: center;
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid #7b5a3c;
-  background: #d6c1a5;
+  background: var(--avatar-accent, #d6c1a5);
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 700;
 }
 
 .detail-avatar img {
