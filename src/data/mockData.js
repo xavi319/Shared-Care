@@ -252,6 +252,212 @@ export const lilianMendozaDetailData = {
   ]
 };
 
+export const bethAdamsDetailData = {
+  title: "Residents",
+  subtitle: "Search",
+  searchValue: "Beth Adams",
+  resident: {
+    id: "beth-adams",
+    slug: "beth-adams",
+    name: "Beth Adams",
+    room: "Room 123",
+    lastUpdate: "10:05 AM",
+    lastUpdateLabel: "Daily Log last updated",
+    image: "/images/beth-adams.jpg",
+    detailPath: "/residents/beth-adams",
+    accent: "#86d4eb"
+  },
+  residentId: "NH-20013",
+  age: "79",
+  dob: "08/14/1946",
+  admissionDate: "January 12, 2022",
+  diagnoses: ["Mild Osteoarthritis", "Chronic Atrial Fibrillation"],
+  medications: [
+    "Apixaban 5 mg Oral Twice Daily (8:00 AM, 8:00 PM)",
+    "Acetaminophen 500 mg Oral As Needed for Joint Pain"
+  ],
+  personalNotes: [
+    "Enjoys bingo and social group activities.",
+    "Prefers oatmeal with fruit for breakfast.",
+    "Requests a reminder before family video calls."
+  ],
+  actions: [
+    { label: "Daily Log Summaries", tone: "neutral" },
+    { label: "Medical Charts", tone: "dark" }
+  ]
+};
+
+export const clarenceDoyleDetailData = {
+  title: "Residents",
+  subtitle: "Search",
+  searchValue: "Clarence Doyle",
+  resident: {
+    id: "clarence-doyle",
+    slug: "clarence-doyle",
+    name: "Clarence Doyle",
+    room: "Room 222",
+    lastUpdate: "9:42 AM",
+    lastUpdateLabel: "Daily Log last updated",
+    detailPath: "/residents/clarence-doyle",
+    accent: "#9dc9e4"
+  },
+  residentId: "NH-20177",
+  age: "83",
+  dob: "03/09/1943",
+  admissionDate: "September 4, 2021",
+  diagnoses: ["Parkinson's Disease", "Orthostatic Hypotension"],
+  medications: [
+    "Carbidopa-Levodopa 25/100 mg Oral Three Times Daily",
+    "Midodrine 5 mg Oral Twice Daily"
+  ],
+  personalNotes: [
+    "Walks better with a short warm-up stretch.",
+    "Responds positively to calm, one-step instructions.",
+    "Enjoys jazz music in the afternoons."
+  ],
+  actions: [
+    { label: "Daily Log Summaries", tone: "neutral" },
+    { label: "Medical Charts", tone: "dark" }
+  ]
+};
+
+export const edgarCallahanDetailData = {
+  title: "Residents",
+  subtitle: "Search",
+  searchValue: "Edgar Callahan",
+  resident: {
+    id: "edgar-callahan",
+    slug: "edgar-callahan",
+    name: "Edgar Callahan",
+    room: "Room 124",
+    lastUpdate: "12:02 PM, Yesterday",
+    lastUpdateLabel: "Daily Log last updated",
+    detailPath: "/residents/edgar-callahan",
+    accent: "#d3a16c"
+  },
+  residentId: "NH-20342",
+  age: "71",
+  dob: "11/27/1954",
+  admissionDate: "April 19, 2024",
+  diagnoses: ["COPD", "Generalized Anxiety Disorder"],
+  medications: [
+    "Tiotropium 18 mcg Inhaled Once Daily",
+    "Sertraline 50 mg Oral Once Daily"
+  ],
+  personalNotes: [
+    "Prefers sitting near windows during meals.",
+    "Benefits from guided breathing during anxiety episodes.",
+    "Likes the newspaper crossword each morning."
+  ],
+  actions: [
+    { label: "Daily Log Summaries", tone: "neutral" },
+    { label: "Medical Charts", tone: "dark" }
+  ]
+};
+
+export const franklinDempseyDetailData = {
+  title: "Residents",
+  subtitle: "Search",
+  searchValue: "Franklin Dempsey",
+  resident: {
+    id: "franklin-dempsey",
+    slug: "franklin-dempsey",
+    name: "Franklin Dempsey",
+    room: "Room 225",
+    lastUpdate: "11:14 AM",
+    lastUpdateLabel: "Daily Log last updated",
+    detailPath: "/residents/franklin-dempsey",
+    accent: "#7a8d9c"
+  },
+  residentId: "NH-20506",
+  age: "76",
+  dob: "06/05/1950",
+  admissionDate: "December 2, 2022",
+  diagnoses: ["Vascular Dementia", "Stage 2 Chronic Kidney Disease"],
+  medications: [
+    "Donepezil 10 mg Oral Nightly",
+    "Losartan 50 mg Oral Once Daily"
+  ],
+  personalNotes: [
+    "Eats better when offered smaller portions more often.",
+    "Prefers evening walks in the courtyard.",
+    "Can become frustrated with loud environments."
+  ],
+  actions: [
+    { label: "Daily Log Summaries", tone: "neutral" },
+    { label: "Medical Charts", tone: "dark" }
+  ]
+};
+
+export const haroldBennettDetailData = {
+  title: "Residents",
+  subtitle: "Search",
+  searchValue: "Harold Bennett",
+  resident: {
+    id: "harold-bennett",
+    slug: "harold-bennett",
+    name: "Harold Bennett",
+    room: "Room 127",
+    lastUpdate: "4:32 PM, Yesterday",
+    lastUpdateLabel: "Daily Log last updated",
+    image: "/images/harold-bennet.jpg",
+    detailPath: "/residents/harold-bennett",
+    accent: "#b9c3cf"
+  },
+  residentId: "NH-19889",
+  age: "88",
+  dob: "10/03/1938",
+  admissionDate: "May 14, 2020",
+  diagnoses: ["Congestive Heart Failure", "Macular Degeneration"],
+  medications: [
+    "Furosemide 20 mg Oral Every Morning",
+    "Metoprolol Succinate 25 mg Oral Once Daily"
+  ],
+  personalNotes: [
+    "Needs high-contrast text for reading materials.",
+    "Enjoys baseball highlights after dinner.",
+    "Prefers blood pressure checks before lunch."
+  ],
+  actions: [
+    { label: "Daily Log Summaries", tone: "neutral" },
+    { label: "Medical Charts", tone: "dark" }
+  ]
+};
+
+export const juneSinclairDetailData = {
+  title: "Residents",
+  subtitle: "Search",
+  searchValue: "June Sinclair",
+  resident: {
+    id: "june-sinclair",
+    slug: "june-sinclair",
+    name: "June Sinclair",
+    room: "Room 532",
+    lastUpdate: "2:54 PM, Yesterday",
+    lastUpdateLabel: "Daily Log last updated",
+    detailPath: "/residents/june-sinclair",
+    accent: "#d0b676"
+  },
+  residentId: "NH-20711",
+  age: "68",
+  dob: "02/18/1958",
+  admissionDate: "August 29, 2025",
+  diagnoses: ["Major Depressive Disorder", "Insomnia"],
+  medications: [
+    "Mirtazapine 15 mg Oral Nightly",
+    "Melatonin 3 mg Oral at Bedtime"
+  ],
+  personalNotes: [
+    "Feels more engaged with afternoon art sessions.",
+    "Prefers tea over coffee.",
+    "Responds well to check-ins before evening medications."
+  ],
+  actions: [
+    { label: "Daily Log Summaries", tone: "neutral" },
+    { label: "Medical Charts", tone: "dark" }
+  ]
+};
+
 export const messagesData = {
   contacts: [
     {
@@ -424,6 +630,12 @@ export const initialChecklistItems = dashboardData.checklistItems;
 export const initialDailyLogEntries = dailyLogsPageData.entries;
 
 const residentDetailsBySlug = {
+  "beth-adams": bethAdamsDetailData,
+  "clarence-doyle": clarenceDoyleDetailData,
+  "edgar-callahan": edgarCallahanDetailData,
+  "franklin-dempsey": franklinDempseyDetailData,
+  "harold-bennett": haroldBennettDetailData,
+  "june-sinclair": juneSinclairDetailData,
   "lilian-mendoza": lilianMendozaDetailData
 };
 
