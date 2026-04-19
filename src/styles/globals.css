@@ -686,13 +686,42 @@ a {
   margin: 0;
 }
 
+.task-group {
+  border-top: 1px solid #efefef;
+}
+
+.task-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 24px 10px;
+}
+
+.task-group-name {
+  margin: 0;
+  color: #111111;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.task-group-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 8px;
+}
+
 .task-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 18px;
-  padding: 18px 24px;
-  border-top: 1px solid #efefef;
+  gap: 14px;
+  padding: 10px 24px;
+}
+
+.task-group-list .task-item + .task-item {
+  border-top: 1px solid #f3f3f3;
 }
 
 .task-item.is-complete .task-desc,
@@ -1144,41 +1173,40 @@ a {
 
 .daily-logs-summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(96px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(82px, 1fr));
+  gap: 18px;
 }
 
 .daily-logs-summary-card {
   display: grid;
-  gap: 4px;
-  min-width: 98px;
-  padding: 12px 14px 10px;
-  border: 1px solid #dbe3ee;
-  border-top: 4px solid #fa971e;
-  border-radius: 12px;
-  background: #ffffff;
+  gap: 6px;
+  min-width: 82px;
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 2px solid #fa971e;
+  background: transparent;
   text-align: left;
 }
 
 .daily-logs-summary-card--attention {
-  border-top-color: #d04b45;
+  border-bottom-color: #d04b45;
 }
 
 .daily-logs-summary-card--complete {
-  border-top-color: #43b42f;
+  border-bottom-color: #43b42f;
 }
 
 .daily-logs-summary-value {
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 1.12rem;
+  font-weight: 600;
   line-height: 1;
-  color: #111111;
+  color: #5f6f89;
 }
 
 .daily-logs-summary-label {
-  font-size: 0.76rem;
+  font-size: 0.98rem;
   font-weight: 700;
-  color: #5f6f89;
+  color: #111111;
 }
 
 .daily-logs-controls-panel {
@@ -1201,7 +1229,7 @@ a {
   margin: 0;
   color: #111111;
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.2;
 }
 
@@ -1224,7 +1252,7 @@ a {
   margin-bottom: 8px;
   color: #6d7b8d;
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .daily-logs-search-shell,
@@ -1400,7 +1428,7 @@ a {
   padding: 0;
   color: #5d6b7d;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .daily-logs-status-chip::before {
@@ -1429,7 +1457,7 @@ a {
   gap: 7px;
   padding: 0;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .daily-logs-mood-pill::before {

@@ -10,7 +10,6 @@ import {
   dashboardData,
   getResidentDetailBySlug,
   getResidentSlug,
-  initialChecklistItems,
   loadDailyLogEntries,
   messagesData,
   residentsPageData,
@@ -19,6 +18,13 @@ import {
 import { db } from "../lib/firebase";
 
 const fallbackResidents = getUniqueById([...residentsPageData.residents, ...dashboardData.residents]);
+
+const checklistTaskTemplates = [
+  { id: "vitals", label: "Check vitals", time: "9:00 AM" },
+  { id: "medications", label: "Administer medications", time: "10:00 AM" },
+  { id: "hygiene", label: "Hygiene care", time: "11:00 AM" },
+  { id: "feeding", label: "Feeding", time: "12:00 PM" }
+];
 
 function getGreetingForTime(date, userName) {
   const hour = date.getHours();
@@ -33,17 +39,45 @@ function getGreetingForTime(date, userName) {
   return `${greetingPrefix}, ${userName}`;
 }
 
-function loadChecklistItems() {
+function getGeneratedChecklistItems(residents, completionById = {}) {
+  return residents.flatMap((resident) =>
+    checklistTaskTemplates.map((template) => {
+      const id = `${resident.id}-${template.id}`;
+
+      return {
+        id,
+        residentId: resident.id,
+        time: template.time,
+        residentName: resident.name,
+        room: resident.room,
+        label: template.label,
+        completed: Boolean(completionById[id])
+      };
+    })
+  );
+}
+
+function loadChecklistItems(residents) {
   const storedValue = window.sessionStorage.getItem(checklistStorageKey);
 
   if (!storedValue) {
-    return initialChecklistItems;
+    return getGeneratedChecklistItems(residents);
   }
 
   try {
-    return JSON.parse(storedValue);
+    const storedItems = JSON.parse(storedValue);
+
+    if (!Array.isArray(storedItems)) {
+      return getGeneratedChecklistItems(residents);
+    }
+
+    const completionById = Object.fromEntries(
+      storedItems.map((item) => [item.id, Boolean(item.completed)])
+    );
+
+    return getGeneratedChecklistItems(residents, completionById);
   } catch {
-    return initialChecklistItems;
+    return getGeneratedChecklistItems(residents);
   }
 }
 
@@ -111,16 +145,37 @@ function getInitialDashboardSources() {
   };
 }
 
+function getChecklistGroups(items, residents) {
+  const itemsByResidentId = new Map();
+
+  items.forEach((item) => {
+    const residentId = item.residentId ?? "other";
+    const currentItems = itemsByResidentId.get(residentId) ?? [];
+    itemsByResidentId.set(residentId, [...currentItems, item]);
+  });
+
+  const residentGroups = residents.map((resident) => ({
+    id: resident.id,
+    name: resident.name,
+    room: resident.room,
+    items: itemsByResidentId.get(resident.id) ?? []
+  }));
+  const otherItems = itemsByResidentId.get("other") ?? [];
+
+  return otherItems.length
+    ? [...residentGroups, { id: "other", name: "Other tasks", room: "", items: otherItems }]
+    : residentGroups;
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [statusMessage, setStatusMessage] = useState("");
   const [greeting, setGreeting] = useState("");
-  const [checklistItems, setChecklistItems] = useState(initialChecklistItems);
+  const [checklistItems, setChecklistItems] = useState(() => loadChecklistItems(dashboardData.residents));
   const [dashboardSources, setDashboardSources] = useState(() => getInitialDashboardSources());
   const [sourcesFromFirestore, setSourcesFromFirestore] = useState({});
 
   useEffect(() => {
-    setChecklistItems(loadChecklistItems());
     setGreeting(getGreetingForTime(new Date(), dashboardData.userName));
 
     const intervalId = window.setInterval(() => {
@@ -128,6 +183,16 @@ export default function DashboardPage() {
     }, 60000);
 
     return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    setChecklistItems((currentItems) => {
+      const completionById = Object.fromEntries(
+        currentItems.map((item) => [item.id, Boolean(item.completed)])
+      );
+
+      return getGeneratedChecklistItems(dashboardData.residents, completionById);
+    });
   }, []);
 
   useEffect(() => {
@@ -208,6 +273,7 @@ export default function DashboardPage() {
       id: `temporary-task-${Date.now()}`,
       time: "11:30 AM",
       label: `Temporary Task ${nextTaskNumber}`,
+      residentName: "Temporary task",
       room: "Room 252",
       completed: false,
       isTemporary: true
@@ -222,6 +288,7 @@ export default function DashboardPage() {
     ...item,
     value: dashboardCounts[item.id] ?? 0
   }));
+  const checklistGroups = getChecklistGroups(checklistItems, dashboardData.residents);
 
   return (
     <StaffAppShell onStubNavigate={handleStubNavigate}>
@@ -296,28 +363,37 @@ export default function DashboardPage() {
             <p>{dashboardData.checklistDate}</p>
           </div>
 
-          <ul className="task-list">
-            {checklistItems.map((item) => (
-              <li key={item.id} className={`task-item${item.completed ? " is-complete" : ""}`}>
-                <button
-                  className="task-toggle"
-                  type="button"
-                  onClick={() => handleToggleTask(item.id)}
-                  aria-pressed={item.completed}
-                  aria-label={`${item.completed ? "Mark as incomplete" : "Mark as complete"}: ${item.label}`}
-                >
-                  <span className={`task-circle${item.completed ? " is-checked" : ""}`}>
-                    {item.completed ? "✓" : ""}
-                  </span>
-                </button>
-                <div>
-                  <p className="task-time">{item.time}</p>
-                  <p className="task-desc">{item.label}</p>
+          <div className="task-list">
+            {checklistGroups.map((group) => (
+              <section key={group.id} className="task-group" aria-label={`${group.name} checklist`}>
+                <div className="task-group-header">
+                  <p className="task-group-name">{group.name}</p>
+                  {group.room ? <span className="room-pill">{group.room}</span> : null}
                 </div>
-                <span className="room-pill">{item.room}</span>
-              </li>
+                <ul className="task-group-list">
+                  {group.items.map((item) => (
+                    <li key={item.id} className={`task-item${item.completed ? " is-complete" : ""}`}>
+                      <button
+                        className="task-toggle"
+                        type="button"
+                        onClick={() => handleToggleTask(item.id)}
+                        aria-pressed={item.completed}
+                        aria-label={`${item.completed ? "Mark as incomplete" : "Mark as complete"}: ${item.label} for ${group.name}`}
+                      >
+                        <span className={`task-circle${item.completed ? " is-checked" : ""}`}>
+                          {item.completed ? "✓" : ""}
+                        </span>
+                      </button>
+                      <div>
+                        <p className="task-time">{item.time}</p>
+                        <p className="task-desc">{item.label}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ul>
+          </div>
         </article>
       </section>
     </StaffAppShell>

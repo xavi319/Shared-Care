@@ -11,7 +11,7 @@ export const dashboardData = {
   stats: [
     { id: "pending-daily-logs", label: "Pending Daily Logs", icon: "logs", href: "/daily-logs" },
     { id: "residents", label: "Residents", icon: "residents", href: "/residents" },
-    { id: "todays-visits", label: "Today's Visits", icon: "visits" },
+    { id: "todays-visits", label: "Today's Visits", icon: "visits", href: "/scheduling" },
     { id: "messages", label: "Messages", icon: "messages", href: "/messages" }
   ],
   residents: [
@@ -45,14 +45,6 @@ export const dashboardData = {
       lastUpdateLabel: "Daily Log last updated",
       accent: "#b9c3cf"
     }
-  ],
-  checklistItems: [
-    { id: "task-1", time: "9:00 AM", label: "Check Beth A. Vitals", room: "Room 123", completed: false },
-    { id: "task-2", time: "9:50 AM", label: "Beth's Son Visiting", room: "Room 123", completed: false },
-    { id: "task-3", time: "9:00 AM", label: "Check Beth's Vitals", room: "Room 123", completed: false },
-    { id: "task-4", time: "9:00 AM", label: "Check Beth's Vitals", room: "Room 123", completed: false },
-    { id: "task-5", time: "9:00 AM", label: "Check Beth's Vitals", room: "Room 123", completed: false },
-    { id: "task-6", time: "9:00 AM", label: "Check Beth's Vitals", room: "Room 123", completed: false }
   ]
 };
 
@@ -626,7 +618,6 @@ export const schedulingPageData = {
  
 export const checklistStorageKey = "sharedcare-dashboard-checklist";
 
-export const initialChecklistItems = dashboardData.checklistItems;
 export const initialDailyLogEntries = dailyLogsPageData.entries;
 
 const residentDetailsBySlug = {

@@ -199,22 +199,19 @@ export default function DailyLogsPage() {
         <div className="daily-logs-page-title-group">
           <p className="eyebrow">{dailyLogsPageData.subtitle}</p>
           <h1 className="page-title">{dailyLogsPageData.title}</h1>
-          <p className="daily-logs-page-copy">
-            Review resident updates, resolve missing logs, and keep family-facing summaries current.
-          </p>
         </div>
         <div className="daily-logs-summary-grid" aria-label="Daily log summary">
           <div className="daily-logs-summary-card daily-logs-summary-card--attention">
-            <span className="daily-logs-summary-value">{attentionCount}</span>
             <span className="daily-logs-summary-label">Needs log</span>
+            <span className="daily-logs-summary-value">{attentionCount}</span>
           </div>
           <div className="daily-logs-summary-card">
-            <span className="daily-logs-summary-value">{pendingCount}</span>
             <span className="daily-logs-summary-label">Pending</span>
+            <span className="daily-logs-summary-value">{pendingCount}</span>
           </div>
           <div className="daily-logs-summary-card daily-logs-summary-card--complete">
-            <span className="daily-logs-summary-value">{completedCount}</span>
             <span className="daily-logs-summary-label">Complete</span>
+            <span className="daily-logs-summary-value">{completedCount}</span>
           </div>
         </div>
       </section>
@@ -223,7 +220,6 @@ export default function DailyLogsPage() {
         <div className="daily-logs-controls-heading">
           <div>
             <h2 className="daily-logs-section-title">Daily log queue</h2>
-            <p className="daily-logs-section-copy">Filter by resident status, mood, or caregiver.</p>
           </div>
           <p className="daily-logs-results-copy">
             Showing {visibleRows.length} of {allRows.length} logs
