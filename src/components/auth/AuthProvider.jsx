@@ -1,47 +1,63 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
-const AUTH_STORAGE_KEY = "sharedcare-auth-session";
-const VALID_ID = "sarah@sharedcare.com";
-const VALID_PASSWORD = "Sarah123";
+import { auth, isFirebaseConfigured } from "../../lib/firebase";
 
 const AuthContext = createContext(null);
 
-function getStoredAuthState() {
-  return window.localStorage.getItem(AUTH_STORAGE_KEY) === "true";
-}
-
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => getStoredAuthState());
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    window.localStorage.setItem(AUTH_STORAGE_KEY, String(isAuthenticated));
-  }, [isAuthenticated]);
-
-  function login(userId, password) {
-    const normalizedUserId = userId.trim().toLowerCase();
-
-    if (normalizedUserId === VALID_ID && password === VALID_PASSWORD) {
-      setIsAuthenticated(true);
-      return { success: true };
+    if (!auth) {
+      setIsLoading(false);
+      return undefined;
     }
 
-    return {
-      success: false,
-      message: "Invalid ID or password"
-    };
+    return onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setIsLoading(false);
+    });
+  }, []);
+
+  async function login(userId, password) {
+    if (!isFirebaseConfigured || !auth) {
+      return {
+        success: false,
+        message: "Firebase is not configured yet. Add your Firebase values to .env.local and restart the dev server."
+      };
+    }
+
+    const normalizedUserId = userId.trim().toLowerCase();
+
+    try {
+      await signInWithEmailAndPassword(auth, normalizedUserId, password);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: getAuthErrorMessage(error)
+      };
+    }
   }
 
-  function logout() {
-    setIsAuthenticated(false);
+  async function logout() {
+    if (auth) {
+      await signOut(auth);
+    }
   }
 
   const value = useMemo(
     () => ({
-      isAuthenticated,
+      currentUser,
+      isAuthenticated: Boolean(currentUser),
+      isFirebaseConfigured,
+      isLoading,
       login,
       logout
     }),
-    [isAuthenticated]
+    [currentUser, isLoading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -55,4 +71,19 @@ export function useAuth() {
   }
 
   return context;
+}
+
+function getAuthErrorMessage(error) {
+  switch (error.code) {
+    case "auth/invalid-credential":
+    case "auth/user-not-found":
+    case "auth/wrong-password":
+      return "Invalid ID or password";
+    case "auth/too-many-requests":
+      return "Too many login attempts. Please wait a moment and try again.";
+    case "auth/network-request-failed":
+      return "Could not reach Firebase. Check your connection and try again.";
+    default:
+      return "Unable to sign in. Please try again.";
+  }
 }

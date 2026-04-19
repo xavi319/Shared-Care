@@ -6,10 +6,11 @@ import { useAuth } from "../components/auth/AuthProvider";
 export default function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, isLoading, login } = useAuth();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (errorMessage) {
@@ -17,15 +18,16 @@ export default function LoginPage() {
     }
   }, [userId, password, errorMessage]);
 
-  if (isAuthenticated) {
+  if (!isLoading && isAuthenticated) {
     const nextPath = location.state?.from || "/";
     return <Navigate to={nextPath} replace />;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    setIsSubmitting(true);
 
-    const result = login(userId, password);
+    const result = await login(userId, password);
 
     if (result.success) {
       const nextPath = location.state?.from || "/";
@@ -34,6 +36,7 @@ export default function LoginPage() {
     }
 
     setErrorMessage(result.message);
+    setIsSubmitting(false);
   }
 
   return (
@@ -75,7 +78,7 @@ export default function LoginPage() {
 
           <div className="login-actions">
             <button className="login-button" type="submit">
-              Log In
+              {isSubmitting ? "Logging in..." : "Log In"}
             </button>
           </div>
         </form>
