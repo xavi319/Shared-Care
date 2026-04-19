@@ -33,7 +33,7 @@ export const dashboardData = {
       image: "/images/ronald-perry.jpg",
       detailPath: "/residents/ronald-perry",
       lastUpdateLabel: "Daily Log last updated",
-      accent: "#c8954b"
+      accent: "#C7A47F"
     },
     {
       id: "harold-bennet",
@@ -87,7 +87,7 @@ export const residentsPageData = {
       lastUpdate: "12:02 PM, Yesterday",
       lastUpdateLabel: "Daily Log last updated",
       detailPath: "/residents/edgar-callahan",
-      accent: "#d3a16c"
+      accent: "#C7A47F"
     },
     {
       id: "franklin-dempsey",
@@ -115,7 +115,7 @@ export const residentsPageData = {
       lastUpdate: "2:54 PM, Yesterday",
       lastUpdateLabel: "Daily Log last updated",
       detailPath: "/residents/june-sinclair",
-      accent: "#d0b676"
+      accent: "#C7A47F"
     },
     {
       id: "lilian-mendoza",
@@ -126,7 +126,7 @@ export const residentsPageData = {
       lastUpdateLabel: "Daily Log last updated",
       image: "/images/lilian-mendoza.jpg",
       detailPath: "/residents/lilian-mendoza",
-      accent: "#b88b72"
+      accent: "#C7A47F"
     }
   ]
 };
@@ -229,7 +229,7 @@ export const lilianMendozaDetailData = {
     lastUpdateLabel: "Daily Log last updated",
     image: "/images/lilian-mendoza.jpg",
     detailPath: "/residents/lilian-mendoza",
-    accent: "#b88b72"
+    accent: "#C7A47F"
   },
   residentId: "NH-20458",
   age: "64",
@@ -333,7 +333,7 @@ export const edgarCallahanDetailData = {
     lastUpdate: "12:02 PM, Yesterday",
     lastUpdateLabel: "Daily Log last updated",
     detailPath: "/residents/edgar-callahan",
-    accent: "#d3a16c"
+    accent: "#C7A47F"
   },
   residentId: "NH-20342",
   age: "71",
@@ -436,7 +436,7 @@ export const juneSinclairDetailData = {
     lastUpdate: "2:54 PM, Yesterday",
     lastUpdateLabel: "Daily Log last updated",
     detailPath: "/residents/june-sinclair",
-    accent: "#d0b676"
+    accent: "#C7A47F"
   },
   residentId: "NH-20711",
   age: "68",
