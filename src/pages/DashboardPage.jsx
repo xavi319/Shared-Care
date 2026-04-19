@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 import { StatCard } from "../components/dashboard/StatCard";
@@ -9,8 +10,15 @@ import {
   dashboardData,
   getResidentDetailBySlug,
   getResidentSlug,
-  initialChecklistItems
+  initialChecklistItems,
+  loadDailyLogEntries,
+  messagesData,
+  residentsPageData,
+  schedulingPageData
 } from "../data/mockData";
+import { db } from "../lib/firebase";
+
+const fallbackResidents = getUniqueById([...residentsPageData.residents, ...dashboardData.residents]);
 
 function getGreetingForTime(date, userName) {
   const hour = date.getHours();
@@ -39,11 +47,77 @@ function loadChecklistItems() {
   }
 }
 
+function getUniqueById(items) {
+  return Array.from(new Map(items.map((item) => [item.id, item])).values());
+}
+
+function getDateKey(value) {
+  if (!value) {
+    return "";
+  }
+
+  if (typeof value?.toDate === "function") {
+    return getDateKey(value.toDate());
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value).slice(0, 10);
+  }
+
+  return date.toISOString().split("T")[0];
+}
+
+function getTodayKey(useMockScheduleDate) {
+  return getDateKey(useMockScheduleDate ? schedulingPageData.initialDate : new Date());
+}
+
+function getVisitDate(visit) {
+  return visit.date ?? visit.scheduledDate ?? visit.visitDate ?? visit.startDate ?? visit.startsAt;
+}
+
+function getUnreadMessagesCount(messages) {
+  return messages.reduce((total, message) => {
+    if (typeof message.unreadCount === "number") {
+      return total + message.unreadCount;
+    }
+
+    if (typeof message.unread === "number") {
+      return total + message.unread;
+    }
+
+    return total + (message.unread === true || message.isUnread === true || message.active === true ? 1 : 0);
+  }, 0);
+}
+
+function getDashboardCounts({ residents, dailyLogs, visits, messages }, sourcesFromFirestore) {
+  const todayKey = getTodayKey(!sourcesFromFirestore.visits);
+
+  return {
+    "pending-daily-logs": dailyLogs.filter((log) => log.status === "pending").length,
+    residents: residents.length,
+    "todays-visits": visits.filter((visit) => getDateKey(getVisitDate(visit)) === todayKey).length,
+    messages: getUnreadMessagesCount(messages)
+  };
+}
+
+function getInitialDashboardSources() {
+  return {
+    residents: fallbackResidents,
+    dailyLogs: loadDailyLogEntries(),
+    visits: schedulingPageData.events,
+    messages: messagesData.contacts
+  };
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [statusMessage, setStatusMessage] = useState("");
   const [greeting, setGreeting] = useState("");
   const [checklistItems, setChecklistItems] = useState(initialChecklistItems);
+  const [dashboardSources, setDashboardSources] = useState(() => getInitialDashboardSources());
+  const [sourcesFromFirestore, setSourcesFromFirestore] = useState({});
 
   useEffect(() => {
     setChecklistItems(loadChecklistItems());
@@ -54,6 +128,51 @@ export default function DashboardPage() {
     }, 60000);
 
     return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    function refreshLocalSources() {
+      setDashboardSources((currentSources) => ({
+        ...currentSources,
+        dailyLogs: loadDailyLogEntries()
+      }));
+    }
+
+    window.addEventListener("focus", refreshLocalSources);
+
+    return () => window.removeEventListener("focus", refreshLocalSources);
+  }, []);
+
+  useEffect(() => {
+    if (!db) {
+      return undefined;
+    }
+
+    const collections = ["residents", "dailyLogs", "visits", "messages"];
+    const unsubscribers = collections.map((collectionName) =>
+      onSnapshot(
+        collection(db, collectionName),
+        (snapshot) => {
+          if (snapshot.empty) {
+            return;
+          }
+
+          setDashboardSources((currentSources) => ({
+            ...currentSources,
+            [collectionName]: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+          }));
+          setSourcesFromFirestore((currentSources) => ({
+            ...currentSources,
+            [collectionName]: true
+          }));
+        },
+        () => {
+          // Keep the existing app data as the fallback if a Firestore collection is unavailable.
+        }
+      )
+    );
+
+    return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
   }, []);
 
   useEffect(() => {
@@ -98,6 +217,12 @@ export default function DashboardPage() {
     setStatusMessage("Added a temporary local task for this session.");
   }
 
+  const dashboardCounts = getDashboardCounts(dashboardSources, sourcesFromFirestore);
+  const dashboardStats = dashboardData.stats.map((item) => ({
+    ...item,
+    value: dashboardCounts[item.id] ?? 0
+  }));
+
   return (
     <StaffAppShell onStubNavigate={handleStubNavigate}>
       <p className="eyebrow">{dashboardData.subtitle}</p>
@@ -107,7 +232,7 @@ export default function DashboardPage() {
       </p>
 
       <section className="stats-grid" aria-label="Dashboard stats">
-        {dashboardData.stats.map((item) => (
+        {dashboardStats.map((item) => (
           <StatCard key={item.id} item={item} />
         ))}
       </section>
