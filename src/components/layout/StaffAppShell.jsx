@@ -1,16 +1,35 @@
-import { dashboardData, messagesData } from "../../data/mockData";
+import { dashboardData, loadDailyLogEntries, messagesData } from "../../data/mockData";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
 
 export function StaffAppShell({ children, onStubNavigate }) {
+  const pendingDailyLogsCount = loadDailyLogEntries().filter(
+    (entry) => entry.status === "pending"
+  ).length;
   const unreadMessagesCount = messagesData.contacts.reduce(
     (total, contact) => total + (contact.unreadCount ?? 0),
     0
   );
 
-  const navItems = dashboardData.navItems.map((item) =>
-    item.id === "messages" ? { ...item, badgeCount: unreadMessagesCount } : item
-  );
+  const navItems = dashboardData.navItems.map((item) => {
+    if (item.id === "daily-logs") {
+      return {
+        ...item,
+        badgeCount: pendingDailyLogsCount,
+        badgeLabel: "pending daily logs"
+      };
+    }
+
+    if (item.id === "messages") {
+      return {
+        ...item,
+        badgeCount: unreadMessagesCount,
+        badgeLabel: "unread messages"
+      };
+    }
+
+    return item;
+  });
 
   return (
     <div className="app-shell">

@@ -4,9 +4,10 @@ export const dashboardData = {
   checklistDate: "February 15, 2026",
   navItems: [
     { id: "dashboard", label: "Dashboard", href: "/", icon: "home" },
+    { id: "daily-logs", label: "Daily Logs", href: "/daily-logs", icon: "logs" },
     { id: "scheduling", label: "Scheduling", href: "/scheduling", icon: "calendar" },
     { id: "residents", label: "Residents", href: "/residents", icon: "residents" },
-    { id: "messages", label: "Messages", href: "/messages", icon: "messages"}
+    { id: "messages", label: "Messages", href: "/messages", icon: "messages" }
   ],
   stats: [
     { id: "pending-daily-logs", label: "Pending Daily Logs", icon: "logs", href: "/daily-logs" },

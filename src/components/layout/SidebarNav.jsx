@@ -17,7 +17,10 @@ export function SidebarNav({ items, onStubNavigate }) {
             </span>
             <span className="nav-link-label">{item.label}</span>
             {typeof item.badgeCount === "number" && item.badgeCount > 0 ? (
-              <span className="nav-link-badge" aria-label={`${item.badgeCount} unread`}>
+              <span
+                className="nav-link-badge"
+                aria-label={`${item.badgeCount} ${item.badgeLabel ?? "notifications"}`}
+              >
                 {item.badgeCount}
               </span>
             ) : null}

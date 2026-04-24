@@ -49,6 +49,8 @@ export function NavIcon({ icon, className }) {
       return <HomeIcon className={iconClassName} aria-hidden="true" />;
     case "calendar":
       return <CalendarDaysIcon className={iconClassName} aria-hidden="true" />;
+    case "logs":
+      return <ClipboardDocumentListIcon className={iconClassName} aria-hidden="true" />;
     case "residents":
       return <UsersIcon className={iconClassName} aria-hidden="true" />;
     case "messages":
