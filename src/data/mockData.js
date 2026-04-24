@@ -124,6 +124,28 @@ export const residentsPageData = {
   ]
 };
 
+export const familyData = {
+  navItems: [
+    { id: "family-dashboard", label: "Dashboard", href: "/family", icon: "home" },
+    { id: "family-daily-logs", label: "Daily Logs", href: "/family/daily-logs", icon: "logs" },
+    { id: "family-scheduling", label: "Scheduling", href: "/family/scheduling", icon: "calendar" },
+    { id: "family-messages", label: "Messages", href: "/family/messages", icon: "messages" }
+  ],
+  resident: {
+    id: "beth-adams",
+    name: "Beth Adams",
+    room: "Room 123",
+    lastUpdated: "Today at 10:05 AM",
+    status: "Mostly Calm",
+    image: "/images/beth-adams.jpg",
+    dailySummary:
+      "Beth had a steady morning, ate breakfast well, and enjoyed a quiet activity after vitals."
+  },
+  visitor: {
+    name: "Robert Adams"
+  }
+};
+
 export const dailyLogsPageData = {
   title: "Daily Logs",
   subtitle: "Care Documentation",
@@ -229,6 +251,12 @@ export const lilianMendozaDetailData = {
   dob: "01/01/1964",
   admissionDate: "June 8, 2023",
   diagnoses: ["Hypertension", "Type 2 Diabetes"],
+  primaryRelative: {
+    name: "Maria Mendoza",
+    relation: "Daughter",
+    room: "Room 252",
+    contactId: "contact-maria-mendoza"
+  },
   medications: [
     "Metformin 500 mg Oral Twice Daily (8:00 AM, 8:00 PM)",
     "Lisinopril 10 mg Oral Once Daily (9:00 AM)"
@@ -265,6 +293,12 @@ export const bethAdamsDetailData = {
   dob: "08/14/1946",
   admissionDate: "January 12, 2022",
   diagnoses: ["Mild Osteoarthritis", "Chronic Atrial Fibrillation"],
+  primaryRelative: {
+    name: "Robert Adams",
+    relation: "Son",
+    room: "Room 123",
+    contactId: "contact-robert-adams"
+  },
   medications: [
     "Apixaban 5 mg Oral Twice Daily (8:00 AM, 8:00 PM)",
     "Acetaminophen 500 mg Oral As Needed for Joint Pain"
@@ -299,6 +333,12 @@ export const clarenceDoyleDetailData = {
   dob: "03/09/1943",
   admissionDate: "September 4, 2021",
   diagnoses: ["Parkinson's Disease", "Orthostatic Hypotension"],
+  primaryRelative: {
+    name: "David Doyle",
+    relation: "Son",
+    room: "Room 222",
+    contactId: "contact-david-doyle"
+  },
   medications: [
     "Carbidopa-Levodopa 25/100 mg Oral Three Times Daily",
     "Midodrine 5 mg Oral Twice Daily"
@@ -333,6 +373,11 @@ export const edgarCallahanDetailData = {
   dob: "11/27/1954",
   admissionDate: "April 19, 2024",
   diagnoses: ["COPD", "Generalized Anxiety Disorder"],
+  primaryRelative: {
+    name: "Megan Callahan",
+    relation: "Daughter",
+    room: "Room 124"
+  },
   medications: [
     "Tiotropium 18 mcg Inhaled Once Daily",
     "Sertraline 50 mg Oral Once Daily"
@@ -367,6 +412,11 @@ export const franklinDempseyDetailData = {
   dob: "06/05/1950",
   admissionDate: "December 2, 2022",
   diagnoses: ["Vascular Dementia", "Stage 2 Chronic Kidney Disease"],
+  primaryRelative: {
+    name: "Angela Dempsey",
+    relation: "Spouse",
+    room: "Room 225"
+  },
   medications: [
     "Donepezil 10 mg Oral Nightly",
     "Losartan 50 mg Oral Once Daily"
@@ -402,6 +452,12 @@ export const haroldBennettDetailData = {
   dob: "10/03/1938",
   admissionDate: "May 14, 2020",
   diagnoses: ["Congestive Heart Failure", "Macular Degeneration"],
+  primaryRelative: {
+    name: "Lillian Bennett",
+    relation: "Daughter",
+    room: "Room 127",
+    contactId: "contact-lillian-bennett"
+  },
   medications: [
     "Furosemide 20 mg Oral Every Morning",
     "Metoprolol Succinate 25 mg Oral Once Daily"
@@ -436,6 +492,11 @@ export const juneSinclairDetailData = {
   dob: "02/18/1958",
   admissionDate: "August 29, 2025",
   diagnoses: ["Major Depressive Disorder", "Insomnia"],
+  primaryRelative: {
+    name: "Paul Sinclair",
+    relation: "Brother",
+    room: "Room 532"
+  },
   medications: [
     "Mirtazapine 15 mg Oral Nightly",
     "Melatonin 3 mg Oral at Bedtime"
@@ -454,11 +515,11 @@ export const juneSinclairDetailData = {
 export const messagesData = {
   contacts: [
     {
-      id: "contact-maria-gomez",
-      name: "Maria Gomez",
-      relation: "Daughter of Alex Gomez",
-      room: "Room 498",
-      lastMessage: "Hello Nurse Clara, how was Alex's morning today?",
+      id: "contact-maria-mendoza",
+      name: "Maria Mendoza",
+      relation: "Daughter of Lilian Mendoza",
+      room: "Room 252",
+      lastMessage: "Hello Nurse Sarah, how was Lilian's morning today?",
       unreadCount: 2,
       image: "https://randomuser.me/api/portraits/women/44.jpg"
     },
@@ -472,19 +533,19 @@ export const messagesData = {
       image: "https://randomuser.me/api/portraits/men/32.jpg"
     },
     {
-      id: "contact-david-langley",
-      name: "David Langley",
-      relation: "Brother of Beatrice Langley",
-      room: "Room 678",
-      lastMessage: "Hello Nurse Clara, how was Alex's morning today?",
+      id: "contact-david-doyle",
+      name: "David Doyle",
+      relation: "Son of Clarence Doyle",
+      room: "Room 222",
+      lastMessage: "Hello Nurse Sarah, how was Clarence's morning today?",
       unreadCount: 0,
       image: "https://randomuser.me/api/portraits/men/75.jpg"
     },
     {
-      id: "contact-lillian-pembroke",
-      name: "Lillian Pembroke",
-      relation: "Daughter of Dorothy",
-      room: "Room 418",
+      id: "contact-lillian-bennett",
+      name: "Lillian Bennett",
+      relation: "Daughter of Harold Bennett",
+      room: "Room 127",
       lastMessage: "Thanks for the update!",
       unreadCount: 0,
       image: "https://randomuser.me/api/portraits/women/68.jpg"
@@ -492,12 +553,12 @@ export const messagesData = {
   ],
 
   conversations: {
-    "contact-maria-gomez": [
+    "contact-maria-mendoza": [
       { id: "d1", type: "divider", label: "Today 9:00 AM" },
       {
         id: "m1",
         type: "message",
-        text: "Hello Nurse Clara, how was Alex's morning today?",
+        text: "Hello Nurse Sarah, how was Lilian's morning today?",
         direction: "incoming"
       }
     ],
@@ -516,21 +577,21 @@ export const messagesData = {
         direction: "outgoing"
       }
     ],
-    "contact-david-langley": [
+    "contact-david-doyle": [
       { id: "d1", type: "divider", label: "Today 8:00 AM" },
       {
         id: "m1",
         type: "message",
-        text: "Hello Nurse Clara, how was Alex's morning today?",
+        text: "Hello Nurse Sarah, how was Clarence's morning today?",
         direction: "incoming"
       }
     ],
-    "contact-lillian-pembroke": [
+    "contact-lillian-bennett": [
       { id: "d1", type: "divider", label: "Yesterday 3:15 PM" },
       {
         id: "m1",
         type: "message",
-        text: "Dorothy had a great physical therapy session!",
+        text: "Harold had a great physical therapy session!",
         direction: "outgoing"
       },
       { id: "m2", type: "message", text: "Thanks for the update!", direction: "incoming" }
@@ -549,8 +610,8 @@ export const schedulingPageData = {
   events: [
     {
       id: "visit-1",
-      title: "Robert Adam Visiting",
-      subtitle: "Beth Adam's son",
+      title: "Robert Adams Visiting",
+      subtitle: "Beth Adams' son",
       room: "Room 123",
       startTime: "9:50 AM",
       endTime: "11:40 AM",
@@ -558,27 +619,27 @@ export const schedulingPageData = {
     },
     {
       id: "visit-2",
-      title: "Lillian Pembroke Visiting",
-      subtitle: "Daughter of Dorothy",
-      room: "Room 418",
+      title: "Lillian Bennett Visiting",
+      subtitle: "Daughter of Harold Bennett",
+      room: "Room 127",
       startTime: "12:30 PM",
       endTime: "1:40 PM",
       date: "2026-02-15",
     },
     {
       id: "visit-3",
-      title: "Maria Gomez Visiting",
-      subtitle: "Daughter of Alex Gomez",
-      room: "Room 498",
+      title: "Maria Mendoza Visiting",
+      subtitle: "Daughter of Lilian Mendoza",
+      room: "Room 252",
       startTime: "11:00 AM",
       endTime: "12:00 PM",
       date: "2026-02-14",
     },
     {
       id: "visit-4",
-      title: "David Langley Visiting",
-      subtitle: "Brother of Beatrice Langley",
-      room: "Room 678",
+      title: "David Doyle Visiting",
+      subtitle: "Son of Clarence Doyle",
+      room: "Room 222",
       startTime: "4:00 PM",
       endTime: "5:00 PM",
       date: "2026-02-16",
@@ -589,21 +650,21 @@ export const schedulingPageData = {
   pendingAppointments: [
     {
       id: "pending-1",
-      name: "Maria Gomez",
-      relation: "Daughter of Alex Gomez",
-      room: "Room 498",
+      name: "Maria Mendoza",
+      relation: "Daughter of Lilian Mendoza",
+      room: "Room 252",
       date: "Feb 20, 2026",
       time: "11:00 AM",
       notes: "Wants to come visit her mother for lunch, around 11AM to 12PM.",
     },
     {
       id: "pending-2",
-      name: "David Langley",
-      relation: "Brother of Beatrice Langley",
-      room: "Room 678",
+      name: "David Doyle",
+      relation: "Son of Clarence Doyle",
+      room: "Room 222",
       date: "Feb 21, 2026",
       time: "4:00 PM",
-      notes: "Wants to come visit his sister just to check up on her, from 4PM to 7PM-ish.",
+      notes: "Wants to come visit his father just to check up on him, from 4PM to 7PM-ish.",
     },
     {
       id: "pending-3",

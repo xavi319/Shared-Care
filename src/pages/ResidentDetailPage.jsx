@@ -3,8 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import { ChevronLeftIcon, SearchIcon, SortIcon } from "../components/layout/icons";
-import { getResidentDetailBySlug } from "../data/mockData";
+import { getResidentDetailBySlug, messagesData } from "../data/mockData";
 import NotFoundPage from "./NotFoundPage";
+
+const familyContactImagesById = new Map(
+  messagesData.contacts.map((contact) => [contact.id, contact.image])
+);
 
 function getInitials(name) {
   return name
@@ -20,6 +24,9 @@ export default function ResidentDetailPage() {
   const { residentId } = useParams();
   const resident = getResidentDetailBySlug(residentId ?? "");
   const [statusMessage, setStatusMessage] = useState("");
+  const primaryRelativeImage = resident?.primaryRelative.contactId
+    ? familyContactImagesById.get(resident.primaryRelative.contactId)
+    : resident?.primaryRelative.image;
 
   if (!resident) {
     return (
@@ -155,6 +162,23 @@ export default function ResidentDetailPage() {
                   <li key={diagnosis}>{diagnosis}</li>
                 ))}
               </ul>
+            </article>
+
+            <article className="detail-card detail-card--relative">
+              <h3 className="detail-card-title">Primary Relative</h3>
+              <div className="relative-card-body">
+                <div className="relative-avatar" aria-hidden="true">
+                  {primaryRelativeImage ? (
+                    <img src={primaryRelativeImage} alt="" />
+                  ) : (
+                    getInitials(resident.primaryRelative.name)
+                  )}
+                </div>
+                <div>
+                  <p className="relative-name">{resident.primaryRelative.name}</p>
+                  <p className="relative-meta">{resident.primaryRelative.relation}</p>
+                </div>
+              </div>
             </article>
 
             <article className="detail-card detail-card--medications">

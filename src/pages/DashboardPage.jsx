@@ -522,8 +522,15 @@ export default function DashboardPage() {
 
   return (
     <StaffAppShell onStubNavigate={handleStubNavigate}>
-      <p className="eyebrow">{dashboardData.subtitle}</p>
-      <h1 className="page-title">{greeting}</h1>
+      <div className="dashboard-heading-row">
+        <div>
+          <p className="eyebrow">{dashboardData.subtitle}</p>
+          <h1 className="page-title">{greeting}</h1>
+        </div>
+        <button className="view-mode-toggle" type="button" onClick={() => navigate("/family")}>
+          Dev: Family View
+        </button>
+      </div>
       <p className="status-message" aria-live="polite">
         {statusMessage}
       </p>
