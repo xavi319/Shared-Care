@@ -37,12 +37,12 @@ export const dashboardData = {
       accent: "#c8954b"
     },
     {
-      id: "harold-bennet",
-      name: "Harold Bennet",
-      room: "Room 123",
+      id: "harold-bennett",
+      name: "Harold Bennett",
+      room: "Room 127",
       lastUpdate: "10:05 AM",
       image: "/images/harold-bennet.jpg",
-      detailPath: "/residents/harold-bennet",
+      detailPath: "/residents/harold-bennett",
       lastUpdateLabel: "Daily Log last updated",
       accent: "#b9c3cf"
     }
@@ -63,6 +63,16 @@ export const residentsPageData = {
       image: "/images/beth-adams.jpg",
       detailPath: "/residents/beth-adams",
       accent: "#86d4eb"
+    },
+    {
+      id: "ronald-perry",
+      name: "Ronald Perry",
+      room: "Room 278",
+      lastUpdate: "10:05 AM",
+      lastUpdateLabel: "Daily Log last updated",
+      image: "/images/ronald-perry.jpg",
+      detailPath: "/residents/ronald-perry",
+      accent: "#c8954b"
     },
     {
       id: "clarence-doyle",
@@ -307,6 +317,46 @@ export const bethAdamsDetailData = {
     "Enjoys bingo and social group activities.",
     "Prefers oatmeal with fruit for breakfast.",
     "Requests a reminder before family video calls."
+  ],
+  actions: [
+    { label: "Daily Log Summaries", tone: "neutral" },
+    { label: "Medical Charts", tone: "dark" }
+  ]
+};
+
+export const ronaldPerryDetailData = {
+  title: "Residents",
+  subtitle: "Search",
+  searchValue: "Ronald Perry",
+  resident: {
+    id: "ronald-perry",
+    slug: "ronald-perry",
+    name: "Ronald Perry",
+    room: "Room 278",
+    lastUpdate: "10:05 AM",
+    lastUpdateLabel: "Daily Log last updated",
+    image: "/images/ronald-perry.jpg",
+    detailPath: "/residents/ronald-perry",
+    accent: "#c8954b"
+  },
+  residentId: "NH-20264",
+  age: "81",
+  dob: "05/22/1945",
+  admissionDate: "March 17, 2023",
+  diagnoses: ["Type 2 Diabetes", "Mild Cognitive Impairment"],
+  primaryRelative: {
+    name: "Elaine Perry",
+    relation: "Daughter",
+    room: "Room 278"
+  },
+  medications: [
+    "Metformin 500 mg Oral Twice Daily",
+    "Atorvastatin 20 mg Oral Nightly"
+  ],
+  personalNotes: [
+    "Enjoys morning walks when weather permits.",
+    "Prefers coffee with breakfast.",
+    "Responds well to reminders written in large print."
   ],
   actions: [
     { label: "Daily Log Summaries", tone: "neutral" },
@@ -684,6 +734,7 @@ export const initialDailyLogEntries = dailyLogsPageData.entries;
 
 const residentDetailsBySlug = {
   "beth-adams": bethAdamsDetailData,
+  "ronald-perry": ronaldPerryDetailData,
   "clarence-doyle": clarenceDoyleDetailData,
   "edgar-callahan": edgarCallahanDetailData,
   "franklin-dempsey": franklinDempseyDetailData,

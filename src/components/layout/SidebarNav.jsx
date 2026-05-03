@@ -32,7 +32,7 @@ export function SidebarNav({ items, onStubNavigate }) {
             <NavLink
               key={item.id}
               className={({ isActive }) => getNavLinkClassName(isActive)}
-              end={item.href === "/"}
+              end={item.href === "/" || item.href === "/family"}
               to={item.href}
             >
               {content}

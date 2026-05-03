@@ -2578,7 +2578,7 @@ a {
 }
 
 .contact-row:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: #f4f7fb;
 }
 
 .contact-row-item:hover {
@@ -2608,7 +2608,7 @@ a {
   display: grid;
   place-items: center;
   width: 52px;
-  height: 452px;
+  height: 52px;
   border-radius: 999px;
   background: var(--surface-accent);
   color: #ffffff;
