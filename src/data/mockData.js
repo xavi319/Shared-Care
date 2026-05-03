@@ -164,8 +164,15 @@ export const dailyLogsPageData = {
       residentId: "beth-adams",
       caregiver: "Sarah Allen",
       mood: "Good",
-      date: "2026-03-15",
-      status: "pending"
+      date: "2026-03-15 10:05",
+      status: "completed",
+      reportStatus: "submitted",
+      meals: "Ate well",
+      activityEngagement: "Moderately Engaged",
+      assistanceLevel: "Partial Assist",
+      safety: "",
+      notes:
+        "Beth had a calm morning. She ate breakfast well, joined part of the group activity, and responded positively to check-ins from staff."
     },
     {
       residentId: "clarence-doyle",

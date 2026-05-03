@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { StaffAppShell } from "../components/layout/StaffAppShell";
-import { ChevronLeftIcon, SearchIcon, SortIcon } from "../components/layout/icons";
+import { ChevronLeftIcon, SearchIcon } from "../components/layout/icons";
 import { getResidentDetailBySlug, messagesData } from "../data/mockData";
 import NotFoundPage from "./NotFoundPage";
 
@@ -68,15 +68,6 @@ export default function ResidentDetailPage() {
       </section>
 
       <div className="toolbar">
-        <button
-          className="sort-button"
-          type="button"
-          onClick={() => setStatusMessage("Sort controls are stubbed on the detail page for now.")}
-        >
-          <span className="sort-label">Sort A-Z</span>
-          <SortIcon />
-        </button>
-
         <div className="toolbar-right">
           <p className="status-message status-message--toolbar" aria-live="polite">
             {statusMessage}

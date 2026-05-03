@@ -1125,6 +1125,120 @@ a {
   margin: 18px 0 0;
 }
 
+.family-logs-header {
+  display: grid;
+  gap: 8px;
+}
+
+.family-logs-resident {
+  margin: 10px 0 0;
+  color: #556274;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.family-logs-stack {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 980px);
+}
+
+.family-logs-section-heading {
+  margin-top: 4px;
+}
+
+.family-log-card,
+.family-log-state {
+  border: 1px solid #dbe3ee;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.family-log-card {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.family-log-card--featured {
+  border-color: #eadcc6;
+  background:
+    linear-gradient(180deg, rgba(245, 230, 206, 0.5) 0%, rgba(255, 255, 255, 0.96) 42%),
+    #ffffff;
+}
+
+.family-log-card-topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+}
+
+.family-log-date,
+.family-log-staff {
+  margin: 0;
+  color: #556274;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.family-log-staff {
+  color: var(--muted-soft);
+}
+
+.family-log-summary {
+  margin: 0;
+  color: #111111;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 650;
+  line-height: 1.38;
+}
+
+.family-log-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.family-log-detail {
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fbff;
+}
+
+.family-log-detail span,
+.family-log-notes h3 {
+  display: block;
+  margin: 0 0 6px;
+  color: #556274;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.family-log-detail p,
+.family-log-notes p {
+  margin: 0;
+  color: #222222;
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.family-log-notes {
+  padding-top: 2px;
+}
+
+.family-log-state {
+  width: min(100%, 760px);
+  padding: 28px;
+  color: #556274;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 .task-group-header {
   display: flex;
   align-items: center;
@@ -3556,7 +3670,8 @@ a {
   }
 
   .family-dashboard-summary,
-  .family-actions-grid {
+  .family-actions-grid,
+  .family-log-detail-grid {
     grid-template-columns: 1fr;
   }
 
