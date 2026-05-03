@@ -1,20 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
+import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import { db } from "../lib/firebase";
 import {
   listenToConversations,
   listenToMessages,
+  markConversationAsRead,
   sendMessage
 } from "../services/messageService";
 
-const currentUser = {
+const staffUser = {
   uid: "staff_1",
   name: "Sarah",
   role: "staff"
 };
 
+const familyUser = {
+  uid: "family_robert_adams",
+  name: "Robert Adams",
+  role: "family"
+};
+
+const robertAdamsConversationId = "contact-robert-adams";
+const sarahProfileImage = "/images/sarah-profile.jpg";
 
 function PhoneIcon() {
   return (
@@ -109,14 +119,21 @@ function getInitials(name) {
     .toUpperCase();
 }
 
-function formatContactFromConversation(conversation) {
+function formatContactFromConversation(conversation, viewMode) {
+  const isFamilyView = viewMode === "family";
+
   return {
     id: conversation.id,
-    name: conversation.familyName,
-    relation: `${conversation.familyRelationship} of ${conversation.residentName}`,
+    name: isFamilyView ? "Sarah" : conversation.familyName,
+    image: isFamilyView ? sarahProfileImage : conversation.familyImage,
+    relation: isFamilyView
+      ? `Care team for ${conversation.residentName}`
+      : `${conversation.familyRelationship} of ${conversation.residentName}`,
     room: conversation.residentRoom,
     lastMessage: conversation.lastMessage ?? "No messages yet.",
-    unreadCount: conversation.unreadCountStaff ?? 0,
+    unreadCount: isFamilyView
+      ? conversation.unreadCountFamily ?? 0
+      : conversation.unreadCountStaff ?? 0,
     conversation
   };
 }
@@ -178,7 +195,15 @@ function getThreadItems(messages) {
   return items;
 }
 
+function resetContactUnreadCount(contacts, conversationId) {
+  return contacts.map((contact) =>
+    contact.id === conversationId ? { ...contact, unreadCount: 0 } : contact
+  );
+}
+
 function ContactRow({ contact, isActive, onClick }) {
+  const unreadLabel = `${contact.unreadCount} unread messages`;
+
   return (
     <li className={`contact-row-item${isActive ? " is-active" : ""}`}>
       <button
@@ -194,11 +219,11 @@ function ContactRow({ contact, isActive, onClick }) {
           ) : (
             <span className="contact-avatar-initials">{getInitials(contact.name)}</span>
           )}
-          {contact.unreadCount > 0 && (
-            <span className="unread-badge" aria-label={`${contact.unreadCount} unread messages`}>
+          {contact.unreadCount > 0 ? (
+            <span className="unread-badge" aria-label={unreadLabel}>
               {contact.unreadCount}
             </span>
-          )}
+          ) : null}
         </div>
         <div className="contact-info">
           <p className="contact-name">{contact.name}</p>
@@ -212,8 +237,8 @@ function ContactRow({ contact, isActive, onClick }) {
   );
 }
 
-function ChatBubble({ message }) {
-  const isOutgoing = message.senderId === currentUser.uid || message.senderRole === currentUser.role;
+function ChatBubble({ message, currentUser }) {
+  const isOutgoing = message.senderId === currentUser.uid;
   return (
     <div className={`chat-bubble-wrapper${isOutgoing ? " is-outgoing" : " is-incoming"}`}>
       <div className={`chat-bubble${isOutgoing ? " bubble--outgoing" : " bubble--incoming"}`}>
@@ -234,6 +259,10 @@ function ChatDateDivider({ label }) {
 
 export default function MessagesPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const viewMode = location.pathname.startsWith("/family") ? "family" : "staff";
+  const currentUser = viewMode === "family" ? familyUser : staffUser;
+  const Shell = viewMode === "family" ? FamilyAppShell : StaffAppShell;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [contacts, setContacts] = useState([]);
@@ -242,6 +271,7 @@ export default function MessagesPage() {
   const [replyText, setReplyText] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [isLoadingConversations, setIsLoadingConversations] = useState(Boolean(db));
+  const chatThreadRef = useRef(null);
 
   useEffect(() => {
     if (!db) {
@@ -255,13 +285,44 @@ export default function MessagesPage() {
     return listenToConversations(
       db,
       (nextConversations) => {
-        const nextContacts = nextConversations.map(formatContactFromConversation);
+        const allContacts = nextConversations.map((conversation) =>
+          formatContactFromConversation(conversation, viewMode)
+        );
+        const nextContacts =
+          viewMode === "family"
+            ? allContacts.filter((contact) =>
+                contact.conversation.participantIds?.includes(currentUser.uid)
+              )
+            : allContacts;
+        const hasRobertAdamsConversation = nextContacts.some(
+          (contact) => contact.id === robertAdamsConversationId
+        );
         setContacts(nextContacts);
         setIsLoadingConversations(false);
-        setStatusMessage(nextContacts.length ? "" : "No Firestore conversations found. Run npm run seed:messages to load demo conversations.");
+        setStatusMessage(() => {
+          if (!nextContacts.length) {
+            return viewMode === "family"
+              ? "Robert Adams' conversation with Sarah about Beth Adams was not found. Run npm run seed:messages to load the demo conversation."
+              : "No Firestore conversations found. Run npm run seed:messages to load demo conversations.";
+          }
+
+          if (viewMode === "family" && !hasRobertAdamsConversation) {
+            return "Robert Adams' conversation with Sarah about Beth Adams was not found.";
+          }
+
+          return "";
+        });
         setActiveContact((currentContact) => {
           if (!nextContacts.length) {
             return null;
+          }
+
+          if (viewMode === "family") {
+            return (
+              nextContacts.find((contact) => contact.id === robertAdamsConversationId) ??
+              nextContacts.find((contact) => contact.id === currentContact?.id) ??
+              nextContacts[0]
+            );
           }
 
           return nextContacts.find((contact) => contact.id === currentContact?.id) ?? nextContacts[0];
@@ -272,12 +333,24 @@ export default function MessagesPage() {
         setStatusMessage("Could not load Firestore conversations. Check your Firebase config and Firestore rules.");
       }
     );
-  }, []);
+  }, [currentUser.uid, viewMode]);
 
   useEffect(() => {
     if (!db || !activeContact?.id) {
       setActiveMessages([]);
       return undefined;
+    }
+
+    if (activeContact.unreadCount > 0) {
+      setContacts((currentContacts) => resetContactUnreadCount(currentContacts, activeContact.id));
+      setActiveContact((currentContact) =>
+        currentContact?.id === activeContact.id
+          ? { ...currentContact, unreadCount: 0 }
+          : currentContact
+      );
+      markConversationAsRead(db, activeContact.id, currentUser).catch(() => {
+        setStatusMessage("Could not update the unread status for this conversation.");
+      });
     }
 
     return listenToMessages(
@@ -286,7 +359,7 @@ export default function MessagesPage() {
       setActiveMessages,
       () => setStatusMessage("Could not load messages for this conversation.")
     );
-  }, [activeContact?.id]);
+  }, [activeContact?.id, activeContact?.unreadCount, currentUser]);
 
   const filteredContacts = contacts.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -295,8 +368,22 @@ export default function MessagesPage() {
 
   const activeThreadItems = useMemo(() => getThreadItems(activeMessages), [activeMessages]);
 
+  useEffect(() => {
+    const chatThread = chatThreadRef.current;
+
+    if (!chatThread) {
+      return;
+    }
+
+    chatThread.scrollTo({
+      top: chatThread.scrollHeight,
+      behavior: "smooth"
+    });
+  }, [activeThreadItems.length]);
+
   function handleSelectContact(contact) {
-    setActiveContact(contact);
+    setContacts((currentContacts) => resetContactUnreadCount(currentContacts, contact.id));
+    setActiveContact({ ...contact, unreadCount: 0 });
     setReplyText("");
   }
 
@@ -323,11 +410,13 @@ export default function MessagesPage() {
   }
 
   return (
-    <StaffAppShell onStubNavigate={() => {}}>
+    <Shell onStubNavigate={() => {}}>
       <div className="messages-page-header">
         <div>
           <p className="eyebrow">Messages</p>
-          <h1 className="page-title">Family Contacts</h1>
+          <h1 className="page-title">
+            {viewMode === "family" ? "Care Team Messages" : "Family Contacts"}
+          </h1>
           <p className="status-message" aria-live="polite">
             {statusMessage}
           </p>
@@ -395,6 +484,14 @@ export default function MessagesPage() {
                   ) : (
                     <span className="contact-avatar-initials">{getInitials(activeContact.name)}</span>
                   )}
+                  {viewMode === "family" && activeContact.unreadCount > 0 ? (
+                    <span
+                      className="unread-badge unread-badge--header"
+                      aria-label={`${activeContact.unreadCount} unread messages from Sarah`}
+                    >
+                      {activeContact.unreadCount}
+                    </span>
+                  ) : null}
                 </div>
                 <div>
                   <p className="chat-header-name">{activeContact.name}</p>
@@ -417,12 +514,12 @@ export default function MessagesPage() {
             </div>
 
             {/* Message thread */}
-            <div className="chat-thread" role="log" aria-live="polite">
+            <div className="chat-thread" role="log" aria-live="polite" ref={chatThreadRef}>
               {activeThreadItems.map((item) =>
                 item.type === "divider" ? (
                   <ChatDateDivider key={item.id} label={item.label} />
                 ) : (
-                  <ChatBubble key={item.id} message={item} />
+                  <ChatBubble key={item.id} message={item} currentUser={currentUser} />
                 )
               )}
             </div>
@@ -462,6 +559,6 @@ export default function MessagesPage() {
           </section>
         )}
       </div>
-    </StaffAppShell>
+    </Shell>
   );
 }

@@ -29,7 +29,7 @@ export default function App() {
         <Route path="/family" element={<FamilyDashboardPage />} />
         <Route path="/family/daily-logs" element={<FamilyPlaceholderPage page="dailyLogs" />} />
         <Route path="/family/scheduling" element={<FamilySchedulingPage />} />
-        <Route path="/family/messages" element={<FamilyPlaceholderPage page="messages" />} />
+        <Route path="/family/messages" element={<MessagesPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

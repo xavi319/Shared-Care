@@ -1,15 +1,37 @@
-import { dashboardData, loadDailyLogEntries, messagesData } from "../../data/mockData";
+import { useEffect, useState } from "react";
+
+import { dashboardData, loadDailyLogEntries } from "../../data/mockData";
+import { db } from "../../lib/firebase";
+import { listenToConversations } from "../../services/messageService";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
 
+const staffUserId = "staff_1";
+
 export function StaffAppShell({ children, onStubNavigate }) {
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const pendingDailyLogsCount = loadDailyLogEntries().filter(
     (entry) => entry.status === "pending"
   ).length;
-  const unreadMessagesCount = messagesData.contacts.reduce(
-    (total, contact) => total + (contact.unreadCount ?? 0),
-    0
-  );
+
+  useEffect(() => {
+    if (!db) {
+      setUnreadMessagesCount(0);
+      return undefined;
+    }
+
+    return listenToConversations(
+      db,
+      (conversations) => {
+        const nextUnreadCount = conversations
+          .filter((conversation) => conversation.participantIds?.includes(staffUserId))
+          .reduce((total, conversation) => total + (conversation.unreadCountStaff ?? 0), 0);
+
+        setUnreadMessagesCount(nextUnreadCount);
+      },
+      () => setUnreadMessagesCount(0)
+    );
+  }, []);
 
   const navItems = dashboardData.navItems.map((item) => {
     if (item.id === "daily-logs") {

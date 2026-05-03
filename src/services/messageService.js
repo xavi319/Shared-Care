@@ -83,3 +83,16 @@ export async function sendMessage(db, conversationId, currentUser, text) {
     [unreadField]: increment(1)
   });
 }
+
+export async function markConversationAsRead(db, conversationId, currentUser) {
+  if (!db || !conversationId) {
+    return;
+  }
+
+  const unreadField =
+    currentUser.role === "staff" ? "unreadCountStaff" : "unreadCountFamily";
+
+  await updateDoc(doc(db, "conversations", conversationId), {
+    [unreadField]: 0
+  });
+}
