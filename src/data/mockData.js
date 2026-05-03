@@ -175,6 +175,48 @@ export const dailyLogsPageData = {
         "Beth had a calm morning. She ate breakfast well, joined part of the group activity, and responded positively to check-ins from staff."
     },
     {
+      residentId: "beth-adams",
+      caregiver: "Terry Nguyen",
+      mood: "Neutral",
+      date: "2026-03-14 17:20",
+      status: "completed",
+      reportStatus: "submitted",
+      meals: "Ate moderately",
+      activityEngagement: "Moderately Engaged",
+      assistanceLevel: "Partial Assist",
+      safety: "",
+      notes:
+        "Beth rested after lunch, ate a moderate dinner, and enjoyed looking through family photos with staff."
+    },
+    {
+      residentId: "beth-adams",
+      caregiver: "Georgia Doe",
+      mood: "Good",
+      date: "2026-03-13 09:45",
+      status: "completed",
+      reportStatus: "submitted",
+      meals: "Ate well",
+      activityEngagement: "Fully Engaged",
+      assistanceLevel: "Independent",
+      safety: "",
+      notes:
+        "Beth was bright during the morning routine, finished most of breakfast, and stayed for the full music group."
+    },
+    {
+      residentId: "beth-adams",
+      caregiver: "Andy Smith",
+      mood: "Withdrawn",
+      date: "2026-03-12 18:10",
+      status: "completed",
+      reportStatus: "submitted",
+      meals: "Ate moderately",
+      activityEngagement: "Disinterested",
+      assistanceLevel: "Partial Assist",
+      safety: "",
+      notes:
+        "Beth preferred quiet time in her room for much of the afternoon, accepted gentle check-ins, and ate soup at dinner."
+    },
+    {
       residentId: "clarence-doyle",
       caregiver: "Andy Smith",
       mood: "Neutral",

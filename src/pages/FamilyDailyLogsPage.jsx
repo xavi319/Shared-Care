@@ -155,6 +155,28 @@ function FamilyUpdateCard({ entry, residentName, isFeatured }) {
   );
 }
 
+function FamilyLogsControls({ updateCount }) {
+  return (
+    <div className="family-logs-controls" aria-label="Daily log display controls">
+      <div className="family-logs-control-group" aria-label="Filter daily updates">
+        <button className="family-logs-control family-logs-control--active" type="button">
+          All updates
+        </button>
+        <button className="family-logs-control" type="button">
+          Notes
+        </button>
+        <button className="family-logs-control" type="button">
+          Care changes
+        </button>
+      </div>
+      <div className="family-logs-sort">
+        <span>{updateCount} updates</span>
+        <span>Newest first</span>
+      </div>
+    </div>
+  );
+}
+
 export default function FamilyDailyLogsPage() {
   const { resident } = familyData;
   const [entries, setEntries] = useState([]);
@@ -202,8 +224,10 @@ export default function FamilyDailyLogsPage() {
 
       {status === "ready" && latestEntry ? (
         <section className="family-logs-stack" aria-label="Beth Adams daily updates">
+          <FamilyLogsControls updateCount={entries.length} />
+
           <div className="family-logs-section-heading">
-            <p className="family-card-label">Today’s Summary</p>
+            <p className="family-card-label">Latest Summary</p>
           </div>
           <FamilyUpdateCard entry={latestEntry} residentName={resident.name} isFeatured />
 
