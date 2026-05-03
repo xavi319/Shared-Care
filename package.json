@@ -5,7 +5,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ignore-pattern dist"
+    "lint": "eslint . --ignore-pattern dist",
+    "seed:messages": "node scripts/seedMessages.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

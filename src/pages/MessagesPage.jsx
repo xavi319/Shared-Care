@@ -1,8 +1,19 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { StaffAppShell } from "../components/layout/StaffAppShell";
-import { messagesData } from "../data/mockData";
+import { db } from "../lib/firebase";
+import {
+  listenToConversations,
+  listenToMessages,
+  sendMessage
+} from "../services/messageService";
+
+const currentUser = {
+  uid: "staff_1",
+  name: "Sarah",
+  role: "staff"
+};
 
 
 function PhoneIcon() {
@@ -98,6 +109,74 @@ function getInitials(name) {
     .toUpperCase();
 }
 
+function formatContactFromConversation(conversation) {
+  return {
+    id: conversation.id,
+    name: conversation.familyName,
+    relation: `${conversation.familyRelationship} of ${conversation.residentName}`,
+    room: conversation.residentRoom,
+    lastMessage: conversation.lastMessage ?? "No messages yet.",
+    unreadCount: conversation.unreadCountStaff ?? 0,
+    conversation
+  };
+}
+
+function isSameDay(leftDate, rightDate) {
+  return (
+    leftDate.getFullYear() === rightDate.getFullYear() &&
+    leftDate.getMonth() === rightDate.getMonth() &&
+    leftDate.getDate() === rightDate.getDate()
+  );
+}
+
+function getMessageDateLabel(value) {
+  if (!value) {
+    return "Just now";
+  }
+
+  const date = typeof value?.toDate === "function" ? value.toDate() : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Recent";
+  }
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const timeLabel = date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+
+  if (isSameDay(date, today)) {
+    return `Today ${timeLabel}`;
+  }
+
+  if (isSameDay(date, yesterday)) {
+    return `Yesterday ${timeLabel}`;
+  }
+
+  return `${date.toLocaleDateString([], { month: "short", day: "numeric" })} ${timeLabel}`;
+}
+
+function getThreadItems(messages) {
+  const items = [];
+  let previousLabel = "";
+
+  messages.forEach((message) => {
+    const label = getMessageDateLabel(message.createdAt);
+
+    if (label !== previousLabel) {
+      items.push({
+        id: `divider-${message.id}`,
+        type: "divider",
+        label
+      });
+      previousLabel = label;
+    }
+
+    items.push(message);
+  });
+
+  return items;
+}
 
 function ContactRow({ contact, isActive, onClick }) {
   return (
@@ -134,7 +213,7 @@ function ContactRow({ contact, isActive, onClick }) {
 }
 
 function ChatBubble({ message }) {
-  const isOutgoing = message.direction === "outgoing";
+  const isOutgoing = message.senderId === currentUser.uid || message.senderRole === currentUser.role;
   return (
     <div className={`chat-bubble-wrapper${isOutgoing ? " is-outgoing" : " is-incoming"}`}>
       <div className={`chat-bubble${isOutgoing ? " bubble--outgoing" : " bubble--incoming"}`}>
@@ -157,37 +236,83 @@ export default function MessagesPage() {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeContact, setActiveContact] = useState(messagesData.contacts[1]); // Robert Adams pre-selected
+  const [contacts, setContacts] = useState([]);
+  const [activeContact, setActiveContact] = useState(null);
+  const [activeMessages, setActiveMessages] = useState([]);
   const [replyText, setReplyText] = useState("");
-  const [conversations, setConversations] = useState(messagesData.conversations);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [isLoadingConversations, setIsLoadingConversations] = useState(Boolean(db));
 
-  const filteredContacts = messagesData.contacts.filter((c) =>
+  useEffect(() => {
+    if (!db) {
+      setStatusMessage("Firebase is not configured. Add your Vite Firebase env variables to use real-time messaging.");
+      setIsLoadingConversations(false);
+      return undefined;
+    }
+
+    setIsLoadingConversations(true);
+
+    return listenToConversations(
+      db,
+      (nextConversations) => {
+        const nextContacts = nextConversations.map(formatContactFromConversation);
+        setContacts(nextContacts);
+        setIsLoadingConversations(false);
+        setStatusMessage(nextContacts.length ? "" : "No Firestore conversations found. Run npm run seed:messages to load demo conversations.");
+        setActiveContact((currentContact) => {
+          if (!nextContacts.length) {
+            return null;
+          }
+
+          return nextContacts.find((contact) => contact.id === currentContact?.id) ?? nextContacts[0];
+        });
+      },
+      () => {
+        setIsLoadingConversations(false);
+        setStatusMessage("Could not load Firestore conversations. Check your Firebase config and Firestore rules.");
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!db || !activeContact?.id) {
+      setActiveMessages([]);
+      return undefined;
+    }
+
+    return listenToMessages(
+      db,
+      activeContact.id,
+      setActiveMessages,
+      () => setStatusMessage("Could not load messages for this conversation.")
+    );
+  }, [activeContact?.id]);
+
+  const filteredContacts = contacts.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.room.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const activeMessages = activeContact ? (conversations[activeContact.id] ?? []) : [];
+  const activeThreadItems = useMemo(() => getThreadItems(activeMessages), [activeMessages]);
 
   function handleSelectContact(contact) {
     setActiveContact(contact);
     setReplyText("");
   }
 
-  function handleSendReply() {
+  async function handleSendReply() {
     if (!replyText.trim() || !activeContact) return;
 
-    const newMessage = {
-      id: `msg-${Date.now()}`,
-      text: replyText.trim(),
-      direction: "outgoing",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-
-    setConversations((prev) => ({
-      ...prev,
-      [activeContact.id]: [...(prev[activeContact.id] ?? []), newMessage],
-    }));
+    const nextReplyText = replyText;
     setReplyText("");
+
+    try {
+      await sendMessage(db, activeContact.id, currentUser, nextReplyText);
+      setStatusMessage("");
+    } catch {
+      setReplyText(nextReplyText);
+      setStatusMessage("Could not send this message. Check your Firebase connection and try again.");
+    }
   }
 
   function handleReplyKeyDown(e) {
@@ -203,6 +328,9 @@ export default function MessagesPage() {
         <div>
           <p className="eyebrow">Messages</p>
           <h1 className="page-title">Family Contacts</h1>
+          <p className="status-message" aria-live="polite">
+            {statusMessage}
+          </p>
         </div>
         <button
           className="messages-back-button"
@@ -244,8 +372,13 @@ export default function MessagesPage() {
                 onClick={handleSelectContact}
               />
             ))}
-            {filteredContacts.length === 0 && (
-              <li className="contact-list-empty">No contacts found</li>
+            {isLoadingConversations ? (
+              <li className="contact-list-empty">Loading conversations...</li>
+            ) : null}
+            {!isLoadingConversations && filteredContacts.length === 0 && (
+              <li className="contact-list-empty">
+                {contacts.length ? "No contacts found" : "No conversations available"}
+              </li>
             )}
           </ul>
         </aside>
@@ -285,7 +418,7 @@ export default function MessagesPage() {
 
             {/* Message thread */}
             <div className="chat-thread" role="log" aria-live="polite">
-              {activeMessages.map((item) =>
+              {activeThreadItems.map((item) =>
                 item.type === "divider" ? (
                   <ChatDateDivider key={item.id} label={item.label} />
                 ) : (
@@ -310,13 +443,14 @@ export default function MessagesPage() {
                 onChange={(e) => setReplyText(e.target.value)}
                 onKeyDown={handleReplyKeyDown}
                 aria-label={`Reply to ${activeContact.name}`}
+                disabled={!db}
               />
               <button
                 className={`reply-send-button${replyText.trim() ? " is-active" : ""}`}
                 type="button"
                 onClick={handleSendReply}
                 aria-label="Send reply"
-                disabled={!replyText.trim()}
+                disabled={!db || !replyText.trim()}
               >
                 <SendIcon />
               </button>
