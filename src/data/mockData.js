@@ -142,7 +142,7 @@ export const familyData = {
     { id: "family-messages", label: "Messages", href: "/family/messages", icon: "messages" }
   ],
   resident: {
-    id: "beth-adams",
+    id: "beth_123",
     name: "Beth Adams",
     room: "Room 123",
     lastUpdated: "Today at 10:05 AM",
@@ -276,6 +276,13 @@ export const dailyLogsPageData = {
 };
 
 export const dailyLogStorageKey = "sharedcare-daily-logs";
+export const currentDemoStaffName = "Sarah Allen";
+const currentDemoStaffFirstName = dashboardData.userName;
+
+const canonicalDailyLogResidentIds = {
+  "beth-adams": "beth_123",
+  beth_123: "beth_123"
+};
 
 export const dailyLogFormOptions = {
   mood: ["Good", "Neutral", "Irritable", "Withdrawn", "Confused"],
@@ -781,6 +788,132 @@ export const checklistStorageKey = "sharedcare-dashboard-checklist";
 
 export const initialDailyLogEntries = dailyLogsPageData.entries;
 
+export function getCanonicalDailyLogResidentId(residentId) {
+  return canonicalDailyLogResidentIds[residentId] ?? residentId;
+}
+
+export function isDailyLogForResident(entryResidentId, residentId) {
+  return getCanonicalDailyLogResidentId(entryResidentId) === getCanonicalDailyLogResidentId(residentId);
+}
+
+function getDailyLogCreatedAt(entry) {
+  return entry.createdAt ?? entry.date ?? "";
+}
+
+function getDailyLogSummary(entry) {
+  return entry.summary ?? entry.notes ?? "";
+}
+
+function normalizeDailyLogIdPart(value) {
+  return String(value || "missing")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function getDailyLogSummaryHash(value) {
+  return String(value || "")
+    .split("")
+    .reduce((hash, character) => ((hash << 5) - hash + character.charCodeAt(0)) | 0, 0)
+    .toString(36)
+    .replace("-", "n");
+}
+
+function getStableDailyLogId(entry) {
+  const createdAt = getDailyLogCreatedAt(entry);
+  const summary = getDailyLogSummary(entry);
+
+  return [
+    "daily-log",
+    normalizeDailyLogIdPart(getCanonicalDailyLogResidentId(entry.residentId)),
+    normalizeDailyLogIdPart(createdAt),
+    getDailyLogSummaryHash(summary || entry.mood || entry.status)
+  ].join("-");
+}
+
+function normalizeDailyLogEntry(entry) {
+  const residentId = getCanonicalDailyLogResidentId(entry.residentId);
+  const createdAt = getDailyLogCreatedAt(entry);
+  const summary = getDailyLogSummary(entry);
+  const rawStaffName = entry.staffName ?? entry.caregiverName ?? entry.caregiver ?? currentDemoStaffName;
+  const staffName = rawStaffName === currentDemoStaffFirstName ? currentDemoStaffName : rawStaffName;
+
+  return {
+    ...entry,
+    id: entry.id ?? getStableDailyLogId({ ...entry, residentId, createdAt, summary }),
+    residentId,
+    residentName: entry.residentName ?? (residentId === "beth_123" ? "Beth Adams" : entry.residentName),
+    residentRoom: entry.residentRoom ?? (residentId === "beth_123" ? "Room 123" : entry.residentRoom),
+    staffName,
+    caregiverName: staffName,
+    caregiver: staffName,
+    createdAt,
+    date: createdAt,
+    summary,
+    notes: entry.notes ?? summary,
+    visibleToFamily: entry.visibleToFamily ?? entry.reportStatus === "submitted"
+  };
+}
+
+function getDailyLogFallbackDedupeKey(entry) {
+  return [
+    getCanonicalDailyLogResidentId(entry.residentId),
+    getDailyLogCreatedAt(entry),
+    getDailyLogSummary(entry)
+  ].join("|");
+}
+
+function getDailyLogPreferenceScore(entry) {
+  let score = 0;
+
+  if (entry.staffName === currentDemoStaffName) {
+    score += 4;
+  } else if (entry.staffName === currentDemoStaffFirstName || entry.staffName?.startsWith(currentDemoStaffFirstName)) {
+    score += 3;
+  }
+
+  if (entry.visibleToFamily) {
+    score += 2;
+  }
+
+  if (entry.reportStatus === "submitted") {
+    score += 1;
+  }
+
+  return score;
+}
+
+function getPreferredDailyLogEntry(currentEntry, nextEntry) {
+  if (!currentEntry) {
+    return nextEntry;
+  }
+
+  return getDailyLogPreferenceScore(nextEntry) >= getDailyLogPreferenceScore(currentEntry)
+    ? nextEntry
+    : currentEntry;
+}
+
+export function getUniqueDailyLogEntries(entries) {
+  const entriesById = new Map();
+
+  entries.map((entry) => normalizeDailyLogEntry(entry)).forEach((entry) => {
+    entriesById.set(entry.id, getPreferredDailyLogEntry(entriesById.get(entry.id), entry));
+  });
+
+  const entriesByFallbackKey = new Map();
+
+  Array.from(entriesById.values()).forEach((entry) => {
+    const fallbackKey = getDailyLogFallbackDedupeKey(entry);
+    entriesByFallbackKey.set(
+      fallbackKey,
+      getPreferredDailyLogEntry(entriesByFallbackKey.get(fallbackKey), entry)
+    );
+  });
+
+  return Array.from(entriesByFallbackKey.values());
+}
+
 const residentDetailsBySlug = {
   "beth-adams": bethAdamsDetailData,
   "ronald-perry": ronaldPerryDetailData,
@@ -807,32 +940,25 @@ export function getResidentSlug(detailPath, explicitSlug) {
 
 export function loadDailyLogEntries() {
   if (typeof window === "undefined") {
-    return initialDailyLogEntries;
+    return getUniqueDailyLogEntries(initialDailyLogEntries);
   }
 
   const storedValue = window.sessionStorage.getItem(dailyLogStorageKey);
 
   if (!storedValue) {
-    return initialDailyLogEntries;
+    return getUniqueDailyLogEntries(initialDailyLogEntries);
   }
 
   try {
     const parsedEntries = JSON.parse(storedValue);
 
     if (!Array.isArray(parsedEntries)) {
-      return initialDailyLogEntries;
+      return getUniqueDailyLogEntries(initialDailyLogEntries);
     }
 
-    const parsedEntriesByResidentId = new Map(
-      parsedEntries.map((entry) => [entry.residentId, entry])
-    );
-
-    return initialDailyLogEntries.map((entry) => ({
-      ...entry,
-      ...(parsedEntriesByResidentId.get(entry.residentId) ?? {})
-    }));
+    return getUniqueDailyLogEntries([...initialDailyLogEntries, ...parsedEntries]);
   } catch {
-    return initialDailyLogEntries;
+    return getUniqueDailyLogEntries(initialDailyLogEntries);
   }
 }
 
@@ -841,18 +967,34 @@ export function saveDailyLogEntries(entries) {
     return;
   }
 
-  window.sessionStorage.setItem(dailyLogStorageKey, JSON.stringify(entries));
+  window.sessionStorage.setItem(dailyLogStorageKey, JSON.stringify(getUniqueDailyLogEntries(entries)));
 }
 
 export function getDailyLogEntryByResidentId(residentId) {
-  return loadDailyLogEntries().find((entry) => entry.residentId === residentId) ?? null;
+  return loadDailyLogEntries()
+    .filter((entry) => isDailyLogForResident(entry.residentId, residentId))
+    .sort((firstEntry, secondEntry) => {
+      const firstDate = new Date(String(getDailyLogCreatedAt(firstEntry)).replace(" ", "T"));
+      const secondDate = new Date(String(getDailyLogCreatedAt(secondEntry)).replace(" ", "T"));
+
+      return secondDate.getTime() - firstDate.getTime();
+    })[0] ?? null;
 }
 
 export function updateDailyLogEntry(residentId, updates) {
-  const nextEntries = loadDailyLogEntries().map((entry) =>
-    entry.residentId === residentId ? { ...entry, ...updates } : entry
-  );
+  const entries = loadDailyLogEntries();
+  const targetIndex = entries.findIndex((entry) => isDailyLogForResident(entry.residentId, residentId));
+  const nextEntry = normalizeDailyLogEntry({
+    ...(targetIndex >= 0 ? entries[targetIndex] : { residentId }),
+    ...updates
+  });
+  const nextEntries =
+    targetIndex >= 0
+      ? entries.map((entry, index) => (index === targetIndex ? nextEntry : entry))
+      : [nextEntry, ...entries];
 
-  saveDailyLogEntries(nextEntries);
-  return nextEntries.find((entry) => entry.residentId === residentId) ?? null;
+  const uniqueEntries = getUniqueDailyLogEntries(nextEntries);
+
+  saveDailyLogEntries(uniqueEntries);
+  return uniqueEntries.find((entry) => entry.id === nextEntry.id) ?? nextEntry;
 }

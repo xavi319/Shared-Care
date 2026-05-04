@@ -302,6 +302,12 @@ a {
   min-height: calc(100vh - 76px);
 }
 
+.family-app-shell .dashboard-shell {
+  height: calc(100vh - 72px);
+  min-height: 0;
+  overflow: hidden;
+}
+
 .sidebar {
   padding: 20px 12px;
   background: rgba(255, 255, 255, 0.92);
@@ -778,6 +784,8 @@ a {
   display: grid;
   align-content: start;
   gap: 22px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .family-dashboard-header {
@@ -1140,7 +1148,7 @@ a {
 .family-logs-stack {
   display: grid;
   gap: 16px;
-  width: min(100%, 980px);
+  width: min(100%, 1240px);
 }
 
 .family-logs-controls {
@@ -3545,6 +3553,12 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .family-app-shell .dashboard-shell {
+    height: auto;
+    min-height: calc(100vh - 72px);
+    overflow: visible;
+  }
+
   .sidebar {
     padding: 16px;
     border-right: 0;
@@ -3578,6 +3592,10 @@ a {
 
   .content {
     padding: 32px 24px 40px;
+  }
+
+  .family-content {
+    overflow-y: visible;
   }
 
   .family-sidebar-heading {

@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
-import { familyData, loadDailyLogEntries } from "../data/mockData";
+import {
+  currentDemoStaffName,
+  familyData,
+  getUniqueDailyLogEntries,
+  isDailyLogForResident,
+  loadDailyLogEntries
+} from "../data/mockData";
 
 const moodEmojiByValue = {
   Good: "😊",
@@ -104,6 +110,10 @@ function getAssistanceSentence(residentName, assistanceLevel) {
 }
 
 function getSummarySentence(entry, residentName) {
+  if (entry.summary) {
+    return entry.summary;
+  }
+
   if (entry.notes) {
     return entry.notes;
   }
@@ -116,6 +126,7 @@ function getSummarySentence(entry, residentName) {
 }
 
 function FamilyUpdateCard({ entry, residentName, isFeatured }) {
+  const staffName = entry.staffName ?? entry.caregiverName ?? entry.caregiver ?? currentDemoStaffName;
   const detailItems = [
     { label: "Mood", value: getMoodSentence(residentName, entry.mood) },
     { label: "Meals", value: getMealSentence(residentName, entry.meals) },
@@ -132,8 +143,8 @@ function FamilyUpdateCard({ entry, residentName, isFeatured }) {
   return (
     <article className={`family-log-card${isFeatured ? " family-log-card--featured" : ""}`}>
       <div className="family-log-card-topline">
-        <p className="family-log-date">{formatLogDate(entry.date)}</p>
-        {entry.caregiver ? <p className="family-log-staff">Updated by {entry.caregiver}</p> : null}
+        <p className="family-log-date">{formatLogDate(entry.createdAt ?? entry.date)}</p>
+        <p className="family-log-staff">Updated by {staffName}</p>
       </div>
 
       <p className="family-log-summary">{getSummarySentence(entry, residentName)}</p>
@@ -185,18 +196,24 @@ export default function FamilyDailyLogsPage() {
   useEffect(() => {
     try {
       const bethEntries = loadDailyLogEntries()
-        .filter((entry) => entry.residentId === resident.id)
-        .sort((firstEntry, secondEntry) => getTimestamp(secondEntry.date) - getTimestamp(firstEntry.date));
+        .filter((entry) => isDailyLogForResident(entry.residentId, resident.id))
+        .filter((entry) => entry.visibleToFamily !== false)
+        .sort((firstEntry, secondEntry) => {
+          const firstDate = firstEntry.createdAt ?? firstEntry.date;
+          const secondDate = secondEntry.createdAt ?? secondEntry.date;
 
-      setEntries(bethEntries);
+          return getTimestamp(secondDate) - getTimestamp(firstDate);
+        });
+
+      setEntries(getUniqueDailyLogEntries(bethEntries));
       setStatus("ready");
     } catch {
       setStatus("error");
     }
   }, [resident.id]);
 
-  const latestEntry = entries[0];
-  const pastEntries = useMemo(() => entries.slice(1), [entries]);
+  const latestLog = entries[0];
+  const previousLogs = useMemo(() => entries.slice(1), [entries]);
 
   return (
     <FamilyAppShell>
@@ -222,23 +239,23 @@ export default function FamilyDailyLogsPage() {
         <section className="family-log-state">No daily updates have been shared yet.</section>
       ) : null}
 
-      {status === "ready" && latestEntry ? (
+      {status === "ready" && latestLog ? (
         <section className="family-logs-stack" aria-label="Beth Adams daily updates">
           <FamilyLogsControls updateCount={entries.length} />
 
           <div className="family-logs-section-heading">
             <p className="family-card-label">Latest Summary</p>
           </div>
-          <FamilyUpdateCard entry={latestEntry} residentName={resident.name} isFeatured />
+          <FamilyUpdateCard entry={latestLog} residentName={resident.name} isFeatured />
 
-          {pastEntries.length ? (
+          {previousLogs.length ? (
             <>
               <div className="family-logs-section-heading">
                 <p className="family-card-label">Previous Updates</p>
               </div>
-              {pastEntries.map((entry) => (
+              {previousLogs.map((entry) => (
                 <FamilyUpdateCard
-                  key={`${entry.residentId}-${entry.date}`}
+                  key={entry.id}
                   entry={entry}
                   residentName={resident.name}
                 />

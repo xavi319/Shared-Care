@@ -4,8 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeftIcon } from "../components/layout/icons";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import {
+  currentDemoStaffName,
   dailyLogFormOptions,
   getDailyLogEntryByResidentId,
+  getCanonicalDailyLogResidentId,
   updateDailyLogEntry,
   dashboardData,
   residentsPageData
@@ -13,7 +15,10 @@ import {
 import NotFoundPage from "./NotFoundPage";
 
 const residentsById = new Map(
-  [...dashboardData.residents, ...residentsPageData.residents].map((resident) => [resident.id, resident])
+  [...dashboardData.residents, ...residentsPageData.residents].flatMap((resident) => [
+    [resident.id, resident],
+    [getCanonicalDailyLogResidentId(resident.id), resident]
+  ])
 );
 
 function formatEntryDate(value) {
@@ -123,17 +128,29 @@ export default function DailyLogSubmissionPage() {
       return;
     }
 
+    const createdAt = getTimestampLabel();
+    const summary = formState.notes.trim();
+
     updateDailyLogEntry(resident.id, {
+      staffName: currentDemoStaffName,
+      caregiverName: currentDemoStaffName,
+      caregiver: currentDemoStaffName,
+      residentId: getCanonicalDailyLogResidentId(resident.id),
+      residentName: resident.name,
+      residentRoom: resident.room,
+      createdAt,
       mood: formState.mood,
       meals: formState.meals,
       activityEngagement: formState.activityEngagement,
       assistanceLevel: formState.assistanceLevel,
       safety: formState.safety,
-      notes: formState.notes.trim(),
+      summary,
+      notes: summary,
+      visibleToFamily: true,
       actionTone: "default",
       reportStatus: "submitted",
       status: "completed",
-      date: getTimestampLabel()
+      date: createdAt
     });
 
     navigate("/daily-logs", {

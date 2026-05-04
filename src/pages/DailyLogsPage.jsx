@@ -6,14 +6,17 @@ import { StaffAppShell } from "../components/layout/StaffAppShell";
 import {
   dailyLogsPageData,
   dashboardData,
+  getCanonicalDailyLogResidentId,
   loadDailyLogEntries,
   residentsPageData,
   updateDailyLogEntry
 } from "../data/mockData";
 
-const residentsById = new Map(
-  [...dashboardData.residents, ...residentsPageData.residents].map((resident) => [resident.id, resident])
-);
+const residents = [...dashboardData.residents, ...residentsPageData.residents];
+const residentsById = new Map([
+  ...residents.map((resident) => [resident.id, resident]),
+  ...residents.map((resident) => [getCanonicalDailyLogResidentId(resident.id), resident])
+]);
 
 const moodToneByValue = {
   Good: "good",
@@ -58,8 +61,9 @@ function getLogRows(entries) {
 
       return {
         ...entry,
+        staffName: entry.staffName ?? entry.caregiverName ?? entry.caregiver,
         resident,
-        detailHref: `/daily-logs/${entry.residentId}/submit`,
+        detailHref: `/daily-logs/${resident.id}/submit`,
         moodTone: entry.mood ? (moodToneByValue[entry.mood] ?? "neutral") : "",
         rowStatus: getRowStatus(entry),
         actionTone: entry.actionTone ?? "default"
@@ -73,7 +77,7 @@ function getTimestamp(value) {
     return Number.NEGATIVE_INFINITY;
   }
 
-  return new Date(value.replace(" ", "T")).getTime();
+  return new Date(String(value).replace(" ", "T")).getTime();
 }
 
 function formatLogDate(value) {
@@ -81,7 +85,7 @@ function formatLogDate(value) {
     return "—";
   }
 
-  const date = new Date(value.replace(" ", "T"));
+  const date = new Date(String(value).replace(" ", "T"));
 
   if (Number.isNaN(date.getTime())) {
     return value;
@@ -103,7 +107,7 @@ function getVisibleRows(rows, filters) {
         !normalizedQuery || row.resident.name.toLowerCase().includes(normalizedQuery);
       const matchesMood = filters.mood === "all" || row.mood === filters.mood;
       const matchesCaregiver =
-        filters.caregiver === "all" || row.caregiver === filters.caregiver;
+        filters.caregiver === "all" || row.staffName === filters.caregiver;
       const matchesStatus = filters.status === "all" || row.rowStatus === filters.status;
 
       return matchesQuery && matchesMood && matchesCaregiver && matchesStatus;
@@ -164,6 +168,7 @@ export default function DailyLogsPage() {
     updateDailyLogEntry(row.residentId, {
       mood: "",
       date: "",
+      createdAt: "",
       status: "pending",
       actionTone: "attention",
       reportStatus: "missing",
@@ -171,7 +176,9 @@ export default function DailyLogsPage() {
       activityEngagement: "",
       assistanceLevel: "",
       safety: "",
-      notes: ""
+      notes: "",
+      summary: "",
+      visibleToFamily: false
     });
 
     setEntries(loadDailyLogEntries());
@@ -184,7 +191,7 @@ export default function DailyLogsPage() {
   const attentionCount = allRows.filter((row) => row.rowStatus === "missing").length;
 
   const moodOptions = Array.from(new Set(allRows.map((row) => row.mood).filter(Boolean)));
-  const caregiverOptions = Array.from(new Set(allRows.map((row) => row.caregiver)));
+  const caregiverOptions = Array.from(new Set(allRows.map((row) => row.staffName).filter(Boolean)));
   const visibleRows = getVisibleRows(allRows, {
     query,
     status: statusFilter,
@@ -331,7 +338,7 @@ export default function DailyLogsPage() {
             </thead>
             <tbody>
               {visibleRows.length ? visibleRows.map((row) => (
-                <tr key={`${row.resident.id}-${row.date}-${row.rowStatus}`}>
+                <tr key={row.id}>
                   <td data-label="Resident">
                     <div className="daily-logs-patient-cell">
                       {row.detailHref ? (
@@ -356,8 +363,8 @@ export default function DailyLogsPage() {
                       <span className="daily-logs-empty-value">Not started</span>
                     )}
                   </td>
-                  <td data-label="Caregiver">{row.caregiver}</td>
-                  <td data-label="Updated">{formatLogDate(row.date)}</td>
+                  <td data-label="Caregiver">{row.staffName}</td>
+                  <td data-label="Updated">{formatLogDate(row.createdAt ?? row.date)}</td>
                   <td data-label="Actions">
                     <div className="daily-logs-actions-cell">
                       <ViewAction row={row} />
