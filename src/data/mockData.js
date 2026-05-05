@@ -159,6 +159,7 @@ export const familyData = {
 export const dailyLogsPageData = {
   title: "Daily Logs",
   subtitle: "Care Documentation",
+  requiredDate: "2026-03-15",
   entries: [
     {
       residentId: "beth-adams",
@@ -800,6 +801,38 @@ function getDailyLogCreatedAt(entry) {
   return entry.createdAt ?? entry.date ?? "";
 }
 
+export function getDailyLogDateKey(value) {
+  if (!value) {
+    return "";
+  }
+
+  const dateValue = typeof value === "object" && typeof value.toDate === "function"
+    ? value.toDate()
+    : new Date(String(value).replace(" ", "T"));
+
+  if (Number.isNaN(dateValue.getTime())) {
+    return String(value).slice(0, 10);
+  }
+
+  const year = dateValue.getFullYear();
+  const month = String(dateValue.getMonth() + 1).padStart(2, "0");
+  const day = String(dateValue.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+export function getDailyLogRequiredDate() {
+  if (dailyLogsPageData.requiredDate) {
+    return dailyLogsPageData.requiredDate;
+  }
+
+  return getUniqueDailyLogEntries(initialDailyLogEntries)
+    .map((entry) => getDailyLogDateKey(getDailyLogCreatedAt(entry)))
+    .filter(Boolean)
+    .sort()
+    .at(-1) ?? "";
+}
+
 function getDailyLogSummary(entry) {
   return entry.summary ?? entry.notes ?? "";
 }
@@ -866,6 +899,10 @@ function getDailyLogFallbackDedupeKey(entry) {
 
 function getDailyLogPreferenceScore(entry) {
   let score = 0;
+
+  if (entry.reportStatus === "missing") {
+    score += 8;
+  }
 
   if (entry.staffName === currentDemoStaffName) {
     score += 4;
@@ -970,9 +1007,10 @@ export function saveDailyLogEntries(entries) {
   window.sessionStorage.setItem(dailyLogStorageKey, JSON.stringify(getUniqueDailyLogEntries(entries)));
 }
 
-export function getDailyLogEntryByResidentId(residentId) {
+export function getDailyLogEntryByResidentId(residentId, targetDate = getDailyLogRequiredDate()) {
   return loadDailyLogEntries()
     .filter((entry) => isDailyLogForResident(entry.residentId, residentId))
+    .filter((entry) => getDailyLogDateKey(getDailyLogCreatedAt(entry)) === targetDate)
     .sort((firstEntry, secondEntry) => {
       const firstDate = new Date(String(getDailyLogCreatedAt(firstEntry)).replace(" ", "T"));
       const secondDate = new Date(String(getDailyLogCreatedAt(secondEntry)).replace(" ", "T"));
@@ -983,7 +1021,12 @@ export function getDailyLogEntryByResidentId(residentId) {
 
 export function updateDailyLogEntry(residentId, updates) {
   const entries = loadDailyLogEntries();
-  const targetIndex = entries.findIndex((entry) => isDailyLogForResident(entry.residentId, residentId));
+  const targetDate = getDailyLogDateKey(updates.createdAt ?? updates.date) || getDailyLogRequiredDate();
+  const targetIndex = entries.findIndex(
+    (entry) =>
+      isDailyLogForResident(entry.residentId, residentId) &&
+      getDailyLogDateKey(getDailyLogCreatedAt(entry)) === targetDate
+  );
   const nextEntry = normalizeDailyLogEntry({
     ...(targetIndex >= 0 ? entries[targetIndex] : { residentId }),
     ...updates

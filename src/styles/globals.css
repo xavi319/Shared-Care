@@ -1387,6 +1387,12 @@ a {
   color: #43b42f;
 }
 
+.family-log-detail-icon--concern,
+.family-log-metric-icon--concern {
+  background: #ffe8e8;
+  color: #d94f4f;
+}
+
 .family-log-detail-icon--meals,
 .family-log-metric-icon--meals {
   background: #e6f4ff;
@@ -1440,7 +1446,7 @@ a {
 
 .family-logs-control--active {
   background: transparent;
-  color: #2f8ee8;
+  color: #2f5ef3;
 }
 
 .family-logs-control--active::after {
@@ -1451,7 +1457,7 @@ a {
   left: 0;
   height: 3px;
   border-radius: 999px 999px 0 0;
-  background: #2f8ee8;
+  background: #2f5ef3;
 }
 
 .family-logs-sort {

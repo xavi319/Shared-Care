@@ -19,6 +19,7 @@ import {
   dailyLogFormOptions,
   getDailyLogEntryByResidentId,
   getCanonicalDailyLogResidentId,
+  getDailyLogRequiredDate,
   updateDailyLogEntry,
   dashboardData,
   residentsPageData
@@ -44,15 +45,12 @@ function formatEntryDate(value) {
   });
 }
 
-function getTimestampLabel() {
+function getTimestampLabel(dateKey = getDailyLogRequiredDate()) {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
   const hours = String(now.getHours()).padStart(2, "0");
   const minutes = String(now.getMinutes()).padStart(2, "0");
 
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
+  return `${dateKey} ${hours}:${minutes}`;
 }
 
 const fieldConfig = {
@@ -161,21 +159,31 @@ function QuickOverview({ formState }) {
 export default function DailyLogSubmissionPage() {
   const navigate = useNavigate();
   const { residentId } = useParams();
+  const requiredDate = getDailyLogRequiredDate();
 
   const resident = residentsById.get(residentId ?? "");
-  const existingEntry = residentId ? getDailyLogEntryByResidentId(residentId) : null;
+  const existingEntry = residentId ? getDailyLogEntryByResidentId(residentId, requiredDate) : null;
+  const currentEntry = existingEntry ?? {
+    date: requiredDate,
+    mood: "",
+    meals: "",
+    activityEngagement: "",
+    assistanceLevel: "",
+    safety: "",
+    notes: ""
+  };
   const [formState, setFormState] = useState(() => ({
-    mood: existingEntry?.mood ?? "",
-    meals: existingEntry?.meals ?? "",
-    activityEngagement: existingEntry?.activityEngagement ?? "",
-    assistanceLevel: existingEntry?.assistanceLevel ?? "",
-    safety: normalizeOptionValue(existingEntry?.safety ?? "", dailyLogFormOptions.safety),
-    notes: existingEntry?.notes ?? ""
+    mood: currentEntry.mood ?? "",
+    meals: currentEntry.meals ?? "",
+    activityEngagement: currentEntry.activityEngagement ?? "",
+    assistanceLevel: currentEntry.assistanceLevel ?? "",
+    safety: normalizeOptionValue(currentEntry.safety ?? "", dailyLogFormOptions.safety),
+    notes: currentEntry.notes ?? ""
   }));
   const [errors, setErrors] = useState({});
   const isEditingExistingReport = existingEntry?.reportStatus === "submitted";
 
-  if (!resident || !existingEntry) {
+  if (!resident) {
     return (
       <NotFoundPage
         title="Daily Log Not Found"
@@ -210,7 +218,7 @@ export default function DailyLogSubmissionPage() {
       return;
     }
 
-    const createdAt = getTimestampLabel();
+    const createdAt = getTimestampLabel(requiredDate);
     const summary = formState.notes.trim();
 
     const savedEntry = updateDailyLogEntry(resident.id, {
@@ -264,7 +272,7 @@ export default function DailyLogSubmissionPage() {
           </h1>
           <p className="daily-log-submit-date">
             <FaRegCalendarDays aria-hidden="true" />
-            <span>{formatEntryDate(existingEntry.date)}</span>
+            <span>{formatEntryDate(currentEntry.date)}</span>
           </p>
           <p className="daily-log-submit-context">{pendingContext}</p>
         </div>

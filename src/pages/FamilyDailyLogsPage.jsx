@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  FaCircleExclamation,
   FaChevronDown,
   FaChevronRight,
   FaHandHoldingHeart,
@@ -228,6 +229,22 @@ function getOverallSummary(entry, residentName) {
     : withoutResidentName;
 }
 
+function isNegativeMood(mood) {
+  return ["Irritable", "Withdrawn", "Confused"].includes(mood);
+}
+
+function getMoodTone(mood) {
+  return isNegativeMood(mood) ? "concern" : "mood";
+}
+
+function getOverallTone(entry) {
+  return isNegativeMood(entry.mood) ? "concern" : "overall";
+}
+
+function getOverallIcon(entry) {
+  return isNegativeMood(entry.mood) ? FaCircleExclamation : FaRegCircleCheck;
+}
+
 function SummaryMetric({ icon: Icon, label, value, tone }) {
   return (
     <article className="family-log-metric">
@@ -251,7 +268,7 @@ function FamilyUpdateCard({ entry, residentName }) {
       label: "Mood",
       value: getMoodSentence(residentName, entry.mood),
       icon: FaRegFaceSmile,
-      tone: "mood"
+      tone: getMoodTone(entry.mood)
     },
     {
       label: "Meals",
@@ -433,14 +450,14 @@ export default function FamilyDailyLogsPage() {
         {
           label: "Overall",
           value: getOverallSummary(latestLog, resident.name),
-          icon: FaRegCircleCheck,
-          tone: "overall"
+          icon: getOverallIcon(latestLog),
+          tone: getOverallTone(latestLog)
         },
         {
           label: "Mood",
           value: getMoodSummary(latestLog.mood),
           icon: FaRegFaceSmile,
-          tone: "mood"
+          tone: getMoodTone(latestLog.mood)
         },
         {
           label: "Meals",

@@ -7,12 +7,21 @@ import {
   dailyLogsPageData,
   dashboardData,
   getCanonicalDailyLogResidentId,
+  getDailyLogDateKey,
+  getDailyLogRequiredDate,
   loadDailyLogEntries,
   residentsPageData,
   updateDailyLogEntry
 } from "../data/mockData";
 
-const residents = [...dashboardData.residents, ...residentsPageData.residents];
+const residents = Array.from(
+  new Map(
+    [...dashboardData.residents, ...residentsPageData.residents].map((resident) => [
+      getCanonicalDailyLogResidentId(resident.id),
+      resident
+    ])
+  ).values()
+);
 const residentsById = new Map([
   ...residents.map((resident) => [resident.id, resident]),
   ...residents.map((resident) => [getCanonicalDailyLogResidentId(resident.id), resident])
@@ -29,7 +38,7 @@ const moodToneByValue = {
 
 const statusMetaByValue = {
   completed: {
-    label: "Completed",
+    label: "Submitted",
     tone: "completed"
   },
   pending: {
@@ -42,6 +51,18 @@ const statusMetaByValue = {
   }
 };
 
+const statusSortRank = {
+  missing: 0,
+  pending: 1,
+  completed: 2
+};
+
+const rowStatusPreferenceRank = {
+  missing: 3,
+  pending: 2,
+  completed: 1
+};
+
 function getRowStatus(entry) {
   if (entry.reportStatus === "missing" || !entry.mood) {
     return "missing";
@@ -50,39 +71,20 @@ function getRowStatus(entry) {
   return entry.status === "completed" ? "completed" : "pending";
 }
 
-function getLogRows(entries) {
-  return entries
-    .map((entry) => {
-      const resident = residentsById.get(entry.residentId);
-
-      if (!resident) {
-        return null;
-      }
-
-      return {
-        ...entry,
-        staffName: entry.staffName ?? entry.caregiverName ?? entry.caregiver,
-        resident,
-        detailHref: `/daily-logs/${resident.id}/submit`,
-        moodTone: entry.mood ? (moodToneByValue[entry.mood] ?? "neutral") : "",
-        rowStatus: getRowStatus(entry),
-        actionTone: entry.actionTone ?? "default"
-      };
-    })
-    .filter(Boolean);
+function getCreatedAtTime(entry) {
+  const value = entry.createdAt ?? entry.date;
+  const date = value ? new Date(String(value).replace(" ", "T")) : null;
+  return date && !Number.isNaN(date.getTime()) ? date.getTime() : Number.NEGATIVE_INFINITY;
 }
 
-function getTimestamp(value) {
-  if (!value) {
-    return Number.NEGATIVE_INFINITY;
-  }
-
-  return new Date(String(value).replace(" ", "T")).getTime();
-}
-
-function formatLogDate(value) {
+function formatLogDate(value = getDailyLogRequiredDate()) {
   if (!value) {
     return "—";
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    const [year, month, day] = String(value).split("-");
+    return `${month}/${day}/${year}`;
   }
 
   const date = new Date(String(value).replace(" ", "T"));
@@ -95,6 +97,61 @@ function formatLogDate(value) {
     month: "2-digit",
     day: "2-digit",
     year: "numeric"
+  });
+}
+
+function getPreferredQueueEntry(currentEntry, nextEntry) {
+  if (!currentEntry) {
+    return nextEntry;
+  }
+
+  const statusDifference =
+    rowStatusPreferenceRank[getRowStatus(nextEntry)] - rowStatusPreferenceRank[getRowStatus(currentEntry)];
+
+  if (statusDifference !== 0) {
+    return statusDifference > 0 ? nextEntry : currentEntry;
+  }
+
+  return getCreatedAtTime(nextEntry) >= getCreatedAtTime(currentEntry) ? nextEntry : currentEntry;
+}
+
+function getAssignedStaffName(entries, residentId) {
+  const latestEntry = entries
+    .filter((entry) => getCanonicalDailyLogResidentId(entry.residentId) === getCanonicalDailyLogResidentId(residentId))
+    .sort((firstEntry, secondEntry) => getCreatedAtTime(secondEntry) - getCreatedAtTime(firstEntry))[0];
+
+  return latestEntry?.staffName ?? latestEntry?.caregiverName ?? latestEntry?.caregiver ?? "Unassigned";
+}
+
+function getLogRows(entries, requiredDate) {
+  return residents.map((resident) => {
+    const canonicalResidentId = getCanonicalDailyLogResidentId(resident.id);
+    const currentEntry = entries
+      .filter((entry) => getCanonicalDailyLogResidentId(entry.residentId) === canonicalResidentId)
+      .filter((entry) => getDailyLogDateKey(entry.createdAt ?? entry.date) === requiredDate)
+      .reduce((preferredEntry, entry) => getPreferredQueueEntry(preferredEntry, entry), null);
+    const entry = currentEntry ?? {
+      id: `daily-log-${canonicalResidentId}-${requiredDate}-required`,
+      residentId: canonicalResidentId,
+      staffName: getAssignedStaffName(entries, canonicalResidentId),
+      date: requiredDate,
+      createdAt: requiredDate,
+      mood: "",
+      status: "pending",
+      reportStatus: "missing",
+      actionTone: "attention"
+    };
+
+    return {
+      ...entry,
+      staffName: entry.staffName ?? entry.caregiverName ?? entry.caregiver ?? "Unassigned",
+      resident,
+      detailHref: `/daily-logs/${resident.id}/submit`,
+      moodTone: entry.mood ? (moodToneByValue[entry.mood] ?? "neutral") : "",
+      rowStatus: getRowStatus(entry),
+      actionTone: entry.actionTone ?? "default",
+      dueDate: requiredDate
+    };
   });
 }
 
@@ -113,8 +170,18 @@ function getVisibleRows(rows, filters) {
       return matchesQuery && matchesMood && matchesCaregiver && matchesStatus;
     })
     .sort((firstRow, secondRow) => {
-      const timeDifference = getTimestamp(secondRow.date) - getTimestamp(firstRow.date);
-      return filters.sortOrder === "newest" ? timeDifference : -timeDifference;
+      if (filters.sortOrder === "resident") {
+        return firstRow.resident.name.localeCompare(secondRow.resident.name);
+      }
+
+      if (filters.sortOrder === "caregiver") {
+        return firstRow.staffName.localeCompare(secondRow.staffName);
+      }
+
+      const statusDifference =
+        statusSortRank[firstRow.rowStatus] - statusSortRank[secondRow.rowStatus];
+
+      return statusDifference || firstRow.resident.name.localeCompare(secondRow.resident.name);
     });
 }
 
@@ -146,12 +213,13 @@ function ViewAction({ row }) {
 
 export default function DailyLogsPage() {
   const location = useLocation();
+  const requiredDate = getDailyLogRequiredDate();
   const [entries, setEntries] = useState(() => loadDailyLogEntries());
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [moodFilter, setMoodFilter] = useState("all");
   const [caregiverFilter, setCaregiverFilter] = useState("all");
-  const [sortOrder, setSortOrder] = useState("newest");
+  const [sortOrder, setSortOrder] = useState("status");
   const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
@@ -165,10 +233,23 @@ export default function DailyLogsPage() {
   }, [location.state]);
 
   function handleClearLog(row) {
+    if (row.rowStatus === "missing") {
+      setStatusMessage(`${row.resident.name} already needs a daily log for ${formatLogDate(requiredDate)}.`);
+      return;
+    }
+
+    const shouldReset = window.confirm(
+      `Reset today's submitted daily log for ${row.resident.name}?`
+    );
+
+    if (!shouldReset) {
+      return;
+    }
+
     updateDailyLogEntry(row.residentId, {
       mood: "",
-      date: "",
-      createdAt: "",
+      date: requiredDate,
+      createdAt: requiredDate,
       status: "pending",
       actionTone: "attention",
       reportStatus: "missing",
@@ -182,10 +263,10 @@ export default function DailyLogsPage() {
     });
 
     setEntries(loadDailyLogEntries());
-    setStatusMessage(`Cleared daily log for ${row.resident.name}.`);
+    setStatusMessage(`Reset today's daily log for ${row.resident.name}.`);
   }
 
-  const allRows = getLogRows(entries);
+  const allRows = getLogRows(entries, requiredDate);
   const pendingCount = allRows.filter((row) => row.rowStatus === "pending").length;
   const completedCount = allRows.filter((row) => row.rowStatus === "completed").length;
   const attentionCount = allRows.filter((row) => row.rowStatus === "missing").length;
@@ -261,7 +342,7 @@ export default function DailyLogsPage() {
               <option value="all">All statuses</option>
               <option value="missing">Needs log</option>
               <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
+              <option value="completed">Submitted</option>
             </select>
           </label>
 
@@ -305,8 +386,9 @@ export default function DailyLogsPage() {
                 value={sortOrder}
                 onChange={(event) => setSortOrder(event.target.value)}
               >
-                <option value="newest">Most recent first</option>
-                <option value="oldest">Oldest first</option>
+                <option value="status">Needs log first</option>
+                <option value="resident">Resident A-Z</option>
+                <option value="caregiver">Caregiver A-Z</option>
               </select>
               <SortIcon className="daily-logs-sort-icon" />
             </div>
@@ -324,7 +406,7 @@ export default function DailyLogsPage() {
         <div className="daily-logs-table-wrap">
           <table className="daily-logs-table">
             <caption className="daily-logs-table-caption">
-              Resident daily logs sorted by {sortOrder === "newest" ? "most recent" : "oldest"} update
+              Required daily log submissions for {formatLogDate(requiredDate)}
             </caption>
             <thead>
               <tr>
@@ -332,7 +414,7 @@ export default function DailyLogsPage() {
                 <th scope="col">Status</th>
                 <th scope="col">Mood</th>
                 <th scope="col">Caregiver</th>
-                <th scope="col">Updated</th>
+                <th scope="col">Due</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -364,16 +446,17 @@ export default function DailyLogsPage() {
                     )}
                   </td>
                   <td data-label="Caregiver">{row.staffName}</td>
-                  <td data-label="Updated">{formatLogDate(row.createdAt ?? row.date)}</td>
+                  <td data-label="Due">{formatLogDate(row.dueDate)}</td>
                   <td data-label="Actions">
                     <div className="daily-logs-actions-cell">
                       <ViewAction row={row} />
                       <button
                         className="daily-logs-clear-action"
                         type="button"
+                        disabled={row.rowStatus === "missing"}
                         onClick={() => handleClearLog(row)}
                       >
-                        Clear
+                        Reset
                       </button>
                     </div>
                   </td>

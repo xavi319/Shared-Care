@@ -1,18 +1,45 @@
 import { useEffect, useState } from "react";
 
-import { dashboardData, loadDailyLogEntries } from "../../data/mockData";
+import {
+  dashboardData,
+  getCanonicalDailyLogResidentId,
+  getDailyLogDateKey,
+  getDailyLogRequiredDate,
+  loadDailyLogEntries,
+  residentsPageData
+} from "../../data/mockData";
 import { db } from "../../lib/firebase";
 import { listenToConversations } from "../../services/messageService";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
 
 const staffUserId = "staff_1";
+const dailyLogResidents = Array.from(
+  new Set(
+    [...dashboardData.residents, ...residentsPageData.residents].map((resident) =>
+      getCanonicalDailyLogResidentId(resident.id)
+    )
+  )
+);
+
+function getPendingDailyLogsCount() {
+  const requiredDate = getDailyLogRequiredDate();
+  const entries = loadDailyLogEntries();
+
+  return dailyLogResidents.filter((residentId) => {
+    const requiredEntry = entries.find(
+      (entry) =>
+        getCanonicalDailyLogResidentId(entry.residentId) === residentId &&
+        getDailyLogDateKey(entry.createdAt ?? entry.date) === requiredDate
+    );
+
+    return requiredEntry?.status !== "completed";
+  }).length;
+}
 
 export function StaffAppShell({ children, onStubNavigate }) {
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
-  const pendingDailyLogsCount = loadDailyLogEntries().filter(
-    (entry) => entry.status === "pending"
-  ).length;
+  const pendingDailyLogsCount = getPendingDailyLogsCount();
 
   useEffect(() => {
     if (!db) {
