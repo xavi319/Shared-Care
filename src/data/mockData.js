@@ -806,6 +806,10 @@ export function getDailyLogDateKey(value) {
     return "";
   }
 
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    return String(value);
+  }
+
   const dateValue = typeof value === "object" && typeof value.toDate === "function"
     ? value.toDate()
     : new Date(String(value).replace(" ", "T"));
@@ -1012,6 +1016,13 @@ export function getDailyLogEntryByResidentId(residentId, targetDate = getDailyLo
     .filter((entry) => isDailyLogForResident(entry.residentId, residentId))
     .filter((entry) => getDailyLogDateKey(getDailyLogCreatedAt(entry)) === targetDate)
     .sort((firstEntry, secondEntry) => {
+      const firstQueueUpdate = firstEntry.queueUpdatedAt ?? 0;
+      const secondQueueUpdate = secondEntry.queueUpdatedAt ?? 0;
+
+      if (firstQueueUpdate !== secondQueueUpdate) {
+        return secondQueueUpdate - firstQueueUpdate;
+      }
+
       const firstDate = new Date(String(getDailyLogCreatedAt(firstEntry)).replace(" ", "T"));
       const secondDate = new Date(String(getDailyLogCreatedAt(secondEntry)).replace(" ", "T"));
 
@@ -1022,19 +1033,26 @@ export function getDailyLogEntryByResidentId(residentId, targetDate = getDailyLo
 export function updateDailyLogEntry(residentId, updates) {
   const entries = loadDailyLogEntries();
   const targetDate = getDailyLogDateKey(updates.createdAt ?? updates.date) || getDailyLogRequiredDate();
-  const targetIndex = entries.findIndex(
+  const existingEntry = entries.find(
     (entry) =>
       isDailyLogForResident(entry.residentId, residentId) &&
       getDailyLogDateKey(getDailyLogCreatedAt(entry)) === targetDate
   );
   const nextEntry = normalizeDailyLogEntry({
-    ...(targetIndex >= 0 ? entries[targetIndex] : { residentId }),
-    ...updates
+    ...(existingEntry ?? { residentId }),
+    ...updates,
+    queueUpdatedAt: updates.queueUpdatedAt ?? Date.now()
   });
-  const nextEntries =
-    targetIndex >= 0
-      ? entries.map((entry, index) => (index === targetIndex ? nextEntry : entry))
-      : [nextEntry, ...entries];
+  const nextEntries = [
+    nextEntry,
+    ...entries.filter(
+      (entry) =>
+        !(
+          isDailyLogForResident(entry.residentId, residentId) &&
+          getDailyLogDateKey(getDailyLogCreatedAt(entry)) === targetDate
+        )
+    )
+  ];
 
   const uniqueEntries = getUniqueDailyLogEntries(nextEntries);
 

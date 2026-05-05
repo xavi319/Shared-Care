@@ -105,6 +105,13 @@ function getPreferredQueueEntry(currentEntry, nextEntry) {
     return nextEntry;
   }
 
+  const currentQueueUpdate = currentEntry.queueUpdatedAt ?? 0;
+  const nextQueueUpdate = nextEntry.queueUpdatedAt ?? 0;
+
+  if (currentQueueUpdate !== nextQueueUpdate) {
+    return nextQueueUpdate > currentQueueUpdate ? nextEntry : currentEntry;
+  }
+
   const statusDifference =
     rowStatusPreferenceRank[getRowStatus(nextEntry)] - rowStatusPreferenceRank[getRowStatus(currentEntry)];
 

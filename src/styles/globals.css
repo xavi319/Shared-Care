@@ -2809,35 +2809,51 @@ a {
 
 .daily-log-submit-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 26px;
+  margin-bottom: 22px;
 }
 
 .daily-log-submit-title-block {
   max-width: 760px;
 }
 
+.daily-log-submit-title-block .eyebrow {
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.daily-log-submit-title-block .page-title {
+  margin-bottom: 10px;
+  font-size: clamp(1.85rem, 3vw, 2.35rem);
+  line-height: 1.08;
+  letter-spacing: 0;
+  font-weight: 750;
+}
+
 .daily-log-submit-header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .daily-log-room-card {
-  min-width: 142px;
-  min-height: 52px;
+  min-width: 126px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px 18px;
+  gap: 8px;
+  padding: 10px 14px;
   border-radius: 10px;
   background: var(--surface);
   border: 1px solid #dbe3ee;
   color: var(--brand);
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 700;
   line-height: 1;
   text-align: center;
@@ -2845,33 +2861,35 @@ a {
 }
 
 .daily-log-room-card svg {
-  width: 20px;
-  height: 20px;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
 }
 
 .daily-log-submit-date {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  margin: 12px 0 0;
+  gap: 8px;
+  margin: 0;
   color: #27364b;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.3;
 }
 
 .daily-log-submit-date svg {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
   color: #516173;
 }
 
 .daily-log-submit-context {
-  margin: 10px 0 0;
+  margin: 6px 0 0;
   color: #6b7a8d;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.42;
 }
 
 .daily-log-submit-layout {
@@ -2885,11 +2903,11 @@ a {
 .daily-log-submit-sidebar {
   background: #f5ebdb;
   border: 1px solid #e5d8c4;
-  border-radius: 24px;
+  border-radius: 18px;
 }
 
 .daily-log-submit-main {
-  padding: 26px 28px;
+  padding: 24px 26px;
 }
 
 .daily-log-submit-grid {
@@ -2900,7 +2918,7 @@ a {
 
 .daily-log-form-group {
   min-width: 0;
-  padding: 0 28px 26px 0;
+  padding: 0 24px 24px 0;
   border-bottom: 1px solid #e2d4bf;
 }
 
@@ -2911,12 +2929,12 @@ a {
 
 .daily-log-form-group:nth-child(2n) {
   padding-right: 0;
-  padding-left: 28px;
+  padding-left: 24px;
   border-left: 1px solid #e2d4bf;
 }
 
 .daily-log-form-group:nth-child(n + 3) {
-  padding-top: 26px;
+  padding-top: 24px;
 }
 
 .daily-log-form-section {
@@ -2928,24 +2946,32 @@ a {
 
 .daily-log-form-section--wide {
   grid-column: 1 / -1;
-  padding-top: 26px;
+  padding-top: 34px;
+}
+
+.daily-log-form-section--wide .daily-log-form-title {
+  margin-bottom: 20px;
+}
+
+.daily-log-form-section--wide .daily-log-section-icon {
+  margin-top: 1px;
 }
 
 .daily-log-form-title,
 .daily-log-sidebar-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 0 0 18px;
+  gap: 10px;
+  margin: 0 0 16px;
   color: #111111;
-  font-size: clamp(1.1rem, 1.55vw, 1.35rem);
-  font-weight: 700;
-  line-height: 1.15;
+  font-size: 1.12rem;
+  font-weight: 750;
+  line-height: 1.2;
 }
 
 .daily-log-section-icon {
-  width: 22px;
-  height: 22px;
+  width: 19px;
+  height: 19px;
   flex: 0 0 auto;
 }
 
@@ -2975,23 +3001,23 @@ a {
 
 .daily-log-option-list {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .daily-log-form-section--wide .daily-log-option-list {
-  grid-template-columns: repeat(5, minmax(130px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px 16px;
 }
 
 .daily-log-option {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
   width: 100%;
-  min-height: 42px;
-  padding: 9px 12px;
-  border-radius: 9px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 8px;
   color: #171717;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
@@ -3004,9 +3030,10 @@ a {
 }
 
 .daily-log-option-indicator {
-  width: 22px;
-  height: 22px;
+  width: 19px;
+  height: 19px;
   flex-shrink: 0;
+  margin-top: 0;
   border-radius: 999px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
@@ -3030,9 +3057,11 @@ a {
 }
 
 .daily-log-option-label {
-  font-size: 0.96rem;
+  min-width: 0;
+  font-size: 0.91rem;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .daily-log-field-error {
@@ -3044,36 +3073,36 @@ a {
 }
 
 .daily-log-submit-sidebar {
-  padding: 24px 24px 22px;
+  padding: 22px;
 }
 
 .daily-log-notes-label {
   display: inline-block;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   color: #23385e;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
 .daily-log-notes-help {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: #667487;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 500;
   line-height: 1.45;
 }
 
 .daily-log-notes-input {
   width: 100%;
-  min-height: 178px;
-  padding: 14px 16px;
+  min-height: 166px;
+  padding: 12px 14px;
   border: 1px solid #d4dee9;
   border-radius: 9px;
   background: #ffffff;
   color: #111111;
-  font-size: 0.98rem;
+  font-size: 0.92rem;
   font-weight: 500;
-  line-height: 1.55;
+  line-height: 1.5;
   resize: vertical;
 }
 
@@ -3084,25 +3113,26 @@ a {
 
 .daily-log-submit-button {
   width: 100%;
-  margin-top: 16px;
-  min-height: 52px;
+  margin-top: 14px;
+  min-height: 46px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   border: 0;
   border-radius: 10px;
   background: var(--brand);
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 0.94rem;
   font-weight: 700;
   cursor: pointer;
   transition: filter 0.18s ease, opacity 0.18s ease;
 }
 
 .daily-log-submit-button svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
 }
 
 .daily-log-submit-button:hover {
@@ -3121,15 +3151,15 @@ a {
 }
 
 .daily-log-overview {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid #e2d4bf;
 }
 
 .daily-log-overview-title {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: #111111;
-  font-size: 0.96rem;
+  font-size: 0.9rem;
   font-weight: 700;
   line-height: 1.2;
 }
@@ -3145,9 +3175,9 @@ a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(128px, 0.9fr);
   align-items: center;
-  gap: 14px;
-  min-height: 38px;
-  padding: 7px 12px;
+  gap: 12px;
+  min-height: 36px;
+  padding: 7px 10px;
   border-bottom: 1px solid #e5ecf3;
 }
 
@@ -3159,16 +3189,16 @@ a {
   display: inline-flex;
   align-items: center;
   min-width: 0;
-  gap: 10px;
+  gap: 8px;
   color: #1f2937;
-  font-size: 0.86rem;
+  font-size: 0.8rem;
   font-weight: 600;
   line-height: 1.2;
 }
 
 .daily-log-overview-icon {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   flex: 0 0 auto;
 }
 
@@ -3177,11 +3207,11 @@ a {
   align-items: center;
   justify-content: center;
   min-height: 26px;
-  padding: 5px 10px;
+  padding: 5px 9px;
   border-radius: 6px;
   background: #f2f6fb;
   color: #334155;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
@@ -3234,13 +3264,13 @@ a {
 
 .daily-log-cancel-button {
   width: 100%;
-  min-height: 50px;
-  margin-top: 10px;
+  min-height: 44px;
+  margin-top: 9px;
   border: 1px solid var(--brand);
   border-radius: 10px;
   background: transparent;
   color: var(--brand);
-  font-size: 1rem;
+  font-size: 0.94rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
