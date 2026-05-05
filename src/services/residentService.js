@@ -1,4 +1,4 @@
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 
 import { familyData, residentsPageData } from "../data/mockData";
 
@@ -93,6 +93,30 @@ export function getFallbackResidents() {
       primaryFamilyRelationship: resident.name === familyData.resident.name ? "Son" : ""
     };
   });
+}
+
+export async function saveResident(db, resident) {
+  if (!db) {
+    throw new Error("Firebase is not configured.");
+  }
+
+  await setDoc(
+    doc(db, residentsCollectionName, resident.residentId),
+    {
+      residentId: resident.residentId,
+      fullName: resident.name,
+      room: resident.room,
+      profilePhoto: resident.image ?? "",
+      admissionDate: resident.admissionDate ?? "",
+      primaryFamilyUserId: "",
+      primaryFamilyName: "",
+      primaryFamilyRelationship: "",
+      status: "active",
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    },
+    { merge: true }
+  );
 }
 
 export function getFallbackFamilyResident(familyUserId = familyFallbackUserId) {

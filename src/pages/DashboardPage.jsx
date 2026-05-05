@@ -16,6 +16,7 @@ import {
   schedulingPageData
 } from "../data/mockData";
 import { db } from "../lib/firebase";
+import { mapFirestoreResident, saveResident } from "../services/residentService";
 
 const fallbackResidents = getUniqueById([...residentsPageData.residents, ...dashboardData.residents]);
 
@@ -71,12 +72,7 @@ const emptyResidentForm = {
   lastName: "",
   image: "",
   roomNumber: "",
-  residentId: "",
-  age: "",
-  dob: "",
-  admissionDate: "",
-  diagnoses: "",
-  medications: ""
+  admissionDate: ""
 };
 
 function loadChecklistItems(residents) {
@@ -202,13 +198,6 @@ function normalizeRoom(value) {
   return trimmedValue.toLowerCase().startsWith("room") ? trimmedValue : `Room ${trimmedValue}`;
 }
 
-function parseList(value) {
-  return value
-    .split(/\n|,/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
 function getInitials(name) {
   return name
     .split(" ")
@@ -218,9 +207,52 @@ function getInitials(name) {
     .toUpperCase();
 }
 
+function getGeneratedResidentId(formState) {
+  const nameParts = [formState.firstName, formState.lastName]
+    .map((value) => slugify(value).replaceAll("-", "_"))
+    .filter(Boolean);
+  const roomPart = slugify(formState.roomNumber).replaceAll("-", "_");
+  const baseId = [...nameParts, roomPart].filter(Boolean).join("_");
+
+  return baseId || "resident_id";
+}
+
+function getUniqueResidentId(residentId, residents) {
+  const currentIds = new Set(
+    residents.flatMap((resident) => [resident.id, resident.residentId]).filter(Boolean)
+  );
+
+  if (!currentIds.has(residentId)) {
+    return residentId;
+  }
+
+  let suffix = 2;
+  let nextResidentId = `${residentId}_${suffix}`;
+
+  while (currentIds.has(nextResidentId)) {
+    suffix += 1;
+    nextResidentId = `${residentId}_${suffix}`;
+  }
+
+  return nextResidentId;
+}
+
+function applyResidentId(resident, residentId) {
+  const residentSlug = slugify(resident.name || residentId);
+
+  return {
+    ...resident,
+    id: residentId,
+    slug: residentSlug,
+    residentId,
+    detailPath: `/residents/${residentSlug}`
+  };
+}
+
 function createResidentFromForm(formState) {
   const name = `${formState.firstName.trim()} ${formState.lastName.trim()}`.trim();
-  const residentSlug = slugify(name || formState.residentId || `resident-${Date.now()}`);
+  const residentId = getGeneratedResidentId(formState);
+  const residentSlug = slugify(name || residentId);
 
   return {
     id: residentSlug,
@@ -231,17 +263,23 @@ function createResidentFromForm(formState) {
     lastUpdateLabel: "Daily Log last updated",
     image: formState.image,
     detailPath: `/residents/${residentSlug}`,
-    residentId: formState.residentId.trim(),
-    age: formState.age.trim(),
-    dob: formState.dob,
-    admissionDate: formState.admissionDate,
-    diagnoses: parseList(formState.diagnoses),
-    medications: parseList(formState.medications)
+    residentId,
+    admissionDate: formState.admissionDate
   };
 }
 
 function AddResidentModal({ onClose, onSubmit }) {
   const [formState, setFormState] = useState(emptyResidentForm);
+  const generatedResidentId = getGeneratedResidentId(formState);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   function updateField(field, value) {
     setFormState((currentState) => ({
@@ -284,7 +322,9 @@ function AddResidentModal({ onClose, onSubmit }) {
         <form className="resident-modal-form" onSubmit={handleSubmit}>
           <div className="resident-modal-grid">
             <label className="resident-modal-field">
-              <span>First Name</span>
+              <span>
+                First Name <span className="required-marker" aria-hidden="true">*</span>
+              </span>
               <input
                 type="text"
                 value={formState.firstName}
@@ -294,7 +334,9 @@ function AddResidentModal({ onClose, onSubmit }) {
             </label>
 
             <label className="resident-modal-field">
-              <span>Last Name</span>
+              <span>
+                Last Name <span className="required-marker" aria-hidden="true">*</span>
+              </span>
               <input
                 type="text"
                 value={formState.lastName}
@@ -304,12 +346,14 @@ function AddResidentModal({ onClose, onSubmit }) {
             </label>
 
             <label className="resident-modal-field">
-              <span>Profile Picture</span>
+              <span>Resident Photo</span>
               <input type="file" accept="image/*" onChange={handleImageChange} />
             </label>
 
             <label className="resident-modal-field">
-              <span>Room Number</span>
+              <span>
+                Room Number <span className="required-marker" aria-hidden="true">*</span>
+              </span>
               <input
                 type="text"
                 value={formState.roomNumber}
@@ -322,29 +366,11 @@ function AddResidentModal({ onClose, onSubmit }) {
               <span>Resident ID</span>
               <input
                 type="text"
-                value={formState.residentId}
-                onChange={(event) => updateField("residentId", event.target.value)}
-                required
+                value={generatedResidentId}
+                readOnly
+                aria-describedby="resident-id-help"
               />
-            </label>
-
-            <label className="resident-modal-field">
-              <span>Age</span>
-              <input
-                type="number"
-                min="0"
-                value={formState.age}
-                onChange={(event) => updateField("age", event.target.value)}
-              />
-            </label>
-
-            <label className="resident-modal-field">
-              <span>Date of Birth</span>
-              <input
-                type="date"
-                value={formState.dob}
-                onChange={(event) => updateField("dob", event.target.value)}
-              />
+              <small id="resident-id-help">Generated from resident name and room.</small>
             </label>
 
             <label className="resident-modal-field">
@@ -355,24 +381,6 @@ function AddResidentModal({ onClose, onSubmit }) {
                 onChange={(event) => updateField("admissionDate", event.target.value)}
               />
             </label>
-
-            <label className="resident-modal-field resident-modal-field--wide">
-              <span>Diagnoses</span>
-              <textarea
-                value={formState.diagnoses}
-                onChange={(event) => updateField("diagnoses", event.target.value)}
-                placeholder="Separate items with commas or new lines"
-              />
-            </label>
-
-            <label className="resident-modal-field resident-modal-field--wide">
-              <span>Medications</span>
-              <textarea
-                value={formState.medications}
-                onChange={(event) => updateField("medications", event.target.value)}
-                placeholder="Separate items with commas or new lines"
-              />
-            </label>
           </div>
 
           <div className="resident-modal-actions">
@@ -380,7 +388,7 @@ function AddResidentModal({ onClose, onSubmit }) {
               Cancel
             </button>
             <button className="resident-modal-primary" type="submit">
-              Add Resident
+              Save
             </button>
           </div>
         </form>
@@ -442,10 +450,18 @@ export default function DashboardPage() {
             return;
           }
 
+          const collectionItems =
+            collectionName === "residents"
+              ? snapshot.docs.map((doc) => mapFirestoreResident(doc.data(), doc.id))
+              : snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
           setDashboardSources((currentSources) => ({
             ...currentSources,
-            [collectionName]: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+            [collectionName]: collectionItems
           }));
+          if (collectionName === "residents") {
+            setAssignedResidents(collectionItems);
+          }
           setSourcesFromFirestore((currentSources) => ({
             ...currentSources,
             [collectionName]: true
@@ -503,14 +519,32 @@ export default function DashboardPage() {
     setStatusMessage("Added a temporary local task for this session.");
   }
 
-  function handleAddResident(resident) {
-    setAssignedResidents((currentResidents) => [...currentResidents, resident]);
+  async function handleAddResident(resident) {
+    const residentToSave = applyResidentId(
+      resident,
+      getUniqueResidentId(resident.residentId, dashboardSources.residents)
+    );
+
+    if (db) {
+      try {
+        await saveResident(db, residentToSave);
+      } catch {
+        setStatusMessage("Unable to save resident to the database. Please try again.");
+        return;
+      }
+    }
+
+    setAssignedResidents((currentResidents) => [...currentResidents, residentToSave]);
     setDashboardSources((currentSources) => ({
       ...currentSources,
-      residents: [...currentSources.residents, resident]
+      residents: [...currentSources.residents, residentToSave]
     }));
     setIsAddResidentModalOpen(false);
-    setStatusMessage(`Added ${resident.name} to assigned residents.`);
+    setStatusMessage(
+      db
+        ? `Saved ${residentToSave.name} to the resident database.`
+        : `Added ${residentToSave.name} locally. Firebase is not configured.`
+    );
   }
 
   const dashboardCounts = getDashboardCounts(dashboardSources, sourcesFromFirestore);
