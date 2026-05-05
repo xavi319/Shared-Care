@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { SearchIcon, SortIcon } from "../components/layout/icons";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import { getResidentDetailBySlug, getResidentSlug, residentsPageData } from "../data/mockData";
+import { db } from "../lib/firebase";
+import { getFallbackResidents, listenToResidents } from "../services/residentService";
 
 function getInitials(name) {
   return name
@@ -14,10 +16,10 @@ function getInitials(name) {
     .join("");
 }
 
-function getVisibleResidents(query, sortAscending) {
+function getVisibleResidents(residents, query, sortAscending) {
   const normalizedQuery = query.trim().toLowerCase();
 
-  return residentsPageData.residents
+  return residents
     .filter((resident) => {
       if (!normalizedQuery) {
         return true;
@@ -36,11 +38,29 @@ function getVisibleResidents(query, sortAscending) {
 
 export default function ResidentsPage() {
   const navigate = useNavigate();
+  const [residents, setResidents] = useState(() => getFallbackResidents());
   const [query, setQuery] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
 
-  const residents = getVisibleResidents(query, sortAscending);
+  useEffect(() => {
+    if (!db) {
+      setResidents(getFallbackResidents());
+      return undefined;
+    }
+
+    return listenToResidents(
+      db,
+      (firestoreResidents) => {
+        setResidents(firestoreResidents.length ? firestoreResidents : getFallbackResidents());
+      },
+      () => {
+        setResidents(getFallbackResidents());
+      }
+    );
+  }, []);
+
+  const visibleResidents = getVisibleResidents(residents, query, sortAscending);
 
   function handleStubNavigate(navId) {
     setStatusMessage(`Stub navigation only for ${navId}. This route now lives in the React app shell.`);
@@ -95,8 +115,8 @@ export default function ResidentsPage() {
 
       <section className="directory-panel">
         <ul className="directory-list">
-          {residents.length ? (
-            residents.map((resident) => {
+          {visibleResidents.length ? (
+            visibleResidents.map((resident) => {
               const initials = getInitials(resident.name);
 
               return (

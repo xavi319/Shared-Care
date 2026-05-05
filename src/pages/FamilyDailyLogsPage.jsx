@@ -15,7 +15,6 @@ import {
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import {
   currentDemoStaffName,
-  familyData,
   loadDailyLogEntries
 } from "../data/mockData";
 import { db } from "../lib/firebase";
@@ -23,6 +22,13 @@ import {
   getSubmittedDailyLogsForResident,
   listenToDailyLogsForResident
 } from "../services/dailyLogService";
+import {
+  getFallbackFamilyResident,
+  listenToResidentsForFamily,
+  toFamilyResident
+} from "../services/residentService";
+
+const familyUserId = "family_robert_adams";
 
 const moodEmojiByValue = {
   Good: "😊",
@@ -377,10 +383,26 @@ function PreviousUpdateItem({ entry, residentName, isExpanded, onToggle }) {
 }
 
 export default function FamilyDailyLogsPage() {
-  const { resident } = familyData;
+  const [resident, setResident] = useState(() => getFallbackFamilyResident(familyUserId));
   const [entries, setEntries] = useState([]);
   const [status, setStatus] = useState("loading");
   const [expandedLogId, setExpandedLogId] = useState("");
+
+  useEffect(() => {
+    if (!db) {
+      setResident(getFallbackFamilyResident(familyUserId));
+      return undefined;
+    }
+
+    return listenToResidentsForFamily(
+      db,
+      familyUserId,
+      (residents) => {
+        setResident(residents[0] ? toFamilyResident(residents[0]) : getFallbackFamilyResident(familyUserId));
+      },
+      () => setResident(getFallbackFamilyResident(familyUserId))
+    );
+  }, []);
 
   useEffect(() => {
     if (!db) {

@@ -1,7 +1,18 @@
 import { useState } from "react";
+import {
+  FaBed,
+  FaChevronLeft,
+  FaFloppyDisk,
+  FaHandHoldingHeart,
+  FaPeopleGroup,
+  FaRegCalendarDays,
+  FaRegClipboard,
+  FaRegFaceSmile,
+  FaShieldHalved,
+  FaUtensils
+} from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { ChevronLeftIcon } from "../components/layout/icons";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import {
   currentDemoStaffName,
@@ -44,13 +55,55 @@ function getTimestampLabel() {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-function OptionGroup({ title, name, options, value, onChange }) {
+const fieldConfig = {
+  mood: {
+    title: "Mood",
+    icon: FaRegFaceSmile,
+    tone: "blue"
+  },
+  meals: {
+    title: "Meals",
+    icon: FaUtensils,
+    tone: "green"
+  },
+  activityEngagement: {
+    title: "Activity & Engagement",
+    icon: FaPeopleGroup,
+    tone: "purple"
+  },
+  assistanceLevel: {
+    title: "Assistance Level",
+    icon: FaHandHoldingHeart,
+    tone: "orange"
+  },
+  safety: {
+    title: "Safety",
+    icon: FaShieldHalved,
+    tone: "red"
+  }
+};
+
+const overviewFields = ["mood", "meals", "activityEngagement", "assistanceLevel", "safety"];
+
+function normalizeOptionValue(value, options) {
+  if (!value) {
+    return "";
+  }
+
+  const matchingOption = options.find((option) => option.toLowerCase() === value.toLowerCase());
+
+  return matchingOption ?? value;
+}
+
+function OptionGroup({ config, name, options, value, onChange, wide = false }) {
   const fieldId = `daily-log-${name}`;
+  const Icon = config.icon;
 
   return (
-    <fieldset className="daily-log-form-section">
+    <fieldset className={`daily-log-form-section daily-log-form-section--${config.tone}${wide ? " daily-log-form-section--wide" : ""}`}>
       <legend className="daily-log-form-title" id={`${fieldId}-legend`}>
-        {title}
+        <Icon className="daily-log-section-icon" aria-hidden="true" />
+        <span>{config.title}</span>
       </legend>
       <div className="daily-log-option-list" role="radiogroup" aria-labelledby={`${fieldId}-legend`}>
         {options.map((option) => {
@@ -78,6 +131,33 @@ function OptionGroup({ title, name, options, value, onChange }) {
   );
 }
 
+function QuickOverview({ formState }) {
+  return (
+    <section className="daily-log-overview" aria-labelledby="daily-log-overview-title">
+      <h3 className="daily-log-overview-title" id="daily-log-overview-title">
+        Quick overview
+      </h3>
+      <div className="daily-log-overview-list">
+        {overviewFields.map((fieldName) => {
+          const config = fieldConfig[fieldName];
+          const Icon = config.icon;
+          const value = formState[fieldName] || "Not selected";
+
+          return (
+            <div className={`daily-log-overview-row daily-log-overview-row--${config.tone}`} key={fieldName}>
+              <span className="daily-log-overview-label">
+                <Icon className="daily-log-overview-icon" aria-hidden="true" />
+                <span>{config.title}</span>
+              </span>
+              <span className="daily-log-overview-value">{value}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export default function DailyLogSubmissionPage() {
   const navigate = useNavigate();
   const { residentId } = useParams();
@@ -89,7 +169,7 @@ export default function DailyLogSubmissionPage() {
     meals: existingEntry?.meals ?? "",
     activityEngagement: existingEntry?.activityEngagement ?? "",
     assistanceLevel: existingEntry?.assistanceLevel ?? "",
-    safety: existingEntry?.safety ?? "",
+    safety: normalizeOptionValue(existingEntry?.safety ?? "", dailyLogFormOptions.safety),
     notes: existingEntry?.notes ?? ""
   }));
   const [errors, setErrors] = useState({});
@@ -182,19 +262,25 @@ export default function DailyLogSubmissionPage() {
           <h1 className="page-title">
             {isEditingExistingReport ? "Edit Daily Log" : "Daily Logs"} - {resident.name}
           </h1>
-          <p className="daily-log-submit-date">{formatEntryDate(existingEntry.date)}</p>
+          <p className="daily-log-submit-date">
+            <FaRegCalendarDays aria-hidden="true" />
+            <span>{formatEntryDate(existingEntry.date)}</span>
+          </p>
           <p className="daily-log-submit-context">{pendingContext}</p>
         </div>
 
         <div className="daily-log-submit-header-actions">
-          <div className="daily-log-room-card">Room {resident.room.replace("Room ", "")}</div>
+          <div className="daily-log-room-card">
+            <FaBed aria-hidden="true" />
+            <span>Room {resident.room.replace("Room ", "")}</span>
+          </div>
           <button
             className="back-button"
             type="button"
             onClick={() => navigate("/daily-logs")}
             aria-label="Back to daily logs"
           >
-            <ChevronLeftIcon />
+            <FaChevronLeft aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -204,7 +290,7 @@ export default function DailyLogSubmissionPage() {
           <div className="daily-log-submit-grid">
             <div className={`daily-log-form-group${errors.mood ? " has-error" : ""}`}>
               <OptionGroup
-                title="Mood"
+                config={fieldConfig.mood}
                 name="mood"
                 options={dailyLogFormOptions.mood}
                 value={formState.mood}
@@ -215,7 +301,7 @@ export default function DailyLogSubmissionPage() {
 
             <div className={`daily-log-form-group${errors.meals ? " has-error" : ""}`}>
               <OptionGroup
-                title="Meals"
+                config={fieldConfig.meals}
                 name="meals"
                 options={dailyLogFormOptions.meals}
                 value={formState.meals}
@@ -226,7 +312,7 @@ export default function DailyLogSubmissionPage() {
 
             <div className={`daily-log-form-group${errors.activityEngagement ? " has-error" : ""}`}>
               <OptionGroup
-                title="Activity & Engagement"
+                config={fieldConfig.activityEngagement}
                 name="activityEngagement"
                 options={dailyLogFormOptions.activityEngagement}
                 value={formState.activityEngagement}
@@ -239,7 +325,7 @@ export default function DailyLogSubmissionPage() {
 
             <div className={`daily-log-form-group${errors.assistanceLevel ? " has-error" : ""}`}>
               <OptionGroup
-                title="Assistance Level"
+                config={fieldConfig.assistanceLevel}
                 name="assistanceLevel"
                 options={dailyLogFormOptions.assistanceLevel}
                 value={formState.assistanceLevel}
@@ -251,17 +337,21 @@ export default function DailyLogSubmissionPage() {
             </div>
 
             <OptionGroup
-              title="Safety"
+              config={fieldConfig.safety}
               name="safety"
               options={dailyLogFormOptions.safety}
               value={formState.safety}
               onChange={(value) => updateField("safety", value)}
+              wide
             />
           </div>
         </section>
 
         <aside className="daily-log-submit-sidebar">
-          <h2 className="daily-log-sidebar-title">Notes & Summary</h2>
+          <h2 className="daily-log-sidebar-title">
+            <FaRegClipboard className="daily-log-section-icon" aria-hidden="true" />
+            <span>Notes & Summary</span>
+          </h2>
           <label className="daily-log-notes-label" htmlFor="daily-log-notes">
             Shift summary
           </label>
@@ -278,8 +368,13 @@ export default function DailyLogSubmissionPage() {
           <p className="daily-log-notes-help" id="daily-log-notes-help">
             This note appears alongside the resident's completed daily log entry.
           </p>
+          <QuickOverview formState={formState} />
           <button className="daily-log-submit-button" type="submit">
-            {isEditingExistingReport ? "Update daily log" : "Submit daily log"}
+            <FaFloppyDisk aria-hidden="true" />
+            Update daily log
+          </button>
+          <button className="daily-log-cancel-button" type="button" onClick={() => navigate("/daily-logs")}>
+            Cancel
           </button>
         </aside>
       </form>

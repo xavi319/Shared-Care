@@ -294,7 +294,7 @@ export const dailyLogFormOptions = {
     "Did Not Engage"
   ],
   assistanceLevel: ["Independent", "Partial Assist", "Full Assist", "Declined Assistance"],
-  safety: ["Fall", "Near Fall", "Injury Observed", "Medication Refused"]
+  safety: ["No safety concerns", "Fall", "Near fall", "Injury observed", "Medication refused"]
 };
 
 export const lilianMendozaDetailData = {

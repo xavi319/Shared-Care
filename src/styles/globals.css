@@ -1292,6 +1292,7 @@ a {
 
 .family-log-metric-icon,
 .family-log-detail-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1305,15 +1306,21 @@ a {
 }
 
 .family-log-metric-icon svg {
+  position: absolute;
+  inset: 50% auto auto 50%;
   display: block;
   width: 22px;
   height: 22px;
+  transform: translate(-50%, -50%);
 }
 
 .family-log-detail-icon svg {
+  position: absolute;
+  inset: 50% auto auto 50%;
   display: block;
   width: 18px;
   height: 18px;
+  transform: translate(-50%, -50%);
 }
 
 .family-log-date svg,
@@ -2762,24 +2769,44 @@ a {
 }
 
 .daily-log-room-card {
-  min-width: 160px;
-  padding: 14px 18px;
-  border-radius: 18px;
+  min-width: 142px;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 10px;
   background: var(--surface);
   border: 1px solid #dbe3ee;
-  color: #2a3f68;
-  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  color: var(--brand);
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1;
   text-align: center;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.daily-log-room-card svg {
+  width: 20px;
+  height: 20px;
 }
 
 .daily-log-submit-date {
-  margin: 10px 0 0;
-  color: #121212;
-  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+  color: #27364b;
+  font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.1;
+}
+
+.daily-log-submit-date svg {
+  width: 18px;
+  height: 18px;
+  color: #516173;
 }
 
 .daily-log-submit-context {
@@ -2792,7 +2819,7 @@ a {
 
 .daily-log-submit-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(0, 1.7fr) minmax(360px, 0.9fr);
   gap: 24px;
   align-items: start;
 }
@@ -2805,23 +2832,34 @@ a {
 }
 
 .daily-log-submit-main {
-  padding: 24px 28px;
+  padding: 26px 28px;
 }
 
 .daily-log-submit-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 26px 34px;
+  gap: 0;
 }
 
 .daily-log-form-group {
   min-width: 0;
+  padding: 0 28px 26px 0;
+  border-bottom: 1px solid #e2d4bf;
 }
 
 .daily-log-form-group.has-error {
   padding: 14px 14px 12px;
-  border-radius: 18px;
   background: rgba(243, 91, 79, 0.06);
+}
+
+.daily-log-form-group:nth-child(2n) {
+  padding-right: 0;
+  padding-left: 28px;
+  border-left: 1px solid #e2d4bf;
+}
+
+.daily-log-form-group:nth-child(n + 3) {
+  padding-top: 26px;
 }
 
 .daily-log-form-section {
@@ -2831,29 +2869,75 @@ a {
   border: 0;
 }
 
+.daily-log-form-section--wide {
+  grid-column: 1 / -1;
+  padding-top: 26px;
+}
+
 .daily-log-form-title,
 .daily-log-sidebar-title {
-  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
   color: #111111;
-  font-size: clamp(1.35rem, 2vw, 1.85rem);
+  font-size: clamp(1.1rem, 1.55vw, 1.35rem);
   font-weight: 700;
   line-height: 1.15;
 }
 
+.daily-log-section-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.daily-log-form-section--blue .daily-log-section-icon {
+  color: #1f6fff;
+}
+
+.daily-log-form-section--green .daily-log-section-icon {
+  color: #14a66a;
+}
+
+.daily-log-form-section--purple .daily-log-section-icon {
+  color: #7c3ff2;
+}
+
+.daily-log-form-section--orange .daily-log-section-icon {
+  color: #f97316;
+}
+
+.daily-log-form-section--red .daily-log-section-icon {
+  color: #ff3f57;
+}
+
+.daily-log-sidebar-title .daily-log-section-icon {
+  color: var(--brand);
+}
+
 .daily-log-option-list {
   display: grid;
-  gap: 10px;
+  gap: 8px;
+}
+
+.daily-log-form-section--wide .daily-log-option-list {
+  grid-template-columns: repeat(5, minmax(130px, 1fr));
+  gap: 12px;
 }
 
 .daily-log-option {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 4px 0;
+  min-height: 42px;
+  padding: 9px 12px;
+  border-radius: 9px;
   color: #171717;
   cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
 }
 
 .daily-log-option-input {
@@ -2863,12 +2947,12 @@ a {
 }
 
 .daily-log-option-indicator {
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
   border-radius: 999px;
-  border: 1px solid #d8d8d8;
-  background: #e7e7e7;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -2883,10 +2967,15 @@ a {
   box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.82);
 }
 
+.daily-log-option.is-selected {
+  background: #e8f1ff;
+  color: #145bd7;
+}
+
 .daily-log-option-label {
-  font-size: 0.98rem;
-  font-weight: 500;
-  line-height: 1.3;
+  font-size: 0.96rem;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 .daily-log-field-error {
@@ -2919,13 +3008,13 @@ a {
 
 .daily-log-notes-input {
   width: 100%;
-  min-height: 360px;
-  padding: 16px 18px;
-  border: 1px solid #2b2b2b;
-  border-radius: 10px;
+  min-height: 178px;
+  padding: 14px 16px;
+  border: 1px solid #d4dee9;
+  border-radius: 9px;
   background: #ffffff;
   color: #111111;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 500;
   line-height: 1.55;
   resize: vertical;
@@ -2938,16 +3027,25 @@ a {
 
 .daily-log-submit-button {
   width: 100%;
-  margin-top: 18px;
-  min-height: 58px;
+  margin-top: 16px;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 10px;
   background: var(--brand);
   color: #ffffff;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: filter 0.18s ease, opacity 0.18s ease;
+}
+
+.daily-log-submit-button svg {
+  width: 18px;
+  height: 18px;
 }
 
 .daily-log-submit-button:hover {
@@ -2963,6 +3061,142 @@ a {
   cursor: default;
   opacity: 0.65;
   filter: none;
+}
+
+.daily-log-overview {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2d4bf;
+}
+
+.daily-log-overview-title {
+  margin: 0 0 12px;
+  color: #111111;
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.daily-log-overview-list {
+  overflow: hidden;
+  border: 1px solid #dce5ef;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.daily-log-overview-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(128px, 0.9fr);
+  align-items: center;
+  gap: 14px;
+  min-height: 38px;
+  padding: 7px 12px;
+  border-bottom: 1px solid #e5ecf3;
+}
+
+.daily-log-overview-row:last-child {
+  border-bottom: 0;
+}
+
+.daily-log-overview-label {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+  color: #1f2937;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.daily-log-overview-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.daily-log-overview-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #f2f6fb;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.daily-log-overview-row--blue .daily-log-overview-icon,
+.daily-log-overview-row--blue .daily-log-overview-value {
+  color: #1f6fff;
+}
+
+.daily-log-overview-row--blue .daily-log-overview-value {
+  background: #e8f1ff;
+}
+
+.daily-log-overview-row--green .daily-log-overview-icon,
+.daily-log-overview-row--green .daily-log-overview-value {
+  color: #0f9460;
+}
+
+.daily-log-overview-row--green .daily-log-overview-value {
+  background: #e5f7ee;
+}
+
+.daily-log-overview-row--purple .daily-log-overview-icon,
+.daily-log-overview-row--purple .daily-log-overview-value {
+  color: #7c3ff2;
+}
+
+.daily-log-overview-row--purple .daily-log-overview-value {
+  background: #f0e9ff;
+}
+
+.daily-log-overview-row--orange .daily-log-overview-icon,
+.daily-log-overview-row--orange .daily-log-overview-value {
+  color: #f97316;
+}
+
+.daily-log-overview-row--orange .daily-log-overview-value {
+  background: #fff0df;
+}
+
+.daily-log-overview-row--red .daily-log-overview-icon,
+.daily-log-overview-row--red .daily-log-overview-value {
+  color: #ff3f57;
+}
+
+.daily-log-overview-row--red .daily-log-overview-value {
+  background: #ffe9ee;
+}
+
+.daily-log-cancel-button {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 10px;
+  border: 1px solid var(--brand);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--brand);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.daily-log-cancel-button:hover,
+.daily-log-cancel-button:focus-visible {
+  background: rgba(51, 102, 255, 0.08);
+}
+
+.daily-log-cancel-button:focus-visible {
+  outline: 2px solid rgba(51, 102, 255, 0.35);
+  outline-offset: 3px;
 }
 
 /* ============================================================
@@ -4062,6 +4296,22 @@ a {
     display: grid;
   }
 
+  .daily-log-form-group,
+  .daily-log-form-group:nth-child(2n),
+  .daily-log-form-group:nth-child(n + 3) {
+    padding: 0 0 24px;
+    border-left: 0;
+    border-bottom: 1px solid #e2d4bf;
+  }
+
+  .daily-log-form-section--wide {
+    padding-top: 24px;
+  }
+
+  .daily-log-form-section--wide .daily-log-option-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .daily-log-room-card {
     min-width: 0;
   }
@@ -4247,11 +4497,27 @@ a {
     padding: 20px;
   }
 
+  .daily-log-submit-header-actions {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
   .daily-log-form-group.has-error {
     padding: 12px;
   }
 
   .daily-log-notes-input {
     min-height: 280px;
+  }
+
+  .daily-log-form-section--wide .daily-log-option-list,
+  .daily-log-overview-row {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-log-overview-value {
+    justify-content: flex-start;
+    width: 100%;
   }
 }

@@ -1,8 +1,16 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import { ChevronLeftIcon } from "../components/layout/icons";
-import { familyData } from "../data/mockData";
+import { db } from "../lib/firebase";
+import {
+  getFallbackFamilyResident,
+  listenToResidentsForFamily,
+  toFamilyResident
+} from "../services/residentService";
+
+const familyUserId = "family_robert_adams";
 
 function getInitials(name) {
   return name
@@ -15,13 +23,29 @@ function getInitials(name) {
 
 export default function FamilyDashboardPage() {
   const navigate = useNavigate();
-  const { resident } = familyData;
+  const [resident, setResident] = useState(() => getFallbackFamilyResident(familyUserId));
   const actionItems = [
     { label: "Past Updates", to: "/family/daily-logs", tone: "primary" },
     { label: "View More", to: "/family/daily-logs", tone: "secondary" },
     { label: "Appointments", to: "/family/scheduling", tone: "primary" },
     { label: "Message Care Team", to: "/family/messages", tone: "primary" }
   ];
+
+  useEffect(() => {
+    if (!db) {
+      setResident(getFallbackFamilyResident(familyUserId));
+      return undefined;
+    }
+
+    return listenToResidentsForFamily(
+      db,
+      familyUserId,
+      (residents) => {
+        setResident(residents[0] ? toFamilyResident(residents[0]) : getFallbackFamilyResident(familyUserId));
+      },
+      () => setResident(getFallbackFamilyResident(familyUserId))
+    );
+  }, []);
 
   return (
     <FamilyAppShell>

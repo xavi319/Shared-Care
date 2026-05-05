@@ -6,6 +6,11 @@ import { ChevronLeftIcon } from "../components/layout/icons";
 import { familyData } from "../data/mockData";
 import { db } from "../lib/firebase";
 import {
+  getFallbackFamilyResident,
+  listenToResidentsForFamily,
+  toFamilyResident
+} from "../services/residentService";
+import {
   createVisitRequest,
   listenToFamilyVisitRequests
 } from "../services/visitRequestService";
@@ -24,7 +29,8 @@ function getVisitRequestStatusLabel(status) {
 
 export default function FamilySchedulingPage() {
   const navigate = useNavigate();
-  const { resident, visitor } = familyData;
+  const { visitor } = familyData;
+  const [resident, setResident] = useState(() => getFallbackFamilyResident(familyUserId));
   const [statusMessage, setStatusMessage] = useState("");
   const [requestsStatus, setRequestsStatus] = useState("loading");
   const [visitRequests, setVisitRequests] = useState([]);
@@ -37,6 +43,29 @@ export default function FamilySchedulingPage() {
     time: "",
     notes: ""
   });
+
+  useEffect(() => {
+    setFormState((currentState) => ({
+      ...currentState,
+      resident: `${resident.name} - ${resident.room}`
+    }));
+  }, [resident.name, resident.room]);
+
+  useEffect(() => {
+    if (!db) {
+      setResident(getFallbackFamilyResident(familyUserId));
+      return undefined;
+    }
+
+    return listenToResidentsForFamily(
+      db,
+      familyUserId,
+      (residents) => {
+        setResident(residents[0] ? toFamilyResident(residents[0]) : getFallbackFamilyResident(familyUserId));
+      },
+      () => setResident(getFallbackFamilyResident(familyUserId))
+    );
+  }, []);
 
   useEffect(() => {
     if (!db) {
