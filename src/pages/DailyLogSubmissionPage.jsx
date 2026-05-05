@@ -12,6 +12,8 @@ import {
   dashboardData,
   residentsPageData
 } from "../data/mockData";
+import { db } from "../lib/firebase";
+import { saveDailyLogToFirestore } from "../services/dailyLogService";
 import NotFoundPage from "./NotFoundPage";
 
 const residentsById = new Map(
@@ -109,7 +111,7 @@ export default function DailyLogSubmissionPage() {
     setErrors((currentErrors) => ({ ...currentErrors, [field]: "" }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const nextErrors = {
@@ -131,7 +133,7 @@ export default function DailyLogSubmissionPage() {
     const createdAt = getTimestampLabel();
     const summary = formState.notes.trim();
 
-    updateDailyLogEntry(resident.id, {
+    const savedEntry = updateDailyLogEntry(resident.id, {
       staffName: currentDemoStaffName,
       caregiverName: currentDemoStaffName,
       caregiver: currentDemoStaffName,
@@ -152,6 +154,12 @@ export default function DailyLogSubmissionPage() {
       status: "completed",
       date: createdAt
     });
+
+    try {
+      await saveDailyLogToFirestore(db, savedEntry);
+    } catch {
+      // Keep the local demo flow working even if Firestore is unavailable.
+    }
 
     navigate("/daily-logs", {
       state: {

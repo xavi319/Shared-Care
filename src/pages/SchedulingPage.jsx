@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { StaffAppShell } from "../components/layout/StaffAppShell";
-import { schedulingPageData } from "../data/mockData";
+import { currentDemoStaffName, schedulingPageData } from "../data/mockData";
+import { db } from "../lib/firebase";
+import {
+  listenToPendingVisitRequests,
+  updateVisitRequestStatus
+} from "../services/visitRequestService";
 
 const HOUR_HEIGHT = 80; // px per hour in the calendar grid
 const DAY_START_HOUR = 8; // first hour shown
@@ -31,17 +36,6 @@ function addDays(date, n) {
   const d = new Date(date);
   d.setDate(d.getDate() + n);
   return d;
-}
-
-function addOneHour(timeStr) {
-  const [time, period] = timeStr.split(" ");
-  let [hours, minutes] = time.split(":").map(Number);
-  if (period === "PM" && hours !== 12) hours += 12;
-  if (period === "AM" && hours === 12) hours = 0;
-  hours += 1;
-  const newPeriod = hours >= 12 ? "PM" : "AM";
-  const displayHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
-  return `${displayHour}:${String(minutes).padStart(2, "0")} ${newPeriod}`;
 }
 
 function toDateString(date) {
@@ -98,103 +92,55 @@ function CalendarEvent({ event }) {
   );
 }
 
-function PendingCard({ appointment, onAccept, onDecline}) {
+function PendingCard({ appointment, isUpdating, onAccept, onDecline }) {
   const [expanded, setExpanded] = useState(false);
-  const [declining, setDeclining] = useState(false);
-  const [reason, setReason] = useState("");
-  const [notes, setNotes] = useState("");
-
-  function handleConfirmDecline() {
-    onDecline(appointment.id, reason, notes);
-  }
 
   return (
-    <article className={`pending-card${declining ? " pending-card--declining" : ""}`}>
+    <article className="pending-card">
       <div className="pending-card-body">
         <p className="pending-card-name">{appointment.name}</p>
-        {(expanded || declining)&& (
+        {expanded ? (
           <p className="pending-card-relation">
             {appointment.relation}<br />
             <strong>{appointment.room}</strong>
           </p>
-        )}
+        ) : null}
         <div className="pending-card-meta">
           <span className="pending-card-date">{appointment.date}</span>
           <span className="pending-card-time">{appointment.time}</span>
         </div>
-        {expanded && !declining && appointment.notes && (
+        {expanded && appointment.notes ? (
           <div className="pending-card-notes">
             <p className="pending-card-notes-label">Notes:</p>
             <p className="pending-card-notes-text">{appointment.notes}</p>
           </div>
-        )}
-        {declining && (
-          <div className="decline-form">
-            <label className="decline-label">
-              Reason for Decline:
-              <textarea
-                className="decline-textarea"
-                placeholder="type here..."
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-              />
-            </label>
-            <label className="decline-label">
-              Additional Notes:
-              <textarea
-                className="decline-textarea"
-                placeholder="type here..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </label>
-          </div>
-        )}
-        {!declining && (
-          <button
-            className="pending-card-details"
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-          >
-            {expanded ? "Hide Details" : "See Details"}
-          </button>
-        )}
+        ) : null}
+        <button
+          className="pending-card-details"
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "Hide Details" : "See Details"}
+        </button>
       </div>
-      {!declining ? (
-        <div className="pending-card-actions">
-          <button
-            className="pending-action-button pending-action-button--accept"
-            type="button"
-            onClick={() => onAccept(appointment.id)}
-          >
-            Accept
-          </button>
-          <button
-            className="pending-action-button pending-action-button--decline"
-            type="button"
-            onClick={() => { setDeclining(true); setExpanded(false); }}
-          >
-            Decline
-          </button>
-        </div>
-      ) : (
-        <div className="pending-card-actions">
-          <button
-            className="pending-action-button pending-action-button--cancel"
-            type="button"
-            onClick={() => { setDeclining(false); setReason(""); setNotes(""); }}
-          >
-            Cancel
-          </button>
-          <button
-            className="pending-action-button pending-action-button--confirm-decline"
-            type="button"
-            onClick={handleConfirmDecline}
-          >
-            Confirm Decline
-          </button>
-        </div>
-      )}
+      <div className="pending-card-actions">
+        <button
+          className="pending-action-button pending-action-button--accept"
+          type="button"
+          onClick={() => onAccept(appointment.id)}
+          disabled={isUpdating}
+        >
+          Accept
+        </button>
+        <button
+          className="pending-action-button pending-action-button--decline"
+          type="button"
+          onClick={() => onDecline(appointment.id)}
+          disabled={isUpdating}
+        >
+          Decline
+        </button>
+      </div>
     </article>
   );
 }
@@ -203,13 +149,49 @@ export default function SchedulingPage() {
   const navigate = useNavigate();
 
   const [currentDate, setCurrentDate] = useState(schedulingPageData.initialDate);
-  const [pendingList, setPendingList] = useState(schedulingPageData.pendingAppointments);
+  const [pendingList, setPendingList] = useState([]);
+  const [pendingStatus, setPendingStatus] = useState("loading");
+  const [updatingRequestIds, setUpdatingRequestIds] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
-  const [events, setEvents] = useState(schedulingPageData.events);
+  const [events] = useState(schedulingPageData.events);
+
+  useEffect(() => {
+    if (!db) {
+      setPendingStatus("error");
+      return undefined;
+    }
+
+    setPendingStatus("loading");
+
+    return listenToPendingVisitRequests(
+      db,
+      (requests) => {
+        setPendingList(requests);
+        setPendingStatus("ready");
+      },
+      () => {
+        setPendingStatus("error");
+      }
+    );
+  }, []);
 
   const hours = Array.from(
     { length: schedulingPageData.hoursShown },
     (_, i) => DAY_START_HOUR + i
+  );
+
+  const pendingAppointments = useMemo(
+    () =>
+      pendingList.map((request) => ({
+        id: request.id,
+        name: request.visitorName || request.familyName,
+        relation: request.residentName,
+        room: request.residentRoom,
+        date: request.requestedDate,
+        time: request.requestedTime,
+        notes: request.notes
+      })),
+    [pendingList]
   );
 
   function formatHourLabel(hour) {
@@ -226,48 +208,44 @@ export default function SchedulingPage() {
     setCurrentDate((d) => addDays(d, 1));
   }
 
-  function handleAccept(id) {
-    const accepted = pendingList.find((a) => a.id === id);
- 
-    if (accepted) {
-      const newStart = timeToMinutes(accepted.time);
-      const newEnd = timeToMinutes(addOneHour(accepted.time));
+  function setRequestUpdating(id, isUpdating) {
+    setUpdatingRequestIds((currentIds) =>
+      isUpdating ? [...currentIds, id] : currentIds.filter((currentId) => currentId !== id)
+    );
+  }
 
-      const hasConflict = events.some((e) => {
-        if (e.date !== toDateString(new Date(accepted.date))) return false;
-        const eStart = timeToMinutes(e.startTime);
-        const eEnd = timeToMinutes(e.endTime);
-        return newStart < eEnd && newEnd > eStart;
-      });
-
-      if (hasConflict) {
-        setStatusMessage(`Time conflict: ${accepted.name}'s appointment overlaps an existing event. Please decline or reschedule.`);
-        return;
-      }
-
-      const newEvent = {
-        id: `event-${accepted.id}`,
-        title: `${accepted.name} Visiting`,
-        subtitle: accepted.date,
-        room: "TBD",
-        startTime: accepted.time,
-        endTime: addOneHour(accepted.time),
-        date: toDateString(new Date(accepted.date))
-      };
-      setEvents((prev) => [...prev, newEvent]);
+  async function handleAccept(id) {
+    if (!db) {
+      setStatusMessage("Visit requests are unavailable because Firebase is not configured.");
+      return;
     }
- 
-    setPendingList((list) => list.filter((a) => a.id !== id));
-    setStatusMessage("Appointment accepted and added to calendar.");
+
+    try {
+      setRequestUpdating(id, true);
+      await updateVisitRequestStatus(db, id, "approved", currentDemoStaffName);
+      setStatusMessage("Appointment accepted.");
+    } catch {
+      setStatusMessage("Could not accept appointment. Check your Firebase connection.");
+    } finally {
+      setRequestUpdating(id, false);
+    }
   }
 
-  function handleDecline(id) {
-    setPendingList((list) => list.filter((a) => a.id !== id));
-    setStatusMessage(`Appointment declined${reason ? `: ${reason}` : "."}`);
-  }
+  async function handleDecline(id) {
+    if (!db) {
+      setStatusMessage("Visit requests are unavailable because Firebase is not configured.");
+      return;
+    }
 
-  function handleSeeDetails(id) {
-    setStatusMessage(`Stub: details for appointment ${id}.`);
+    try {
+      setRequestUpdating(id, true);
+      await updateVisitRequestStatus(db, id, "declined", currentDemoStaffName);
+      setStatusMessage("Appointment declined.");
+    } catch {
+      setStatusMessage("Could not decline appointment. Check your Firebase connection.");
+    } finally {
+      setRequestUpdating(id, false);
+    }
   }
 
    const visibleEvents = events.filter(
@@ -357,22 +335,34 @@ export default function SchedulingPage() {
         <aside className="pending-panel" aria-label="Pending appointments">
           <h2 className="pending-panel-title">Pending Appointments</h2>
 
-          {pendingList.length === 0 ? (
+          {pendingStatus === "loading" ? (
+            <p className="pending-panel-empty">Loading pending appointments...</p>
+          ) : null}
+
+          {pendingStatus === "error" ? (
+            <p className="pending-panel-empty">
+              Pending appointments are unavailable right now.
+            </p>
+          ) : null}
+
+          {pendingStatus === "ready" && pendingAppointments.length === 0 ? (
             <p className="pending-panel-empty">No pending appointments.</p>
-          ) : (
+          ) : null}
+
+          {pendingStatus === "ready" && pendingAppointments.length ? (
             <ul className="pending-list">
-              {pendingList.map((appt) => (
+              {pendingAppointments.map((appt) => (
                 <li key={appt.id}>
                   <PendingCard
                     appointment={appt}
+                    isUpdating={updatingRequestIds.includes(appt.id)}
                     onAccept={handleAccept}
                     onDecline={handleDecline}
-                    onSeeDetails={handleSeeDetails}
                   />
                 </li>
               ))}
             </ul>
-          )}
+          ) : null}
         </aside>
       </div>
     </StaffAppShell>

@@ -1,13 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
+import {
+  FaChevronDown,
+  FaChevronRight,
+  FaHandHoldingHeart,
+  FaPeopleGroup,
+  FaRegCircleCheck,
+  FaRegCircleUser,
+  FaRegClock,
+  FaRegFaceSmile,
+  FaRegNoteSticky,
+  FaUtensils
+} from "react-icons/fa6";
 
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import {
   currentDemoStaffName,
   familyData,
-  getUniqueDailyLogEntries,
-  isDailyLogForResident,
   loadDailyLogEntries
 } from "../data/mockData";
+import { db } from "../lib/firebase";
+import {
+  getSubmittedDailyLogsForResident,
+  listenToDailyLogsForResident
+} from "../services/dailyLogService";
 
 const moodEmojiByValue = {
   Good: "😊",
@@ -17,13 +32,8 @@ const moodEmojiByValue = {
   Confused: "😕"
 };
 
-function getTimestamp(value) {
-  if (!value) {
-    return Number.NEGATIVE_INFINITY;
-  }
-
-  const date = new Date(String(value).replace(" ", "T"));
-  return Number.isNaN(date.getTime()) ? Number.NEGATIVE_INFINITY : date.getTime();
+function getLogTimestamp(entry) {
+  return entry.createdAt ?? entry.date;
 }
 
 function formatLogDate(value) {
@@ -46,6 +56,30 @@ function formatLogDate(value) {
   });
 }
 
+function formatPreviousLogDate(value) {
+  if (!value) {
+    return "Date not shared";
+  }
+
+  const date = new Date(String(value).replace(" ", "T"));
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return {
+    date: date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }),
+    time: date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit"
+    })
+  };
+}
+
 function getMoodSentence(residentName, mood) {
   const emoji = moodEmojiByValue[mood] ?? "🙂";
 
@@ -64,6 +98,18 @@ function getMoodSentence(residentName, mood) {
   return `${residentName} seemed to be ${moodTextByValue[mood] ?? mood.toLowerCase()} today ${emoji}`;
 }
 
+function getMoodSummary(mood) {
+  const moodTextByValue = {
+    Good: "Good",
+    Neutral: "Steady",
+    Irritable: "Irritable",
+    Withdrawn: "Withdrawn",
+    Confused: "Confused"
+  };
+
+  return moodTextByValue[mood] ?? mood ?? "Not shared";
+}
+
 function getMealSentence(residentName, meals) {
   if (!meals) {
     return "Meal details have not been shared yet.";
@@ -77,6 +123,17 @@ function getMealSentence(residentName, meals) {
   };
 
   return mealTextByValue[meals] ?? `${residentName}'s meal update: ${meals}.`;
+}
+
+function getMealSummary(meals) {
+  const mealTextByValue = {
+    "Ate well": "Ate well",
+    "Ate moderately": "Ate moderately",
+    "Ate poorly": "Ate lightly",
+    "Refused meals": "Refused meals"
+  };
+
+  return mealTextByValue[meals] ?? meals ?? "Not shared";
 }
 
 function getActivitySentence(residentName, activityEngagement) {
@@ -94,6 +151,17 @@ function getActivitySentence(residentName, activityEngagement) {
   return activityTextByValue[activityEngagement] ?? `${residentName}'s activity update: ${activityEngagement}.`;
 }
 
+function getActivitySummary(activityEngagement) {
+  const activityTextByValue = {
+    "Fully Engaged": "Fully engaged",
+    "Moderately Engaged": "Participated",
+    Disinterested: "Less engaged",
+    "Did Not Engage": "Did not join"
+  };
+
+  return activityTextByValue[activityEngagement] ?? activityEngagement ?? "Not shared";
+}
+
 function getAssistanceSentence(residentName, assistanceLevel) {
   if (!assistanceLevel) {
     return "Assistance details have not been shared yet.";
@@ -107,6 +175,17 @@ function getAssistanceSentence(residentName, assistanceLevel) {
   };
 
   return assistanceTextByValue[assistanceLevel] ?? `${residentName}'s assistance update: ${assistanceLevel}.`;
+}
+
+function getAssistanceSummary(assistanceLevel) {
+  const assistanceTextByValue = {
+    Independent: "Independent",
+    "Partial Assist": "Some help",
+    "Full Assist": "Full support",
+    "Declined Assistance": "Declined help"
+  };
+
+  return assistanceTextByValue[assistanceLevel] ?? assistanceLevel ?? "Not shared";
 }
 
 function getSummarySentence(entry, residentName) {
@@ -125,43 +204,107 @@ function getSummarySentence(entry, residentName) {
   ].join(" ");
 }
 
-function FamilyUpdateCard({ entry, residentName, isFeatured }) {
+function getOverallSummary(entry, residentName) {
+  const summary = getSummarySentence(entry, residentName);
+  const firstSentence = summary.split(".")[0].trim();
+
+  if (!firstSentence) {
+    return "Update shared";
+  }
+
+  const withoutResidentName = firstSentence
+    .replace(new RegExp(`^${residentName}\\s+`, "i"), "")
+    .replace(/^had\s+/i, "")
+    .replace(/^was\s+/i, "");
+
+  return withoutResidentName.length > 24
+    ? `${withoutResidentName.slice(0, 24).trim()}...`
+    : withoutResidentName;
+}
+
+function SummaryMetric({ icon: Icon, label, value, tone }) {
+  return (
+    <article className="family-log-metric">
+      <span className={`family-log-metric-icon family-log-metric-icon--${tone}`}>
+        <Icon aria-hidden="true" />
+      </span>
+      <div>
+        <h2>{label}</h2>
+        <p>{value}</p>
+      </div>
+    </article>
+  );
+}
+
+function FamilyUpdateCard({ entry, residentName }) {
   const staffName = entry.staffName ?? entry.caregiverName ?? entry.caregiver ?? currentDemoStaffName;
+  const summary = getSummarySentence(entry, residentName);
+  const notesText = entry.notes && entry.notes !== summary ? entry.notes : "";
   const detailItems = [
-    { label: "Mood", value: getMoodSentence(residentName, entry.mood) },
-    { label: "Meals", value: getMealSentence(residentName, entry.meals) },
+    {
+      label: "Mood",
+      value: getMoodSentence(residentName, entry.mood),
+      icon: FaRegFaceSmile,
+      tone: "mood"
+    },
+    {
+      label: "Meals",
+      value: getMealSentence(residentName, entry.meals),
+      icon: FaUtensils,
+      tone: "meals"
+    },
     {
       label: "Activity & Engagement",
-      value: getActivitySentence(residentName, entry.activityEngagement)
+      value: getActivitySentence(residentName, entry.activityEngagement),
+      icon: FaPeopleGroup,
+      tone: "activity"
     },
     {
       label: "Assistance Level",
-      value: getAssistanceSentence(residentName, entry.assistanceLevel)
+      value: getAssistanceSentence(residentName, entry.assistanceLevel),
+      icon: FaHandHoldingHeart,
+      tone: "assistance"
     }
   ];
 
   return (
-    <article className={`family-log-card${isFeatured ? " family-log-card--featured" : ""}`}>
+    <article className="family-log-card family-log-card--featured">
       <div className="family-log-card-topline">
-        <p className="family-log-date">{formatLogDate(entry.createdAt ?? entry.date)}</p>
-        <p className="family-log-staff">Updated by {staffName}</p>
+        <p className="family-log-date">
+          <FaRegClock aria-hidden="true" />
+          {formatLogDate(getLogTimestamp(entry))}
+        </p>
+        <p className="family-log-staff">
+          <FaRegCircleUser aria-hidden="true" />
+          Updated by {staffName}
+        </p>
       </div>
 
-      <p className="family-log-summary">{getSummarySentence(entry, residentName)}</p>
+      <p className="family-log-summary">{summary}</p>
 
       <div className="family-log-detail-grid">
         {detailItems.map((item) => (
           <div key={item.label} className="family-log-detail">
-            <span>{item.label}</span>
-            <p>{item.value}</p>
+            <span className={`family-log-detail-icon family-log-detail-icon--${item.tone}`}>
+              <item.icon aria-hidden="true" />
+            </span>
+            <div>
+              <span>{item.label}</span>
+              <p>{item.value}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="family-log-notes">
-        <h3>Notes & Summary</h3>
-        <p>{entry.notes || "No additional notes were shared for this update."}</p>
-      </div>
+      {notesText ? (
+        <div className="family-log-notes">
+          <FaRegNoteSticky aria-hidden="true" />
+          <div>
+            <h3>Notes</h3>
+            <p>{notesText}</p>
+          </div>
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -183,8 +326,53 @@ function FamilyLogsControls({ updateCount }) {
       <div className="family-logs-sort">
         <span>{updateCount} updates</span>
         <span>Newest first</span>
+        <FaChevronDown aria-hidden="true" />
       </div>
     </div>
+  );
+}
+
+function PreviousUpdateItem({ entry, residentName, isExpanded, onToggle }) {
+  const formattedDate = formatPreviousLogDate(getLogTimestamp(entry));
+  const summary = getSummarySentence(entry, residentName);
+  const expandedDetails = [
+    ["Mood", getMoodSummary(entry.mood)],
+    ["Meals", getMealSummary(entry.meals)],
+    ["Activity", getActivitySummary(entry.activityEngagement)],
+    ["Assistance", getAssistanceSummary(entry.assistanceLevel)]
+  ];
+
+  return (
+    <li className="family-log-timeline-item">
+      <span className="family-log-timeline-dot" aria-hidden="true" />
+      <button
+        className="family-log-previous-card"
+        type="button"
+        aria-expanded={isExpanded}
+        onClick={onToggle}
+      >
+        <span className="family-log-previous-date">
+          {typeof formattedDate === "string" ? formattedDate : (
+            <>
+              {formattedDate.date}
+              <small>{formattedDate.time}</small>
+            </>
+          )}
+        </span>
+        <span className="family-log-previous-summary">{summary}</span>
+        <FaChevronRight aria-hidden="true" />
+      </button>
+      {isExpanded ? (
+        <div className="family-log-previous-details">
+          {expandedDetails.map(([label, value]) => (
+            <p key={label}>
+              <span>{label}</span>
+              {value}
+            </p>
+          ))}
+        </div>
+      ) : null}
+    </li>
   );
 }
 
@@ -192,28 +380,66 @@ export default function FamilyDailyLogsPage() {
   const { resident } = familyData;
   const [entries, setEntries] = useState([]);
   const [status, setStatus] = useState("loading");
+  const [expandedLogId, setExpandedLogId] = useState("");
 
   useEffect(() => {
-    try {
-      const bethEntries = loadDailyLogEntries()
-        .filter((entry) => isDailyLogForResident(entry.residentId, resident.id))
-        .filter((entry) => entry.visibleToFamily !== false)
-        .sort((firstEntry, secondEntry) => {
-          const firstDate = firstEntry.createdAt ?? firstEntry.date;
-          const secondDate = secondEntry.createdAt ?? secondEntry.date;
-
-          return getTimestamp(secondDate) - getTimestamp(firstDate);
-        });
-
-      setEntries(getUniqueDailyLogEntries(bethEntries));
+    if (!db) {
+      const fallbackEntries = getSubmittedDailyLogsForResident(loadDailyLogEntries(), resident.id);
+      setEntries(fallbackEntries);
       setStatus("ready");
-    } catch {
-      setStatus("error");
+      return undefined;
     }
+
+    setStatus("loading");
+
+    return listenToDailyLogsForResident(
+      db,
+      resident.id,
+      (logs) => {
+        setEntries(logs);
+        setStatus("ready");
+      },
+      () => setStatus("error")
+    );
   }, [resident.id]);
 
   const latestLog = entries[0];
   const previousLogs = useMemo(() => entries.slice(1), [entries]);
+  const lastUpdated = latestLog ? formatLogDate(getLogTimestamp(latestLog)) : "";
+  const summaryMetrics = latestLog
+    ? [
+        {
+          label: "Overall",
+          value: getOverallSummary(latestLog, resident.name),
+          icon: FaRegCircleCheck,
+          tone: "overall"
+        },
+        {
+          label: "Mood",
+          value: getMoodSummary(latestLog.mood),
+          icon: FaRegFaceSmile,
+          tone: "mood"
+        },
+        {
+          label: "Meals",
+          value: getMealSummary(latestLog.meals),
+          icon: FaUtensils,
+          tone: "meals"
+        },
+        {
+          label: "Activity",
+          value: getActivitySummary(latestLog.activityEngagement),
+          icon: FaPeopleGroup,
+          tone: "activity"
+        },
+        {
+          label: "Assistance",
+          value: getAssistanceSummary(latestLog.assistanceLevel),
+          icon: FaHandHoldingHeart,
+          tone: "assistance"
+        }
+      ]
+    : [];
 
   return (
     <FamilyAppShell>
@@ -224,6 +450,9 @@ export default function FamilyDailyLogsPage() {
           <p className="family-logs-resident">
             {resident.name} · {resident.room}
           </p>
+          {lastUpdated ? (
+            <p className="family-logs-last-updated">Last updated {lastUpdated}</p>
+          ) : null}
         </div>
       </section>
 
@@ -241,25 +470,37 @@ export default function FamilyDailyLogsPage() {
 
       {status === "ready" && latestLog ? (
         <section className="family-logs-stack" aria-label="Beth Adams daily updates">
+          <section className="family-log-summary-row" aria-label="Latest daily log status summary">
+            {summaryMetrics.map((metric) => (
+              <SummaryMetric key={metric.label} {...metric} />
+            ))}
+          </section>
+
           <FamilyLogsControls updateCount={entries.length} />
 
           <div className="family-logs-section-heading">
-            <p className="family-card-label">Latest Summary</p>
+            <p className="family-card-label">Latest update</p>
           </div>
-          <FamilyUpdateCard entry={latestLog} residentName={resident.name} isFeatured />
+          <FamilyUpdateCard entry={latestLog} residentName={resident.name} />
 
           {previousLogs.length ? (
             <>
               <div className="family-logs-section-heading">
-                <p className="family-card-label">Previous Updates</p>
+                <p className="family-card-label">Previous updates</p>
               </div>
-              {previousLogs.map((entry) => (
-                <FamilyUpdateCard
-                  key={entry.id}
-                  entry={entry}
-                  residentName={resident.name}
-                />
-              ))}
+              <ol className="family-log-timeline">
+                {previousLogs.map((entry) => (
+                  <PreviousUpdateItem
+                    key={entry.id}
+                    entry={entry}
+                    residentName={resident.name}
+                    isExpanded={expandedLogId === entry.id}
+                    onToggle={() =>
+                      setExpandedLogId((currentId) => (currentId === entry.id ? "" : entry.id))
+                    }
+                  />
+                ))}
+              </ol>
             </>
           ) : null}
         </section>
