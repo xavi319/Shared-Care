@@ -5,7 +5,6 @@ import {
   FaFloppyDisk,
   FaHandHoldingHeart,
   FaPeopleGroup,
-  FaRegCalendarDays,
   FaRegClipboard,
   FaRegFaceSmile,
   FaShieldHalved,
@@ -34,16 +33,6 @@ const residentsById = new Map(
     [getCanonicalDailyLogResidentId(resident.id), resident]
   ])
 );
-
-function formatEntryDate(value) {
-  const date = value ? new Date(value.replace(" ", "T")) : new Date();
-
-  return date.toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric"
-  });
-}
 
 function getTimestampLabel(dateKey = getDailyLogRequiredDate()) {
   const now = new Date();
@@ -256,9 +245,6 @@ export default function DailyLogSubmissionPage() {
     });
   }
 
-  const pendingContext = !isEditingExistingReport
-    ? "This resident still has a daily log pending submission."
-    : "Review the current selections and update this resident's daily log as needed.";
   const notesHelpText = "Summarize the resident's day, key observations, and any follow-up needed.";
   const notesError = errors.notes;
 
@@ -270,11 +256,6 @@ export default function DailyLogSubmissionPage() {
           <h1 className="page-title">
             {isEditingExistingReport ? "Edit Daily Log" : "Daily Logs"} - {resident.name}
           </h1>
-          <p className="daily-log-submit-date">
-            <FaRegCalendarDays aria-hidden="true" />
-            <span>{formatEntryDate(currentEntry.date)}</span>
-          </p>
-          <p className="daily-log-submit-context">{pendingContext}</p>
         </div>
 
         <div className="daily-log-submit-header-actions">
