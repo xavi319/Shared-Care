@@ -88,10 +88,10 @@ function OptionGroup({ config, name, options, value, onChange, wide = false }) {
 
   return (
     <fieldset className={`daily-log-form-section daily-log-form-section--${config.tone}${wide ? " daily-log-form-section--wide" : ""}`}>
-      <legend className="daily-log-form-title" id={`${fieldId}-legend`}>
+      <div className="daily-log-form-title" id={`${fieldId}-legend`}>
         <Icon className="daily-log-section-icon" aria-hidden="true" />
         <span>{config.title}</span>
-      </legend>
+      </div>
       <div className="daily-log-option-list" role="radiogroup" aria-labelledby={`${fieldId}-legend`}>
         {options.map((option) => {
           const checked = value === option;

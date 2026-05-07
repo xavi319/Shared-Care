@@ -3,7 +3,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 import { StatCard } from "../components/dashboard/StatCard";
-import { ChartIcon, ChevronRightIcon } from "../components/layout/icons";
+import { ChevronRightIcon } from "../components/layout/icons";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import {
   checklistStorageKey,
@@ -19,6 +19,7 @@ import { db } from "../lib/firebase";
 import { mapFirestoreResident, saveResident } from "../services/residentService";
 
 const fallbackResidents = getUniqueById([...residentsPageData.residents, ...dashboardData.residents]);
+const assignedResidentNames = ["Beth Adams", "Edgar Callahan", "Lilian Mendoza"];
 
 const checklistTaskTemplates = [
   { id: "vitals", label: "Check vitals", time: "9:00 AM" },
@@ -176,6 +177,7 @@ function getChecklistGroups(items, residents) {
     id: resident.id,
     name: resident.name,
     room: resident.room,
+    image: resident.image,
     items: itemsByResidentId.get(resident.id) ?? []
   }));
   const otherItems = itemsByResidentId.get("other") ?? [];
@@ -183,6 +185,33 @@ function getChecklistGroups(items, residents) {
   return otherItems.length
     ? [...residentGroups, { id: "other", name: "Other tasks", room: "", items: otherItems }]
     : residentGroups;
+}
+
+function isPrimaryDemoResident(resident) {
+  return resident.id === "beth-adams" || resident.name === "Beth Adams";
+}
+
+function sortPrimaryResidentFirst(items) {
+  const primaryItem = items.find(isPrimaryDemoResident);
+
+  if (!primaryItem) {
+    return items;
+  }
+
+  return [primaryItem, ...items.filter((item) => item.id !== primaryItem.id)];
+}
+
+function getAssignedResidentPreview(residents) {
+  return assignedResidentNames
+    .map((residentName) => residents.find((resident) => resident.name === residentName))
+    .filter(Boolean);
+}
+
+function getDashboardChecklistPreview(groups) {
+  const sortedGroups = sortPrimaryResidentFirst(groups).filter((group) => group.items.length > 0);
+  const primaryGroup = sortedGroups[0];
+
+  return primaryGroup ? [{ ...primaryGroup, items: primaryGroup.items.slice(0, 4) }] : [];
 }
 
 function slugify(value) {
@@ -401,9 +430,9 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [statusMessage, setStatusMessage] = useState("");
   const [greeting, setGreeting] = useState("");
-  const [assignedResidents, setAssignedResidents] = useState(dashboardData.residents);
+  const [assignedResidents, setAssignedResidents] = useState(fallbackResidents);
   const [isAddResidentModalOpen, setIsAddResidentModalOpen] = useState(false);
-  const [checklistItems, setChecklistItems] = useState(() => loadChecklistItems(dashboardData.residents));
+  const [checklistItems, setChecklistItems] = useState(() => loadChecklistItems(fallbackResidents));
   const [dashboardSources, setDashboardSources] = useState(() => getInitialDashboardSources());
   const [sourcesFromFirestore, setSourcesFromFirestore] = useState({});
 
@@ -553,6 +582,8 @@ export default function DashboardPage() {
     value: dashboardCounts[item.id] ?? 0
   }));
   const checklistGroups = getChecklistGroups(checklistItems, assignedResidents);
+  const residentPreview = getAssignedResidentPreview(assignedResidents);
+  const checklistPreviewGroups = getDashboardChecklistPreview(checklistGroups);
 
   return (
     <StaffAppShell onStubNavigate={handleStubNavigate}>
@@ -583,22 +614,23 @@ export default function DashboardPage() {
               <h2 className="panel-title">Residents</h2>
             </div>
             <div className="resident-header-actions">
+              <div className="resident-count-badge">
+                <span id="resident-count-value">{residentPreview.length}</span>
+              </div>
               <button
                 className="resident-add-button"
                 type="button"
                 onClick={() => setIsAddResidentModalOpen(true)}
                 aria-label="Add resident"
               >
-                +
+                <span aria-hidden="true">+</span>
+                Add resident
               </button>
-              <div className="resident-count-badge">
-                <span id="resident-count-value">{assignedResidents.length}</span>
-              </div>
             </div>
           </div>
 
           <ul className="resident-list">
-            {assignedResidents.map((resident) => (
+            {residentPreview.map((resident) => (
               <li key={resident.id} className="resident-row-item">
                 <button
                   className="resident-row"
@@ -614,10 +646,9 @@ export default function DashboardPage() {
                     <p className="resident-room">{resident.room}</p>
                   </div>
                   <div className="resident-update">
-                    <strong>Last Update</strong>
+                    <strong>Last update</strong>
                     {resident.lastUpdate}
                   </div>
-                  <ChartIcon />
                   <ChevronRightIcon />
                 </button>
               </li>
@@ -625,30 +656,32 @@ export default function DashboardPage() {
           </ul>
 
           <button className="view-all-button" type="button" onClick={() => navigate("/residents")}>
-            View All
+            View all residents
+            <ChevronRightIcon className="view-all-icon" />
           </button>
         </article>
 
         <article className="panel panel--accent">
           <div className="panel-header panel-header--accent">
             <div>
-              <p className="panel-eyebrow panel-eyebrow--light">To Do</p>
+              <p className="panel-eyebrow panel-eyebrow--light">To do</p>
               <h2 className="panel-title panel-title--light">Daily Checklist</h2>
             </div>
             <button className="add-task-button" type="button" onClick={handleAddTask}>
-              + Add Task
+              + Add task
             </button>
           </div>
 
-          <div className="tasks-meta">
-            <p>{dashboardData.checklistDate}</p>
-          </div>
-
           <div className="task-list">
-            {checklistGroups.map((group) => (
+            {checklistPreviewGroups.map((group) => (
               <section key={group.id} className="task-group" aria-label={`${group.name} checklist`}>
                 <div className="task-group-header">
-                  <p className="task-group-name">{group.name}</p>
+                  <div className="task-group-resident">
+                    <div className="resident-avatar task-group-avatar">
+                      {group.image ? <img src={group.image} alt={group.name} /> : <span>{getInitials(group.name)}</span>}
+                    </div>
+                    <p className="task-group-name">{group.name}</p>
+                  </div>
                   {group.room ? <span className="room-pill">{group.room}</span> : null}
                 </div>
                 <ul className="task-group-list">
@@ -675,6 +708,11 @@ export default function DashboardPage() {
               </section>
             ))}
           </div>
+
+          <button className="view-all-button checklist-view-button" type="button" onClick={() => handleStubNavigate("full checklist")}>
+            View full checklist
+            <ChevronRightIcon className="view-all-icon" />
+          </button>
         </article>
       </section>
 
