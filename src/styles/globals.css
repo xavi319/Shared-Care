@@ -556,13 +556,14 @@ a {
 .dashboard-panels {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
-  align-items: start;
+  align-items: stretch;
   gap: 30px;
 }
 
 .dashboard-panels > .panel {
   display: flex;
   flex-direction: column;
+  height: 100%;
   max-height: min(720px, calc(100vh - 260px));
   min-height: 0;
 }
@@ -679,15 +680,13 @@ a {
 }
 
 .dashboard-panels .resident-list {
-  flex: initial;
-  margin: 14px 24px 0;
-  border: 1px solid #dbe3ee;
-  border-radius: 10px;
+  flex: 1 1 auto;
+  margin: 14px 0 0;
   overflow: hidden;
 }
 
 .dashboard-panels .task-list {
-  flex: 1;
+  flex: 1 1 auto;
   border-bottom: 1px solid #e4e8ee;
 }
 
@@ -782,6 +781,7 @@ a {
 
 .view-all-button {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   gap: 8px;

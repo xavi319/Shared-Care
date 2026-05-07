@@ -166,8 +166,7 @@ export const dailyLogsPageData = {
       caregiver: "Sarah Allen",
       mood: "Good",
       date: "2026-03-15 10:05",
-      status: "completed",
-      reportStatus: "submitted",
+      status: "pending",
       meals: "Ate well",
       activityEngagement: "Moderately Engaged",
       assistanceLevel: "Partial Assist",
@@ -221,57 +220,72 @@ export const dailyLogsPageData = {
       residentId: "clarence-doyle",
       caregiver: "Andy Smith",
       mood: "Neutral",
-      date: "2026-03-15",
-      status: "pending"
+      date: "2026-03-15 09:42",
+      status: "completed",
+      reportStatus: "submitted",
+      notes: "Clarence completed his morning routine and attended breakfast in the dining room."
     },
     {
       residentId: "ronald-perry",
       caregiver: "Andy Smith",
       mood: "Good",
-      date: "2026-03-15",
-      status: "pending"
+      date: "2026-03-15 10:05",
+      status: "completed",
+      reportStatus: "submitted",
+      notes: "Ronald was upbeat during morning care and finished most of breakfast."
+    },
+    {
+      residentId: "edgar-callahan",
+      caregiver: "Sarah Allen",
+      mood: "Calm",
+      date: "2026-03-15 12:02",
+      status: "pending",
+      meals: "Ate moderately",
+      activityEngagement: "Moderately Engaged",
+      assistanceLevel: "Partial Assist",
+      safety: "",
+      notes:
+        "Edgar had a steady morning and needs Sarah's daily log review before submission."
     },
     {
       residentId: "franklin-dempsey",
       caregiver: "Georgia Doe",
       mood: "Calm",
-      date: "2026-03-15",
-      status: "pending"
+      date: "2026-03-15 11:14",
+      status: "completed",
+      reportStatus: "submitted",
+      notes: "Franklin completed morning care and joined the seated exercise group."
     },
     {
       residentId: "lilian-mendoza",
       caregiver: "Sarah Allen",
-      mood: "",
-      date: "2026-03-15",
+      mood: "Neutral",
+      date: "2026-03-15 08:24",
       status: "pending",
-      actionTone: "attention",
-      reportStatus: "missing",
-      meals: "",
-      activityEngagement: "",
-      assistanceLevel: "",
+      meals: "Ate moderately",
+      activityEngagement: "Moderately Engaged",
+      assistanceLevel: "Partial Assist",
       safety: "",
-      notes: ""
+      notes:
+        "Lilian's daily log is in progress and still needs Sarah's final submission."
     },
     {
       residentId: "harold-bennett",
       caregiver: "Terry Nguyen",
       mood: "Irritable",
-      date: "2026-03-14 19:47",
-      status: "completed"
-    },
-    {
-      residentId: "edgar-callahan",
-      caregiver: "Sarah Allen",
-      mood: "Good",
-      date: "2026-03-14 11:27",
-      status: "completed"
+      date: "2026-03-15 16:32",
+      status: "completed",
+      reportStatus: "submitted",
+      notes: "Harold was irritable before lunch but settled after quiet time in his room."
     },
     {
       residentId: "june-sinclair",
       caregiver: "Andy Smith",
       mood: "Withdrawn",
-      date: "2026-03-14 14:09",
-      status: "completed"
+      date: "2026-03-15 14:54",
+      status: "completed",
+      reportStatus: "submitted",
+      notes: "June spent extra time resting and accepted check-ins throughout the afternoon."
     }
   ]
 };
