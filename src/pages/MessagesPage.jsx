@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FaCheck, FaCheckDouble } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
@@ -368,7 +369,7 @@ function ChatBubble({ message, currentUser }) {
       </div>
       <p className="chat-bubble-time">
         {formatMessageTimestamp(message.createdAt)}
-        {isOutgoing ? <span aria-hidden="true"> ✓✓</span> : null}
+        {isOutgoing ? <FaCheckDouble className="message-read-check" aria-hidden="true" /> : null}
       </p>
     </div>
   );
@@ -400,6 +401,7 @@ function ResidentContextStrip({ contact, latestDailyLog }) {
         {mealLabel ? (
           <span className={isConfirmedAteWell ? "resident-context-meals is-confirmed" : "resident-context-meals"}>
             {mealLabel}
+            {isConfirmedAteWell ? <FaCheck className="resident-context-check" aria-hidden="true" /> : null}
           </span>
         ) : null}
       </p>

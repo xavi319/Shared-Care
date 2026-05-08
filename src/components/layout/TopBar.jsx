@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/AuthProvider";
-import { InboxIcon } from "./icons";
 
 function formatTime(date) {
   return new Intl.DateTimeFormat("en-US", {
@@ -39,9 +38,6 @@ export function TopBar() {
 
       <div className="topbar-actions">
         <p className="current-time">{currentTime}</p>
-        <button className="icon-button" type="button" aria-label="Inbox">
-          <InboxIcon />
-        </button>
         <button className="topbar-action-button" type="button" onClick={handleLogout}>
           Log Out
         </button>

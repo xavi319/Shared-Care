@@ -6,9 +6,9 @@ import {
   ChevronLeftIcon as HeroChevronLeftIcon,
   ChevronRightIcon as HeroChevronRightIcon,
   ClipboardDocumentListIcon,
-  EnvelopeIcon,
   HeartIcon,
   HomeIcon,
+  InboxStackIcon,
   MagnifyingGlassIcon,
   UsersIcon
 } from "@heroicons/react/24/outline";
@@ -18,7 +18,7 @@ function withDefaultClassName(className) {
 }
 
 export function InboxIcon({ className }) {
-  return <EnvelopeIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <InboxStackIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
 export function SearchIcon({ className }) {

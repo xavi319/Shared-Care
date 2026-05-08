@@ -197,7 +197,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 78px;
+  height: 64px;
   padding: 0 40px 0 42px;
   background: rgba(255, 255, 255, 0.97);
   border-bottom: 1px solid #e3e7ee;
@@ -218,8 +218,8 @@ a {
 }
 
 .topbar .brand-wordmark {
-  width: 196px;
-  height: 33px;
+  width: 184px;
+  height: 31px;
 }
 
 .topbar-actions {
@@ -321,7 +321,7 @@ a {
 
 .dashboard-shell {
   display: grid;
-  grid-template-columns: 252px minmax(0, 1fr);
+  grid-template-columns: 236px minmax(0, 1fr);
   min-height: calc(100vh - 76px);
 }
 
@@ -614,29 +614,32 @@ a {
 .panel-header--accent {
   background: var(--surface-accent);
   color: #ffffff;
+  padding: 16px 20px 14px;
 }
 
 .panel-eyebrow {
   margin: 0 0 2px;
   color: var(--muted-soft);
-  font-size: 1.1rem;
+  font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.01em;
 }
 
 .panel-eyebrow--light {
   color: rgba(255, 255, 255, 0.7);
+  font-size: 0.92rem;
 }
 
 .panel-title {
   margin: 0;
-  font-size: 1.55rem;
+  font-size: 1.28rem;
   font-weight: 600;
   line-height: 1.1;
 }
 
 .panel-title--light {
   color: #ffffff;
+  font-size: 1.28rem;
 }
 
 .resident-count-badge {
@@ -1773,29 +1776,29 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 22px 24px 12px;
+  padding: 16px 20px 8px;
 }
 
 .task-group-resident {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .task-group-avatar {
-  width: 46px;
-  height: 46px;
+  width: 38px;
+  height: 38px;
   background: #eaf1ff;
   color: var(--brand);
-  font-size: 0.95rem;
+  font-size: 0.84rem;
   font-weight: 700;
 }
 
 .task-group-name {
   margin: 0;
   color: #111111;
-  font-size: 1.12rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.2;
 }
@@ -1803,16 +1806,16 @@ a {
 .task-group-list {
   list-style: none;
   margin: 0;
-  padding: 0 24px 18px 84px;
+  padding: 0 20px 12px 70px;
 }
 
 .task-item {
   position: relative;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr);
   align-items: start;
-  gap: 16px;
-  padding: 8px 0 12px;
+  gap: 12px;
+  padding: 6px 0 9px;
 }
 
 .task-group-list .task-item + .task-item {
@@ -1830,8 +1833,8 @@ a {
 
 .task-toggle {
   position: relative;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   padding: 0;
@@ -1843,8 +1846,8 @@ a {
 .task-item:not(:last-child) .task-toggle::after {
   content: "";
   position: absolute;
-  top: 28px;
-  bottom: -22px;
+  top: 22px;
+  bottom: -17px;
   left: 50%;
   width: 1px;
   background: #d7dee9;
@@ -1852,14 +1855,19 @@ a {
 }
 
 .task-circle {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   display: grid;
   place-items: center;
   border: 2px solid #b9b9b9;
   border-radius: 999px;
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 0.7rem;
+}
+
+.task-circle svg {
+  width: 10px;
+  height: 10px;
 }
 
 .task-circle.is-checked {
@@ -1873,15 +1881,15 @@ a {
 }
 
 .task-time {
-  margin-bottom: 5px;
+  margin-bottom: 3px;
   color: #7d7d7d;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0;
 }
 
 .task-desc {
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 600;
   line-height: 1.35;
 }
@@ -1889,22 +1897,22 @@ a {
 .room-pill {
   display: inline-flex;
   align-items: center;
-  padding: 7px 12px;
+  padding: 5px 10px;
   border-radius: 999px;
   background: rgba(183, 203, 248, 0.45);
   color: #4364a7;
-  font-size: 0.84rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0;
 }
 
 .add-task-button {
-  padding: 11px 18px;
+  padding: 8px 14px;
   border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.14);
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -2107,13 +2115,14 @@ a {
   border-radius: 12px;
   background: #ffffff;
   box-shadow: none;
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 400;
   color: #111111;
 }
 
 .search-input::placeholder {
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 300;
 }
 
 .search-input:focus-visible {
@@ -2608,6 +2617,8 @@ a {
 
 .daily-logs-search-input {
   padding: 0 48px 0 16px;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 .daily-logs-select {
@@ -2617,6 +2628,7 @@ a {
 
 .daily-logs-search-input::placeholder {
   color: rgba(0, 0, 0, 0.45);
+  font-weight: 300;
 }
 
 .daily-logs-search-input:focus-visible,
@@ -2713,8 +2725,9 @@ a {
 
 .daily-logs-table tbody .daily-logs-section-row td {
   padding: 10px 20px;
-  background: var(--page-bg);
-  border-top: 1px solid #edf1f6;
+  background: var(--surface);
+  border-top: 2px solid #dbe3ee;
+  border-bottom: 2px solid #dbe3ee;
   color: #566579;
   font-size: 0.86rem;
   font-weight: 700;
@@ -2727,7 +2740,7 @@ a {
 
 .daily-logs-table tbody .daily-logs-section-row:hover,
 .daily-logs-table tbody .daily-logs-section-row:focus-within {
-  background: var(--page-bg);
+  background: var(--surface);
 }
 
 .daily-logs-section-content {
@@ -3509,8 +3522,8 @@ a {
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--surface);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 400;
   color: var(--text);
   outline: none;
   transition: border-color 0.18s ease;
@@ -3523,7 +3536,8 @@ a {
 }
 
 .messages-search-input::placeholder {
-  color: var(--muted-soft);
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 300;
 }
 
 /* Contact list */
@@ -3856,18 +3870,15 @@ a {
   color: var(--brand);
 }
 
-.resident-context-meals.is-confirmed::after {
-  content: "✓";
-  display: inline-grid;
-  place-items: center;
+.resident-context-check {
   width: 16px;
   height: 16px;
   margin-left: 8px;
+  padding: 3px;
   border: 1.5px solid #35b86b;
   border-radius: 999px;
   color: #35b86b;
-  font-size: 0.72rem;
-  font-weight: 800;
+  vertical-align: -0.18em;
 }
 
 .chat-thread {
@@ -3946,8 +3957,16 @@ a {
   align-self: flex-start;
 }
 
-.chat-bubble-wrapper.is-outgoing .chat-bubble-time span {
+.chat-bubble-wrapper.is-outgoing .chat-bubble-time span,
+.message-read-check {
   color: var(--brand);
+}
+
+.message-read-check {
+  width: 0.9em;
+  height: 0.9em;
+  margin-left: 5px;
+  vertical-align: -0.1em;
 }
 
 .chat-thread-empty {

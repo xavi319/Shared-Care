@@ -52,7 +52,7 @@ export const dashboardData = {
 export const residentsPageData = {
   title: "Residents",
   subtitle: "Search",
-  searchPlaceholder: "Type to search...",
+  searchPlaceholder: "Search residents",
   residents: [
     {
       id: "beth-adams",
