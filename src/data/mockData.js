@@ -640,7 +640,7 @@ export const messagesData = {
       name: "Maria Mendoza",
       relation: "Daughter of Lilian Mendoza",
       room: "Room 252",
-      lastMessage: "Hello Nurse Sarah, how was Lilian's morning today?",
+      lastMessage: "Thank you. Did she seem anxious today?",
       unreadCount: 2,
       image: "https://randomuser.me/api/portraits/women/44.jpg"
     },
@@ -649,7 +649,7 @@ export const messagesData = {
       name: "Robert Adams",
       relation: "Son of Beth Adams",
       room: "Room 123",
-      lastMessage: "Yes, she is doing well. She just finished her breakfast.",
+      lastMessage: "Thank you for the update. So glad she enjoyed breakfast.",
       unreadCount: 0,
       image: "https://randomuser.me/api/portraits/men/32.jpg"
     },
@@ -658,7 +658,7 @@ export const messagesData = {
       name: "David Doyle",
       relation: "Son of Clarence Doyle",
       room: "Room 222",
-      lastMessage: "Hello Nurse Sarah, how was Clarence's morning today?",
+      lastMessage: "That sounds like him. Thank you.",
       unreadCount: 0,
       image: "https://randomuser.me/api/portraits/men/75.jpg"
     },
@@ -667,7 +667,7 @@ export const messagesData = {
       name: "Lillian Bennett",
       relation: "Daughter of Harold Bennett",
       room: "Room 127",
-      lastMessage: "Thanks for the update!",
+      lastMessage: "We also made sure his reading materials were refreshed.",
       unreadCount: 0,
       image: "https://randomuser.me/api/portraits/women/68.jpg"
     }
@@ -679,23 +679,39 @@ export const messagesData = {
       {
         id: "m1",
         type: "message",
-        text: "Hello Nurse Sarah, how was Lilian's morning today?",
+        text: "Good morning, how was Lilian overnight?",
+        direction: "incoming"
+      },
+      {
+        id: "m2",
+        type: "message",
+        text: "She slept steadily and had chamomile tea before bed.",
+        direction: "outgoing"
+      },
+      {
+        id: "m3",
+        type: "message",
+        text: "Thank you. Did she seem anxious today?",
         direction: "incoming"
       }
     ],
     "contact-robert-adams": [
       { id: "d1", type: "divider", label: "Yesterday 5:07 PM" },
-      { id: "m1", type: "message", text: "Sarah just won her bingo game!", direction: "outgoing" },
-      { id: "m2", type: "message", text: "She's super happy!", direction: "outgoing" },
-      { id: "m3", type: "message", text: "Haha good to hear!", direction: "incoming" },
+      { id: "m1", type: "message", text: "Beth enjoyed music group and stayed engaged through the whole activity.", direction: "outgoing" },
+      { id: "m2", type: "message", text: "That is wonderful to hear.", direction: "incoming" },
       { id: "d2", type: "divider", label: "Today 8:23 AM" },
-      { id: "m4", type: "message", text: "Hi, How is my mom doing?", direction: "incoming" },
-      { id: "m5", type: "message", text: "Has she been eating?", direction: "incoming" },
+      { id: "m4", type: "message", text: "Good morning. How is my mom doing today?", direction: "incoming" },
+      {
+        id: "m5",
+        type: "message",
+        text: "Beth had a great morning. She ate most of breakfast and enjoyed the music during activity time.",
+        direction: "outgoing"
+      },
       {
         id: "m6",
         type: "message",
-        text: "Yes, she is doing well. She just finished her breakfast.",
-        direction: "outgoing"
+        text: "Thank you for the update. So glad she enjoyed breakfast.",
+        direction: "incoming"
       }
     ],
     "contact-david-doyle": [
@@ -703,7 +719,19 @@ export const messagesData = {
       {
         id: "m1",
         type: "message",
-        text: "Hello Nurse Sarah, how was Clarence's morning today?",
+        text: "Hello Sarah, how was Clarence's morning?",
+        direction: "incoming"
+      },
+      {
+        id: "m2",
+        type: "message",
+        text: "He did well after a short warm-up walk and enjoyed jazz after breakfast.",
+        direction: "outgoing"
+      },
+      {
+        id: "m3",
+        type: "message",
+        text: "That sounds like him. Thank you.",
         direction: "incoming"
       }
     ],
@@ -712,10 +740,16 @@ export const messagesData = {
       {
         id: "m1",
         type: "message",
-        text: "Harold had a great physical therapy session!",
+        text: "Harold had a good physical therapy session today.",
         direction: "outgoing"
       },
-      { id: "m2", type: "message", text: "Thanks for the update!", direction: "incoming" }
+      { id: "m2", type: "message", text: "Thanks for the update.", direction: "incoming" },
+      {
+        id: "m3",
+        type: "message",
+        text: "We also made sure his reading materials were refreshed.",
+        direction: "outgoing"
+      }
     ]
   }
 };

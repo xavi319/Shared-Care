@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { SearchIcon, SortIcon } from "../components/layout/icons";
@@ -22,10 +22,19 @@ const residents = Array.from(
     ])
   ).values()
 );
-const residentsById = new Map([
-  ...residents.map((resident) => [resident.id, resident]),
-  ...residents.map((resident) => [getCanonicalDailyLogResidentId(resident.id), resident])
-]);
+const assignedCaregiverName = "Sarah Allen";
+const assignedResidentOrder = ["beth_123", "edgar-callahan", "lilian-mendoza"];
+const otherResidentOrder = [
+  "clarence-doyle",
+  "franklin-dempsey",
+  "harold-bennett",
+  "june-sinclair",
+  "ronald-perry"
+];
+const residentDisplayOrder = [...assignedResidentOrder, ...otherResidentOrder];
+const residentDisplayRank = new Map(
+  residentDisplayOrder.map((residentId, index) => [residentId, index])
+);
 
 const moodToneByValue = {
   Good: "good",
@@ -130,36 +139,52 @@ function getAssignedStaffName(entries, residentId) {
   return latestEntry?.staffName ?? latestEntry?.caregiverName ?? latestEntry?.caregiver ?? "Unassigned";
 }
 
-function getLogRows(entries, requiredDate) {
-  return residents.map((resident) => {
-    const canonicalResidentId = getCanonicalDailyLogResidentId(resident.id);
-    const currentEntry = entries
-      .filter((entry) => getCanonicalDailyLogResidentId(entry.residentId) === canonicalResidentId)
-      .filter((entry) => getDailyLogDateKey(entry.createdAt ?? entry.date) === requiredDate)
-      .reduce((preferredEntry, entry) => getPreferredQueueEntry(preferredEntry, entry), null);
-    const entry = currentEntry ?? {
-      id: `daily-log-${canonicalResidentId}-${requiredDate}-required`,
-      residentId: canonicalResidentId,
-      staffName: getAssignedStaffName(entries, canonicalResidentId),
-      date: requiredDate,
-      createdAt: requiredDate,
-      mood: "",
-      status: "pending",
-      reportStatus: "missing",
-      actionTone: "attention"
-    };
+function getResidentDisplayRank(residentId) {
+  return residentDisplayRank.get(getCanonicalDailyLogResidentId(residentId)) ?? residentDisplayRank.size;
+}
 
-    return {
-      ...entry,
-      staffName: entry.staffName ?? entry.caregiverName ?? entry.caregiver ?? "Unassigned",
-      resident,
-      detailHref: `/daily-logs/${resident.id}/submit`,
-      moodTone: entry.mood ? (moodToneByValue[entry.mood] ?? "neutral") : "",
-      rowStatus: getRowStatus(entry),
-      actionTone: entry.actionTone ?? "default",
-      dueDate: requiredDate
-    };
-  });
+function getLogRows(entries, requiredDate) {
+  return residents
+    .map((resident) => {
+      const canonicalResidentId = getCanonicalDailyLogResidentId(resident.id);
+      const isAssignedToSarah = assignedResidentOrder.includes(canonicalResidentId);
+      const currentEntry = entries
+        .filter((entry) => getCanonicalDailyLogResidentId(entry.residentId) === canonicalResidentId)
+        .filter((entry) => getDailyLogDateKey(entry.createdAt ?? entry.date) === requiredDate)
+        .reduce((preferredEntry, entry) => getPreferredQueueEntry(preferredEntry, entry), null);
+      const entry = currentEntry ?? {
+        id: `daily-log-${canonicalResidentId}-${requiredDate}-required`,
+        residentId: canonicalResidentId,
+        staffName: getAssignedStaffName(entries, canonicalResidentId),
+        date: requiredDate,
+        createdAt: requiredDate,
+        mood: "",
+        status: "pending",
+        reportStatus: "missing",
+        actionTone: "attention"
+      };
+      const rowStatus = isAssignedToSarah ? "pending" : "completed";
+
+      return {
+        ...entry,
+        staffName: isAssignedToSarah
+          ? assignedCaregiverName
+          : entry.staffName ??
+            entry.caregiverName ??
+            entry.caregiver ??
+            getAssignedStaffName(entries, canonicalResidentId),
+        resident,
+        detailHref: `/daily-logs/${resident.id}/submit`,
+        moodTone: entry.mood ? (moodToneByValue[entry.mood] ?? "neutral") : "",
+        rowStatus,
+        actionTone: entry.actionTone ?? "default",
+        dueDate: requiredDate,
+        group: isAssignedToSarah ? "assigned" : "other",
+        displayRank: getResidentDisplayRank(canonicalResidentId)
+      };
+    })
+    .filter((row) => row.group === "assigned" || otherResidentOrder.includes(getCanonicalDailyLogResidentId(row.resident.id)))
+    .sort((firstRow, secondRow) => firstRow.displayRank - secondRow.displayRank);
 }
 
 function getVisibleRows(rows, filters) {
@@ -188,8 +213,28 @@ function getVisibleRows(rows, filters) {
       const statusDifference =
         statusSortRank[firstRow.rowStatus] - statusSortRank[secondRow.rowStatus];
 
-      return statusDifference || firstRow.resident.name.localeCompare(secondRow.resident.name);
+      return statusDifference || firstRow.displayRank - secondRow.displayRank;
     });
+}
+
+function getGroupedRows(rows) {
+  const assignedRows = rows.filter((row) => row.group === "assigned");
+  const otherRows = rows.filter((row) => row.group === "other");
+
+  return [
+    {
+      id: "assigned",
+      label: `Assigned to ${assignedCaregiverName}`,
+      badge: `${assignedRows.length} pending`,
+      rows: assignedRows
+    },
+    {
+      id: "other",
+      label: "Other residents",
+      badge: `${otherRows.length} submitted`,
+      rows: otherRows
+    }
+  ].filter((section) => section.rows.length);
 }
 
 function StatusChip({ status }) {
@@ -287,6 +332,7 @@ export default function DailyLogsPage() {
     caregiver: caregiverFilter,
     sortOrder
   });
+  const groupedRows = getGroupedRows(visibleRows);
 
   return (
     <StaffAppShell onStubNavigate={() => {}}>
@@ -393,7 +439,7 @@ export default function DailyLogsPage() {
                 value={sortOrder}
                 onChange={(event) => setSortOrder(event.target.value)}
               >
-                <option value="status">Needs log first</option>
+                <option value="status">Pending first</option>
                 <option value="resident">Resident A-Z</option>
                 <option value="caregiver">Caregiver A-Z</option>
               </select>
@@ -402,11 +448,13 @@ export default function DailyLogsPage() {
           </label>
         </div>
 
-        <div className="daily-logs-context-row">
-          <p className="status-message status-message--toolbar" aria-live="polite">
-            {statusMessage}
-          </p>
-        </div>
+        {statusMessage ? (
+          <div className="daily-logs-context-row">
+            <p className="status-message status-message--toolbar" aria-live="polite">
+              {statusMessage}
+            </p>
+          </div>
+        ) : null}
       </section>
 
       <section className="daily-logs-panel" aria-label="Daily logs table">
@@ -426,48 +474,60 @@ export default function DailyLogsPage() {
               </tr>
             </thead>
             <tbody>
-              {visibleRows.length ? visibleRows.map((row) => (
-                <tr key={row.id}>
-                  <td data-label="Resident">
-                    <div className="daily-logs-patient-cell">
-                      {row.detailHref ? (
-                        <Link className="daily-logs-patient-link" to={row.detailHref}>
-                          {row.resident.name}
-                        </Link>
-                      ) : (
-                        <span className="daily-logs-patient-name">{row.resident.name}</span>
-                      )}
-                      <span className="daily-logs-patient-room">{row.resident.room}</span>
-                    </div>
-                  </td>
-                  <td data-label="Status">
-                    <StatusChip status={row.rowStatus} />
-                  </td>
-                  <td data-label="Mood">
-                    {row.mood ? (
-                      <span className={`daily-logs-mood-pill daily-logs-mood-pill--${row.moodTone}`}>
-                        {row.mood}
-                      </span>
-                    ) : (
-                      <span className="daily-logs-empty-value">Not started</span>
-                    )}
-                  </td>
-                  <td data-label="Caregiver">{row.staffName}</td>
-                  <td data-label="Due">{formatLogDate(row.dueDate)}</td>
-                  <td data-label="Actions">
-                    <div className="daily-logs-actions-cell">
-                      <ViewAction row={row} />
-                      <button
-                        className="daily-logs-clear-action"
-                        type="button"
-                        disabled={row.rowStatus === "missing"}
-                        onClick={() => handleClearLog(row)}
-                      >
-                        Reset
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+              {groupedRows.length ? groupedRows.map((section) => (
+                <Fragment key={section.id}>
+                  <tr className="daily-logs-section-row">
+                    <td colSpan="6">
+                      <div className="daily-logs-section-content">
+                        <span>{section.label}</span>
+                        <span className="daily-logs-section-badge">{section.badge}</span>
+                      </div>
+                    </td>
+                  </tr>
+                  {section.rows.map((row) => (
+                    <tr key={row.id}>
+                      <td data-label="Resident">
+                        <div className="daily-logs-patient-cell">
+                          {row.detailHref ? (
+                            <Link className="daily-logs-patient-link" to={row.detailHref}>
+                              {row.resident.name}
+                            </Link>
+                          ) : (
+                            <span className="daily-logs-patient-name">{row.resident.name}</span>
+                          )}
+                          <span className="daily-logs-patient-room">{row.resident.room}</span>
+                        </div>
+                      </td>
+                      <td data-label="Status">
+                        <StatusChip status={row.rowStatus} />
+                      </td>
+                      <td data-label="Mood">
+                        {row.mood ? (
+                          <span className={`daily-logs-mood-pill daily-logs-mood-pill--${row.moodTone}`}>
+                            {row.mood}
+                          </span>
+                        ) : (
+                          <span className="daily-logs-empty-value">Not started</span>
+                        )}
+                      </td>
+                      <td data-label="Caregiver">{row.staffName}</td>
+                      <td data-label="Due">{formatLogDate(row.dueDate)}</td>
+                      <td data-label="Actions">
+                        <div className="daily-logs-actions-cell">
+                          <ViewAction row={row} />
+                          <button
+                            className="daily-logs-clear-action"
+                            type="button"
+                            disabled={row.rowStatus === "missing"}
+                            onClick={() => handleClearLog(row)}
+                          >
+                            Reset
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </Fragment>
               )) : (
                 <tr>
                   <td className="daily-logs-empty-state" colSpan="6">

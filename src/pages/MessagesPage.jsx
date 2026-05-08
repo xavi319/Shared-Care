@@ -3,7 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
+import { getDailyLogEntryByResidentId, messagesData } from "../data/mockData";
 import { db } from "../lib/firebase";
+import { listenToDailyLogsForResident } from "../services/dailyLogService";
 import {
   listenToConversations,
   listenToMessages,
@@ -26,31 +28,11 @@ const familyUser = {
 const robertAdamsConversationId = "contact-robert-adams";
 const sarahProfileImage = "/images/sarah-profile.jpg";
 
-function PhoneIcon() {
+function ProfileIcon() {
   return (
     <svg className="chat-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round"
-        d="M2 3.5A1.5 1.5 0 013.5 2h2.382a1.5 1.5 0 011.418 1.01l.97 2.91a1.5 1.5 0 01-.34 1.56l-1.3 1.3a16.07 16.07 0 006.59 6.59l1.3-1.3a1.5 1.5 0 011.56-.34l2.91.97A1.5 1.5 0 0122 16.118V18.5A1.5 1.5 0 0120.5 20C10.335 20 2 11.665 2 3.5z"
-      />
-    </svg>
-  );
-}
-
-function VideoIcon() {
-  return (
-    <svg className="chat-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round"
-        d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v12.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 5.25h-9A2.25 2.25 0 002.25 7.5v9A2.25 2.25 0 004.5 18.75z"
-      />
-    </svg>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg className="chat-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path strokeLinecap="round" d="M12 8h.01M12 11v5" />
+      <circle cx="12" cy="8" r="3.25" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 20a6.5 6.5 0 0113 0" />
     </svg>
   );
 }
@@ -85,16 +67,6 @@ function BackIcon() {
 function ImageIcon() {
   return (
     <svg className="attach-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <rect x="3" y="3" width="18" height="18" rx="3" />
-      <circle cx="8.5" cy="8.5" r="1.5" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-5-5L5 21" />
-    </svg>
-  );
-}
-
-function AttachIcon() {
-  return (
-    <svg className="attach-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round"
         d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"
       />
@@ -111,7 +83,7 @@ function SendIcon() {
 }
 
 function getInitials(name) {
-  return name
+  return String(name || "")
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -119,23 +91,171 @@ function getInitials(name) {
     .toUpperCase();
 }
 
+function normalizeRoom(room) {
+  if (!room) {
+    return "";
+  }
+
+  const roomText = String(room);
+  return roomText.toLowerCase().includes("room") ? roomText : `Room ${roomText}`;
+}
+
+function parseFamilyRelation(relation = "") {
+  const [relationship, residentName] = String(relation).split(" of ");
+
+  return {
+    relationship: relationship || "Family",
+    residentName: residentName || ""
+  };
+}
+
+function getFallbackResidentId(residentName, fallbackId) {
+  const slug = String(residentName || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return slug || fallbackId;
+}
+
+function getResidentProfilePath(contact) {
+  const residentSlug = String(contact?.residentName || contact?.residentId || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return residentSlug ? `/residents/${residentSlug}` : "/residents";
+}
+
+function formatCareLabel(value) {
+  return String(value || "")
+    .trim()
+    .split(/\s+/)
+    .map((word) => `${word.slice(0, 1).toUpperCase()}${word.slice(1).toLowerCase()}`)
+    .join(" ");
+}
+
+function formatTimestamp(value, fallback = "") {
+  if (!value) {
+    return fallback;
+  }
+
+  const date = typeof value?.toDate === "function" ? value.toDate() : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+
+  const today = new Date();
+  const yesterday = new Date();
+
+  yesterday.setDate(today.getDate() - 1);
+
+  if (isSameDay(date, today)) {
+    return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+
+  if (isSameDay(date, yesterday)) {
+    return "Yesterday";
+  }
+
+  return date.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
 function formatContactFromConversation(conversation, viewMode) {
   const isFamilyView = viewMode === "family";
+  const room = normalizeRoom(conversation.residentRoom);
+  const relationship = isFamilyView ? "Care team" : conversation.familyRelationship;
+  const relation = isFamilyView
+    ? `Care team for ${conversation.residentName}`
+    : `${relationship} of ${conversation.residentName}`;
 
   return {
     id: conversation.id,
     name: isFamilyView ? "Sarah" : conversation.familyName,
     image: isFamilyView ? sarahProfileImage : conversation.familyImage,
-    relation: isFamilyView
-      ? `Care team for ${conversation.residentName}`
-      : `${conversation.familyRelationship} of ${conversation.residentName}`,
-    room: conversation.residentRoom,
-    lastMessage: conversation.lastMessage ?? "No messages yet.",
+    relation,
+    relationship,
+    residentName: conversation.residentName,
+    residentId: conversation.residentId,
+    room,
+    lastMessage: conversation.lastMessage ?? "No care updates have been shared yet.",
+    timestamp: formatTimestamp(conversation.lastMessageAt, ""),
     unreadCount: isFamilyView
       ? conversation.unreadCountFamily ?? 0
       : conversation.unreadCountStaff ?? 0,
     conversation
   };
+}
+
+function getFallbackConversations(viewMode) {
+  const fallbackContacts = messagesData.contacts.map((contact, index) => {
+    const { relationship, residentName } = parseFamilyRelation(contact.relation);
+
+    return {
+      id: contact.id,
+      familyName: contact.name,
+      familyRelationship: relationship,
+      familyImage: "",
+      residentId: getFallbackResidentId(residentName, contact.id),
+      residentName,
+      residentRoom: contact.room,
+      lastMessage: contact.lastMessage,
+      lastMessageAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000),
+      unreadCountStaff: contact.unreadCount,
+      unreadCountFamily: contact.id === robertAdamsConversationId ? contact.unreadCount : 0,
+      participantIds: ["staff_1", contact.id === robertAdamsConversationId ? familyUser.uid : `family_${contact.id}`]
+    };
+  });
+
+  const conversations = viewMode === "family"
+    ? fallbackContacts.filter((conversation) => conversation.id === robertAdamsConversationId)
+    : fallbackContacts;
+
+  return conversations.map((conversation) => formatContactFromConversation(conversation, viewMode));
+}
+
+function getFallbackMessages(conversationId) {
+  const fallbackMessages = messagesData.conversations[conversationId] ?? [];
+
+  return fallbackMessages
+    .filter((message) => message.type === "message")
+    .map((message, index) => {
+      const isFromFamily = message.direction === "incoming";
+      const createdAt = new Date(Date.now() - (fallbackMessages.length - index) * 4 * 60 * 1000);
+
+      return {
+        id: message.id,
+        senderId: isFromFamily ? familyUser.uid : staffUser.uid,
+        senderName: isFromFamily ? familyUser.name : staffUser.name,
+        senderRole: isFromFamily ? familyUser.role : staffUser.role,
+        text: message.text,
+        createdAt
+      };
+    });
+}
+
+function formatMessageTimestamp(value) {
+  if (!value) {
+    return "Sending...";
+  }
+
+  const date = typeof value?.toDate === "function" ? value.toDate() : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const timeLabel = date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit"
+  });
+
+  if (isSameDay(date, new Date())) {
+    return timeLabel;
+  }
+
+  return `${date.toLocaleDateString([], { month: "short", day: "numeric" })} · ${timeLabel}`;
 }
 
 function isSameDay(leftDate, rightDate) {
@@ -160,17 +280,16 @@ function getMessageDateLabel(value) {
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
-  const timeLabel = date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
   if (isSameDay(date, today)) {
-    return `Today ${timeLabel}`;
+    return "Today";
   }
 
   if (isSameDay(date, yesterday)) {
-    return `Yesterday ${timeLabel}`;
+    return "Yesterday";
   }
 
-  return `${date.toLocaleDateString([], { month: "short", day: "numeric" })} ${timeLabel}`;
+  return date.toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
 function getThreadItems(messages) {
@@ -213,6 +332,7 @@ function ContactRow({ contact, isActive, onClick }) {
         aria-label={`Open conversation with ${contact.name}`}
         aria-pressed={isActive}
       >
+        {contact.unreadCount > 0 ? <span className="contact-unread-dot" aria-hidden="true" /> : null}
         <div className="contact-avatar">
           {contact.image ? (
             <img src={contact.image} alt={contact.name} />
@@ -220,7 +340,7 @@ function ContactRow({ contact, isActive, onClick }) {
             <span className="contact-avatar-initials">{getInitials(contact.name)}</span>
           )}
           {contact.unreadCount > 0 ? (
-            <span className="unread-badge" aria-label={unreadLabel}>
+            <span className="unread-badge unread-badge--inline" aria-label={unreadLabel}>
               {contact.unreadCount}
             </span>
           ) : null}
@@ -228,10 +348,12 @@ function ContactRow({ contact, isActive, onClick }) {
         <div className="contact-info">
           <p className="contact-name">{contact.name}</p>
           <p className="contact-relation">
-            {contact.relation} · <strong>{contact.room}</strong>
+            <span>{contact.relation}</span>
+            {contact.room ? <strong>{contact.room}</strong> : null}
           </p>
           <p className="contact-preview">{contact.lastMessage}</p>
         </div>
+        <span className="contact-time">{contact.timestamp}</span>
       </button>
     </li>
   );
@@ -244,6 +366,10 @@ function ChatBubble({ message, currentUser }) {
       <div className={`chat-bubble${isOutgoing ? " bubble--outgoing" : " bubble--incoming"}`}>
         {message.text}
       </div>
+      <p className="chat-bubble-time">
+        {formatMessageTimestamp(message.createdAt)}
+        {isOutgoing ? <span aria-hidden="true"> ✓✓</span> : null}
+      </p>
     </div>
   );
 }
@@ -252,6 +378,31 @@ function ChatDateDivider({ label }) {
   return (
     <div className="chat-date-divider" aria-label={label}>
       <span>{label}</span>
+    </div>
+  );
+}
+
+function ResidentContextStrip({ contact, latestDailyLog }) {
+  const dailyLog = latestDailyLog ?? getDailyLogEntryByResidentId(contact.residentId);
+  const updatedAt = dailyLog?.createdAt ?? dailyLog?.date ?? dailyLog?.updatedAt;
+  const updateTime = updatedAt ? formatTimestamp(updatedAt, "") : "";
+  const mood = dailyLog?.mood ?? dailyLog?.status;
+  const mealSummary = dailyLog?.meals ?? dailyLog?.summary;
+  const mealLabel = formatCareLabel(mealSummary);
+  const isConfirmedAteWell = String(dailyLog?.meals || "").trim().toLowerCase() === "ate well";
+
+  return (
+    <div className="resident-context-strip" aria-label={`${contact.residentName} care context`}>
+      <p className="resident-context-copy">
+        <strong>{contact.residentName}</strong>
+        {updateTime ? <span>Updated {updateTime}</span> : <span>No Daily Update Yet Today</span>}
+        {mood ? <span>Mood: <b>{formatCareLabel(mood)}</b></span> : null}
+        {mealLabel ? (
+          <span className={isConfirmedAteWell ? "resident-context-meals is-confirmed" : "resident-context-meals"}>
+            {mealLabel}
+          </span>
+        ) : null}
+      </p>
     </div>
   );
 }
@@ -271,10 +422,17 @@ export default function MessagesPage() {
   const [replyText, setReplyText] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [isLoadingConversations, setIsLoadingConversations] = useState(Boolean(db));
+  const [latestDailyLog, setLatestDailyLog] = useState(null);
   const chatThreadRef = useRef(null);
 
   useEffect(() => {
     if (!db) {
+      const fallbackContacts = getFallbackConversations(viewMode);
+
+      setContacts(fallbackContacts);
+      setActiveContact((currentContact) =>
+        fallbackContacts.find((contact) => contact.id === currentContact?.id) ?? fallbackContacts[0] ?? null
+      );
       setStatusMessage("Firebase is not configured. Add your Vite Firebase env variables to use real-time messaging.");
       setIsLoadingConversations(false);
       return undefined;
@@ -336,8 +494,13 @@ export default function MessagesPage() {
   }, [currentUser.uid, viewMode]);
 
   useEffect(() => {
-    if (!db || !activeContact?.id) {
+    if (!activeContact?.id) {
       setActiveMessages([]);
+      return undefined;
+    }
+
+    if (!db) {
+      setActiveMessages(getFallbackMessages(activeContact.id));
       return undefined;
     }
 
@@ -361,9 +524,25 @@ export default function MessagesPage() {
     );
   }, [activeContact?.id, activeContact?.unreadCount, currentUser]);
 
+  useEffect(() => {
+    if (!db || !activeContact?.residentId) {
+      setLatestDailyLog(getDailyLogEntryByResidentId(activeContact?.residentId));
+      return undefined;
+    }
+
+    return listenToDailyLogsForResident(
+      db,
+      activeContact.residentId,
+      (dailyLogs) => setLatestDailyLog(dailyLogs[0] ?? getDailyLogEntryByResidentId(activeContact.residentId)),
+      () => setLatestDailyLog(getDailyLogEntryByResidentId(activeContact.residentId))
+    );
+  }, [activeContact?.residentId]);
+
   const filteredContacts = contacts.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.room.toLowerCase().includes(searchQuery.toLowerCase())
+    c.relation.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.room.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.residentName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const activeThreadItems = useMemo(() => getThreadItems(activeMessages), [activeMessages]);
@@ -411,153 +590,163 @@ export default function MessagesPage() {
 
   return (
     <Shell onStubNavigate={() => {}}>
-      <div className="messages-page-header">
-        <div>
-          <p className="eyebrow">Messages</p>
-          <h1 className="page-title">
-            {viewMode === "family" ? "Care Team Messages" : "Family Contacts"}
-          </h1>
-          <p className="status-message" aria-live="polite">
-            {statusMessage}
-          </p>
-        </div>
-        <button
-          className="messages-back-button"
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="Go back"
-        >
-          <BackIcon />
-        </button>
-      </div>
-
-      <div className="messages-layout">
-        {/* ── Sidebar ── */}
-        <aside className="messages-sidebar" aria-label="Contacts list">
-          <div className="sidebar-top">
-            <button className="compose-button" type="button" aria-label="Compose new message">
-              <ComposeIcon />
-            </button>
-          </div>
-
-          <div className="messages-search-wrapper">
-            <SearchIcon />
-            <input
-              className="messages-search-input"
-              type="search"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search contacts"
-            />
-          </div>
-
-          <ul className="contact-list">
-            {filteredContacts.map((contact) => (
-              <ContactRow
-                key={contact.id}
-                contact={contact}
-                isActive={activeContact?.id === contact.id}
-                onClick={handleSelectContact}
-              />
-            ))}
-            {isLoadingConversations ? (
-              <li className="contact-list-empty">Loading conversations...</li>
+      <div className="messages-page">
+        <div className="messages-page-header">
+          <div>
+            <p className="eyebrow">Messages</p>
+            <h1 className="page-title">
+              {viewMode === "family" ? "Care Team Messages" : "Family Contacts"}
+            </h1>
+            {statusMessage ? (
+              <p className="status-message" aria-live="polite">
+                {statusMessage}
+              </p>
             ) : null}
-            {!isLoadingConversations && filteredContacts.length === 0 && (
-              <li className="contact-list-empty">
-                {contacts.length ? "No contacts found" : "No conversations available"}
-              </li>
-            )}
-          </ul>
-        </aside>
+          </div>
+          <button
+            className="messages-back-button"
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+          >
+            <BackIcon />
+          </button>
+        </div>
 
-        {/* ── Chat Panel ── */}
-        {activeContact ? (
-          <section className="chat-panel" aria-label={`Conversation with ${activeContact.name}`}>
-            {/* Header */}
-            <div className="chat-header">
-              <div className="chat-header-identity">
-                <div className="chat-header-avatar">
-                  {activeContact.image ? (
-                    <img src={activeContact.image} alt={activeContact.name} />
-                  ) : (
-                    <span className="contact-avatar-initials">{getInitials(activeContact.name)}</span>
-                  )}
-                  {viewMode === "family" && activeContact.unreadCount > 0 ? (
-                    <span
-                      className="unread-badge unread-badge--header"
-                      aria-label={`${activeContact.unreadCount} unread messages from Sarah`}
-                    >
-                      {activeContact.unreadCount}
-                    </span>
-                  ) : null}
-                </div>
-                <div>
-                  <p className="chat-header-name">{activeContact.name}</p>
-                  <p className="chat-header-sub">
-                    {activeContact.relation} · <strong>{activeContact.room}</strong>
-                  </p>
-                </div>
+        <div className="messages-layout">
+          {/* ── Sidebar ── */}
+          <aside className="messages-sidebar" aria-label="Contacts list">
+            <div className="sidebar-top">
+              <div className="messages-search-wrapper">
+                <SearchIcon />
+                <input
+                  className="messages-search-input"
+                  type="search"
+                  placeholder="Search conversations"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search contacts"
+                />
               </div>
-              <div className="chat-header-actions">
-                <button className="chat-action-button" type="button" aria-label="Voice call">
-                  <PhoneIcon />
-                </button>
-                <button className="chat-action-button" type="button" aria-label="Video call">
-                  <VideoIcon />
-                </button>
-                <button className="chat-action-button" type="button" aria-label="Contact info">
-                  <InfoIcon />
-                </button>
-              </div>
+              <button className="compose-button" type="button" aria-label="Compose new message">
+                <ComposeIcon />
+              </button>
             </div>
 
-            {/* Message thread */}
-            <div className="chat-thread" role="log" aria-live="polite" ref={chatThreadRef}>
-              {activeThreadItems.map((item) =>
-                item.type === "divider" ? (
-                  <ChatDateDivider key={item.id} label={item.label} />
-                ) : (
-                  <ChatBubble key={item.id} message={item} currentUser={currentUser} />
-                )
+            <ul className="contact-list">
+              {filteredContacts.map((contact) => (
+                <ContactRow
+                  key={contact.id}
+                  contact={contact}
+                  isActive={activeContact?.id === contact.id}
+                  onClick={handleSelectContact}
+                />
+              ))}
+              {isLoadingConversations ? (
+                <li className="contact-list-empty">Loading conversations...</li>
+              ) : null}
+              {!isLoadingConversations && filteredContacts.length === 0 && (
+                <li className="contact-list-empty">
+                  {contacts.length ? "No contacts found" : "No conversations available"}
+                </li>
               )}
-            </div>
+            </ul>
+          </aside>
 
-            {/* Reply bar */}
-            <div className="chat-reply-bar">
-              <button className="reply-attach-button" type="button" aria-label="Attach image">
-                <ImageIcon />
-              </button>
-              <button className="reply-attach-button" type="button" aria-label="Attach file">
-                <AttachIcon />
-              </button>
-              <input
-                className="reply-input"
-                type="text"
-                placeholder="Reply to ..."
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                onKeyDown={handleReplyKeyDown}
-                aria-label={`Reply to ${activeContact.name}`}
-                disabled={!db}
-              />
-              <button
-                className={`reply-send-button${replyText.trim() ? " is-active" : ""}`}
-                type="button"
-                onClick={handleSendReply}
-                aria-label="Send reply"
-                disabled={!db || !replyText.trim()}
-              >
-                <SendIcon />
-              </button>
-            </div>
-          </section>
-        ) : (
-          <section className="chat-panel chat-panel--empty">
-            <p>Select a contact to start messaging.</p>
-          </section>
-        )}
+          {/* ── Chat Panel ── */}
+          {activeContact ? (
+            <section className="chat-panel" aria-label={`Conversation with ${activeContact.name}`}>
+              {/* Header */}
+              <div className="chat-header">
+                <div className="chat-header-identity">
+                  <div className="chat-header-avatar">
+                    {activeContact.image ? (
+                      <img src={activeContact.image} alt={activeContact.name} />
+                    ) : (
+                      <span className="contact-avatar-initials">{getInitials(activeContact.name)}</span>
+                    )}
+                    {viewMode === "family" && activeContact.unreadCount > 0 ? (
+                      <span
+                        className="unread-badge unread-badge--header"
+                        aria-label={`${activeContact.unreadCount} unread messages from Sarah`}
+                      >
+                        {activeContact.unreadCount}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div>
+                    <p className="chat-header-name">{activeContact.name}</p>
+                    <p className="chat-header-sub">
+                      {activeContact.relation} · <strong>{activeContact.room}</strong>
+                    </p>
+                  </div>
+                </div>
+                <div className="chat-header-actions">
+                  <button
+                    className="chat-action-button"
+                    type="button"
+                    onClick={() => navigate(getResidentProfilePath(activeContact))}
+                    aria-label={`Open ${activeContact.residentName} resident profile`}
+                  >
+                    <ProfileIcon />
+                    <span>Resident Profile</span>
+                  </button>
+                </div>
+              </div>
+
+              <ResidentContextStrip contact={activeContact} latestDailyLog={latestDailyLog} />
+
+              {/* Message thread */}
+              <div className="chat-thread" role="log" aria-live="polite" ref={chatThreadRef}>
+                {activeThreadItems.length ? activeThreadItems.map((item) =>
+                  item.type === "divider" ? (
+                    <ChatDateDivider key={item.id} label={item.label} />
+                  ) : (
+                    <ChatBubble key={item.id} message={item} currentUser={currentUser} />
+                  )
+                ) : (
+                  <div className="chat-thread-empty">
+                    <p>No messages yet.</p>
+                    <span>Start the conversation with a care update or question.</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Reply bar */}
+              <div className="chat-composer">
+                <p className="chat-privacy-note">Messages are visible to authorized staff and family only.</p>
+                <div className="chat-reply-bar">
+                  <button className="reply-attach-button" type="button" aria-label="Attach file">
+                    <ImageIcon />
+                  </button>
+                  <input
+                    className="reply-input"
+                    type="text"
+                    placeholder="Write a message..."
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={handleReplyKeyDown}
+                    aria-label={`Reply to ${activeContact.name}`}
+                    disabled={!db}
+                  />
+                  <button
+                    className={`reply-send-button${replyText.trim() ? " is-active" : ""}`}
+                    type="button"
+                    onClick={handleSendReply}
+                    aria-label="Send reply"
+                    disabled={!db || !replyText.trim()}
+                  >
+                    <SendIcon />
+                  </button>
+                </div>
+              </div>
+            </section>
+          ) : (
+            <section className="chat-panel chat-panel--empty">
+              <p>Select a contact to start messaging.</p>
+            </section>
+          )}
+        </div>
       </div>
     </Shell>
   );
