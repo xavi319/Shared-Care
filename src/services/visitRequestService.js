@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
   query,
@@ -62,12 +63,21 @@ export async function createVisitRequest(db, request) {
     visitorName: request.visitorName,
     requestedDate: request.requestedDate,
     requestedTime: request.requestedTime,
+    visitType: request.visitType ?? "in-person",
     notes: trimmedNotes,
     status: "pending",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     reviewedBy: ""
   });
+}
+
+export async function cancelVisitRequest(db, requestId) {
+  if (!db) {
+    throw new Error("Firebase is not configured.");
+  }
+
+  await deleteDoc(doc(db, visitRequestsCollectionName, requestId));
 }
 
 export function listenToFamilyVisitRequests(db, familyUserId, onNext, onError) {

@@ -1069,27 +1069,29 @@ a {
 
 .family-scheduling-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 20px;
+  gap: 14px;
+  max-width: 1240px;
 }
 
 .family-scheduling-back {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  margin-top: 12px;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0;
   border: 0;
   background: transparent;
-  color: #111111;
+  color: #556274;
+  font-size: 0.92rem;
+  font-weight: 650;
   cursor: pointer;
 }
 
 .family-scheduling-back .sharedcare-icon {
-  width: 34px;
-  height: 34px;
-  stroke-width: 1.75;
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
 }
 
 .family-scheduling-back:hover,
@@ -1098,42 +1100,37 @@ a {
   outline: none;
 }
 
-.family-visit-panel {
-  overflow: hidden;
+.family-scheduling-title-group {
+  display: grid;
+  gap: 8px;
+}
+
+.family-scheduling-title-group p {
+  margin: 0;
+  color: #556274;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.family-visit-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(330px, 0.72fr);
+  align-items: stretch;
+  width: min(100%, 1240px);
+  min-height: 720px;
   border: 1px solid #dbe3ee;
   border-radius: 20px;
   background: #ffffff;
   box-shadow: none;
-}
-
-.family-visit-panel-header {
-  padding: 28px 36px;
-  background: var(--surface-muted);
-  border-bottom: 1px solid #eadcc6;
-}
-
-.family-visit-panel-header h2 {
-  margin: 0;
-  color: #111111;
-  font-size: clamp(1.75rem, 3vw, 2.4rem);
-  font-weight: 700;
-  line-height: 1.15;
+  overflow: hidden;
 }
 
 .family-visit-form {
-  padding: 32px 36px 28px;
-}
-
-.family-visit-fields {
-  display: grid;
-  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1fr);
-  gap: 28px;
-  align-items: start;
-}
-
-.family-visit-column {
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 30px 24px;
 }
 
 .family-visit-field {
@@ -1143,45 +1140,87 @@ a {
 
 .family-visit-field span {
   color: #111111;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 650;
   line-height: 1.25;
 }
 
 .family-visit-field input,
-.family-visit-field textarea {
+.family-visit-field textarea,
+.family-visit-field select {
   width: 100%;
-  border: 1px solid #b8b8b8;
-  border-radius: 18px;
+  border: 0;
   background: #ffffff;
   color: #111111;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 500;
+  outline: none;
 }
 
-.family-visit-field input {
-  min-height: 58px;
-  padding: 0 18px;
+.family-visit-field input,
+.family-visit-field select {
+  min-height: 48px;
+  padding: 0 14px 0 0;
 }
 
 .family-visit-field textarea {
-  min-height: 168px;
-  padding: 16px 18px;
+  min-height: 84px;
+  padding: 14px 16px 30px;
   resize: vertical;
 }
 
-.family-visit-field input::placeholder {
-  color: #111111;
+.family-visit-field select {
+  appearance: none;
 }
 
-.family-visit-field input:focus-visible,
-.family-visit-field textarea:focus-visible {
+.family-visit-field input::placeholder,
+.family-visit-field textarea::placeholder {
+  color: #7b8796;
+}
+
+.family-visit-input-wrap,
+.family-resident-select,
+.family-visit-notes-wrap {
+  display: grid;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #cfd8e6;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #51627e;
+}
+
+.family-visit-input-wrap {
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 14px;
+}
+
+.family-visit-input-wrap .sharedcare-icon {
+  width: 20px;
+  height: 20px;
+  color: #51627e;
+}
+
+.family-visit-input-wrap--select {
+  grid-template-columns: 22px minmax(0, 1fr) 18px;
+}
+
+.family-visit-input-wrap--select > .sharedcare-icon:last-child {
+  width: 17px;
+  height: 17px;
+}
+
+.family-visit-input-wrap:focus-within,
+.family-visit-notes-wrap:focus-within {
   border-color: var(--brand);
   outline: 2px solid rgba(51, 102, 255, 0.18);
   outline-offset: 2px;
 }
 
-.family-visit-field input[aria-invalid="true"] {
+.family-visit-input-wrap:has(input[aria-invalid="true"]),
+.family-visit-input-wrap:has(select[aria-invalid="true"]) {
   border-color: #d94f4f;
 }
 
@@ -1197,17 +1236,226 @@ a {
   gap: 18px;
 }
 
-.family-visit-submit {
-  min-height: 58px;
-  align-self: end;
-  margin-top: 22px;
+.family-resident-select {
+  min-height: 66px;
+  grid-template-columns: minmax(0, 1fr) 18px;
+  gap: 12px;
+  padding: 10px 14px;
+}
+
+.family-resident-select > .sharedcare-icon {
+  width: 18px;
+  height: 18px;
+  color: #51627e;
+}
+
+.family-resident-select-main,
+.family-about-resident,
+.family-visit-request-date-block {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 14px;
+}
+
+.family-resident-select strong,
+.family-about-resident p,
+.family-visit-request-resident p {
+  display: block;
+  margin: 0;
+  color: #111111;
+  font-size: 1rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.family-resident-select small,
+.family-about-resident span,
+.family-visit-request-resident span {
+  display: block;
+  margin-top: 4px;
+  color: #556274;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.family-resident-avatar {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid #d4dee9;
+  border-radius: 999px;
+  background: #e6f4ff;
+  color: #365bcb;
+  font-weight: 800;
+}
+
+.family-resident-avatar--small {
+  width: 48px;
+  height: 48px;
+}
+
+.family-resident-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.family-visit-type-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.family-visit-type-group legend {
+  margin: 0 0 10px;
+  color: #111111;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.family-visit-type-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.family-visit-type-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  padding: 12px;
+  border: 1px solid #d4dee9;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.family-visit-type-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.family-visit-type-card.is-selected {
+  border-color: var(--brand);
+  background: #f4f7ff;
+}
+
+.family-visit-type-card:focus-within {
+  outline: 2px solid rgba(51, 102, 255, 0.18);
+  outline-offset: 2px;
+}
+
+.family-visit-type-icon,
+.family-guideline-icon,
+.family-request-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #eef3fb;
+  color: #365bcb;
+}
+
+.family-visit-type-icon .sharedcare-icon,
+.family-guideline-icon .sharedcare-icon,
+.family-request-icon .sharedcare-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.family-visit-type-card strong {
+  display: block;
+  color: #23385e;
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.family-visit-type-card small {
+  display: block;
+  margin-top: 4px;
+  color: #556274;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.family-visit-notes-wrap {
+  position: relative;
+  align-items: stretch;
+}
+
+.family-visit-notes-wrap small {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  color: #556274;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.family-visit-note {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 46px;
+  padding: 10px 14px;
   border: 1px solid rgba(51, 102, 255, 0.22);
-  border-radius: 18px;
+  border-radius: 12px;
+  background: #f4f8ff;
+  color: #365bcb;
+}
+
+.family-visit-note .sharedcare-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.family-visit-note p {
+  margin: 0;
+  color: #23385e;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.family-visit-note strong {
+  color: #365bcb;
+  font-weight: 800;
+}
+
+.family-visit-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid rgba(51, 102, 255, 0.22);
+  border-radius: 12px;
   background: var(--brand);
   color: #ffffff;
-  font-size: 1.12rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.family-visit-submit .sharedcare-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .family-visit-submit:hover,
@@ -1223,11 +1471,170 @@ a {
 }
 
 .family-visit-status {
-  margin: 18px 0 0;
+  margin: 0;
+  min-height: 1.2rem;
+}
+
+.family-visit-info-panel {
+  border-left: 1px solid #e4eaf2;
+  background: #fbfdff;
+}
+
+.family-about-card,
+.family-guidelines-card {
+  padding: 24px;
+}
+
+.family-guidelines-card {
+  border-top: 1px solid #e4eaf2;
 }
 
 .family-visit-requests {
-  padding: 0 36px 32px;
+  width: min(100%, 1240px);
+}
+
+.family-about-card h2,
+.family-guidelines-card h2,
+.family-visit-requests-header h2 {
+  margin: 0;
+  color: #111111;
+  font-size: 1.05rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.family-about-resident {
+  margin-top: 18px;
+}
+
+.family-profile-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  margin-top: 10px;
+  padding: 0 14px;
+  border: 1px solid rgba(51, 102, 255, 0.5);
+  border-radius: 9px;
+  color: var(--brand);
+  font-size: 0.84rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.family-profile-link:hover,
+.family-profile-link:focus-visible {
+  background: #f4f7ff;
+  outline: none;
+}
+
+.family-welcome-callout {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 22px;
+  padding: 14px;
+  border: 1px solid rgba(67, 180, 47, 0.28);
+  border-radius: 12px;
+  background: #f0fbef;
+  color: #2f7a3d;
+}
+
+.family-welcome-callout .sharedcare-icon {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+}
+
+.family-welcome-callout p,
+.family-welcome-callout span {
+  display: block;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.family-welcome-callout p {
+  color: #2f7a3d;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.family-welcome-callout span {
+  margin-top: 4px;
+  color: #2f3d32;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.family-guidelines-list {
+  display: grid;
+  gap: 16px;
+  margin: 18px 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.family-guidelines-list li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.family-guidelines-list strong,
+.family-guidelines-list small {
+  display: block;
+  line-height: 1.35;
+}
+
+.family-guidelines-list strong {
+  color: #111111;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.family-guidelines-list small {
+  margin-top: 2px;
+  color: #556274;
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.family-policy-button {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 0 14px;
+  border: 1px solid rgba(51, 102, 255, 0.24);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--brand);
+  font-size: 0.95rem;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+}
+
+.family-policy-button .sharedcare-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.family-policy-button:hover,
+.family-policy-button:focus-visible {
+  background: #f4f7ff;
+  outline: none;
+}
+
+.family-visit-requests {
+  padding: 24px 28px 28px;
+  border: 1px solid #dbe3ee;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: none;
 }
 
 .family-visit-requests-header {
@@ -1235,19 +1642,11 @@ a {
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  padding-top: 24px;
-  border-top: 1px solid #e2e8f0;
 }
 
-.family-visit-requests-header h3,
+.family-visit-requests-header h2,
 .family-visit-requests-header p {
   margin: 0;
-}
-
-.family-visit-requests-header h3 {
-  color: #111111;
-  font-size: 1.05rem;
-  font-weight: 700;
 }
 
 .family-visit-requests-header p,
@@ -1259,6 +1658,32 @@ a {
 
 .family-visit-requests-state {
   margin: 18px 0 0;
+  padding: 20px;
+  border: 1px solid #e4eaf2;
+  border-radius: 14px;
+  background: #f8fbff;
+  text-align: center;
+}
+
+.family-visit-requests-state p {
+  margin: 0;
+  color: #111111;
+  font-weight: 750;
+}
+
+.family-visit-requests-state span {
+  display: block;
+  margin-top: 4px;
+  color: #556274;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.family-visit-requests-state--empty .sharedcare-icon {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 8px;
+  color: #365bcb;
 }
 
 .family-visit-requests-list {
@@ -1270,48 +1695,45 @@ a {
 }
 
 .family-visit-request-card {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: minmax(240px, 1.1fr) minmax(130px, 0.5fr) auto auto 18px;
+  align-items: center;
+  gap: 16px;
+  min-height: 70px;
+  padding: 12px 14px;
   border: 1px solid #dbe3ee;
-  border-radius: 16px;
+  border-radius: 12px;
   background: #f8fbff;
 }
 
 .family-visit-request-date,
-.family-visit-request-time,
-.family-visit-request-notes {
+.family-visit-request-time {
   margin: 0;
 }
 
 .family-visit-request-date {
   color: #111111;
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.family-visit-request-time,
-.family-visit-request-notes {
-  color: #556274;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 750;
 }
 
-.family-visit-request-notes {
-  margin-top: 8px;
-  line-height: 1.45;
+.family-visit-request-time {
+  margin-top: 4px;
+  color: #556274;
+  font-size: 0.88rem;
+  font-weight: 600;
 }
 
 .family-visit-request-status {
   flex-shrink: 0;
-  padding: 5px 11px;
+  justify-self: start;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: #e2e8f0;
-  color: #556274;
+  background: #fff0de;
+  color: #ba6816;
   font-size: 0.82rem;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .family-visit-request-status--approved {
@@ -1322,6 +1744,38 @@ a {
 .family-visit-request-status--declined {
   background: #ffe8e8;
   color: #b93636;
+}
+
+.family-cancel-request-button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(208, 75, 69, 0.58);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #c3493f;
+  font-size: 0.86rem;
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.family-cancel-request-button:hover,
+.family-cancel-request-button:focus-visible {
+  background: #fff4f4;
+  outline: none;
+}
+
+.family-cancel-request-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.family-request-chevron {
+  width: 18px;
+  height: 18px;
+  color: #556274;
+  grid-column: -1;
+  justify-self: end;
 }
 
 .family-logs-header {
@@ -4605,6 +5059,36 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .family-visit-shell {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .family-visit-info-panel {
+    border-top: 1px solid #e4eaf2;
+    border-left: 0;
+  }
+
+  .family-visit-type-options {
+    grid-template-columns: 1fr;
+  }
+
+  .family-visit-request-card {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .family-visit-request-resident,
+  .family-visit-request-status,
+  .family-cancel-request-button {
+    grid-column: 1 / -1;
+  }
+
+  .family-request-chevron {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: end;
+  }
+
   .family-visit-submit {
     margin-top: 0;
   }
@@ -4783,11 +5267,7 @@ a {
   }
 
   .family-scheduling-header {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .family-visit-panel-header {
-    padding: 22px;
+    grid-template-columns: 1fr;
   }
 
   .family-visit-inline-fields {
@@ -4795,7 +5275,7 @@ a {
   }
 
   .family-visit-request-card {
-    flex-direction: column;
+    align-items: start;
   }
 
   .family-log-summary-row,

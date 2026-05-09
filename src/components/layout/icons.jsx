@@ -4,12 +4,22 @@ import {
   ChartBarIcon as HeroChartBarIcon,
   ChatBubbleLeftRightIcon,
   ChevronLeftIcon as HeroChevronLeftIcon,
+  ChevronDownIcon as HeroChevronDownIcon,
   ChevronRightIcon as HeroChevronRightIcon,
+  CheckCircleIcon,
+  ClockIcon as HeroClockIcon,
   ClipboardDocumentListIcon,
+  DocumentTextIcon,
+  GiftIcon,
   HeartIcon,
   HomeIcon,
   InboxStackIcon,
+  InformationCircleIcon,
   MagnifyingGlassIcon,
+  ShieldCheckIcon,
+  UserCircleIcon,
+  UserGroupIcon,
+  VideoCameraIcon,
   UsersIcon
 } from "@heroicons/react/24/outline";
 
@@ -29,8 +39,52 @@ export function ChevronRightIcon({ className }) {
   return <HeroChevronRightIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
+export function ChevronDownIcon({ className }) {
+  return <HeroChevronDownIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
 export function ChevronLeftIcon({ className }) {
   return <HeroChevronLeftIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function CalendarIcon({ className }) {
+  return <CalendarDaysIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function CheckIcon({ className }) {
+  return <CheckCircleIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function ClockIcon({ className }) {
+  return <HeroClockIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function DocumentIcon({ className }) {
+  return <DocumentTextIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function GiftVisitIcon({ className }) {
+  return <GiftIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function InfoIcon({ className }) {
+  return <InformationCircleIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function ShieldIcon({ className }) {
+  return <ShieldCheckIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function UserIcon({ className }) {
+  return <UserCircleIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function UserGroupVisitIcon({ className }) {
+  return <UserGroupIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+}
+
+export function VideoVisitIcon({ className }) {
+  return <VideoCameraIcon className={withDefaultClassName(className)} aria-hidden="true" />;
 }
 
 export function ChartIcon({ className }) {
