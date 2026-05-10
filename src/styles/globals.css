@@ -326,9 +326,8 @@ a {
 }
 
 .family-app-shell .dashboard-shell {
-  height: calc(100vh - 72px);
-  min-height: 0;
-  overflow: hidden;
+  min-height: calc(100vh - 72px);
+  overflow: visible;
 }
 
 .sidebar {
@@ -862,97 +861,16 @@ a {
   align-content: start;
   gap: 22px;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
-.family-dashboard-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 20px;
-}
-
-.family-dashboard-panel {
-  display: grid;
-  gap: 34px;
-  width: min(100%, 1240px);
-  min-height: 0;
-  padding: 38px 42px 42px;
-  background: var(--surface-muted);
-  border: 1px solid #eadcc6;
-  border-radius: 0;
-}
-
-.family-dashboard-summary {
-  display: grid;
-  grid-template-columns: 104px minmax(0, 1fr) minmax(240px, 0.72fr);
-  align-items: center;
-  gap: 28px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid rgba(199, 164, 127, 0.46);
-}
-
-.family-avatar {
-  display: grid;
-  place-items: center;
-  width: 96px;
-  height: 96px;
-  border: 1px solid #111111;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #ffffff;
-  color: #365bcb;
-  font-size: 2.15rem;
-  font-weight: 700;
-}
-
-.family-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.family-room-value {
+.family-card-label {
   margin: 0;
-  color: #111111;
-  font-size: clamp(2rem, 3.6vw, 3.2rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-
-.family-updated {
-  margin: 8px 0 0;
   color: #556274;
-  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
-  font-weight: 500;
-  line-height: 1.35;
-}
-
-.family-status-summary {
-  justify-self: end;
-  min-width: 240px;
-  padding: 20px 24px;
-  border: 1px solid rgba(199, 164, 127, 0.62);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.42);
-  text-align: center;
-}
-
-.family-status-heading {
-  margin: 0 0 8px;
-  color: #111111;
-  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-size: 0.84rem;
   font-weight: 700;
-  line-height: 1.1;
-}
-
-.family-status-copy {
-  margin: 0;
-  color: #111111;
-  font-size: clamp(1.1rem, 1.8vw, 1.45rem);
-  font-weight: 500;
-  line-height: 1.3;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .family-placeholder-panel {
@@ -979,59 +897,10 @@ a {
 .family-summary-text {
   margin: 0;
   max-width: 720px;
-  font-size: 1.1rem;
+  padding-top: 2px;
+  color: #556274;
+  font-size: 1rem;
   font-weight: 500;
-}
-
-.family-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  width: min(100%, 900px);
-  justify-self: center;
-}
-
-.family-action-button {
-  min-height: 92px;
-  padding: 18px 22px;
-  border-radius: 16px;
-  font-size: clamp(1.15rem, 2vw, 1.65rem);
-  font-weight: 700;
-  line-height: 1.12;
-  cursor: pointer;
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
-}
-
-.family-action-button--primary {
-  border: 1px solid rgba(51, 102, 255, 0.2);
-  background: var(--brand);
-  color: #ffffff;
-}
-
-.family-action-button--secondary {
-  border: 1px solid rgba(192, 141, 82, 0.62);
-  background: var(--surface-accent);
-  color: #ffffff;
-}
-
-.family-action-button:hover,
-.family-action-button:focus-visible {
-  outline: none;
-}
-
-.family-action-button--primary:hover,
-.family-action-button--primary:focus-visible {
-  background: #2f5ef3;
-  border-color: rgba(51, 102, 255, 0.38);
-}
-
-.family-action-button--secondary:hover,
-.family-action-button--secondary:focus-visible {
-  background: #b78249;
-  border-color: rgba(192, 141, 82, 0.74);
 }
 
 .family-placeholder-panel {
@@ -1067,50 +936,31 @@ a {
   text-decoration: none;
 }
 
+.family-scheduling-page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
 .family-scheduling-header {
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0;
+  width: min(100%, 1240px);
   max-width: 1240px;
+  margin-bottom: 0;
+  text-align: left;
 }
 
-.family-scheduling-back {
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 32px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #556274;
-  font-size: 0.92rem;
-  font-weight: 650;
-  cursor: pointer;
+.family-scheduling-header .eyebrow {
+  margin-bottom: 2px;
 }
 
-.family-scheduling-back .sharedcare-icon {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2;
-}
-
-.family-scheduling-back:hover,
-.family-scheduling-back:focus-visible {
-  color: var(--brand);
-  outline: none;
-}
-
-.family-scheduling-title-group {
-  display: grid;
-  gap: 8px;
-}
-
-.family-scheduling-title-group p {
+.family-scheduling-header .page-title {
   margin: 0;
-  color: #556274;
-  font-size: 1.05rem;
-  font-weight: 500;
-  line-height: 1.45;
 }
 
 .family-visit-shell {
@@ -1118,24 +968,28 @@ a {
   grid-template-columns: minmax(0, 1.28fr) minmax(330px, 0.72fr);
   align-items: stretch;
   width: min(100%, 1240px);
-  min-height: 720px;
+  margin-top: 0;
   border: 1px solid #dbe3ee;
   border-radius: 20px;
   background: #ffffff;
   box-shadow: none;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .family-visit-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 28px 30px 24px;
+  gap: 14px;
+  padding: 24px 28px;
 }
 
 .family-visit-field {
   display: grid;
-  gap: 8px;
+  gap: 6px;
+}
+
+.family-visit-field--with-message {
+  grid-template-rows: auto auto minmax(18px, auto);
 }
 
 .family-visit-field span {
@@ -1153,19 +1007,20 @@ a {
   background: #ffffff;
   color: #111111;
   font-size: 0.98rem;
-  font-weight: 500;
+  font-weight: 400;
+  font-family: inherit;
   outline: none;
 }
 
 .family-visit-field input,
 .family-visit-field select {
-  min-height: 48px;
+  min-height: 40px;
   padding: 0 14px 0 0;
 }
 
 .family-visit-field textarea {
-  min-height: 84px;
-  padding: 14px 16px 30px;
+  min-height: 50px;
+  padding: 8px 14px 24px;
   resize: vertical;
 }
 
@@ -1175,12 +1030,19 @@ a {
 
 .family-visit-field input::placeholder,
 .family-visit-field textarea::placeholder {
-  color: #7b8796;
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 300;
+}
+
+.family-visit-field input.family-visit-placeholder-value,
+.family-visit-field select.family-visit-placeholder-value {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 1rem;
+  font-weight: 300;
 }
 
 .family-visit-input-wrap,
-.family-resident-select,
-.family-visit-notes-wrap {
+.family-resident-select {
   display: grid;
   align-items: center;
   width: 100%;
@@ -1193,7 +1055,7 @@ a {
 .family-visit-input-wrap {
   grid-template-columns: 22px minmax(0, 1fr);
   gap: 10px;
-  min-height: 50px;
+  min-height: 42px;
   padding: 0 14px;
 }
 
@@ -1212,8 +1074,13 @@ a {
   height: 17px;
 }
 
-.family-visit-input-wrap:focus-within,
-.family-visit-notes-wrap:focus-within {
+.family-visit-input-wrap:focus-within {
+  border-color: var(--brand);
+  outline: 2px solid rgba(51, 102, 255, 0.18);
+  outline-offset: 2px;
+}
+
+.family-visit-notes-wrap textarea:focus-visible {
   border-color: var(--brand);
   outline: 2px solid rgba(51, 102, 255, 0.18);
   outline-offset: 2px;
@@ -1228,25 +1095,25 @@ a {
   color: #d94f4f;
   font-size: 0.85rem;
   font-weight: 700;
+  line-height: 1.3;
+  min-height: 18px;
+}
+
+.family-visit-field-error.is-empty {
+  visibility: hidden;
 }
 
 .family-visit-inline-fields {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: flex-start;
   gap: 18px;
 }
 
 .family-resident-select {
-  min-height: 66px;
-  grid-template-columns: minmax(0, 1fr) 18px;
-  gap: 12px;
-  padding: 10px 14px;
-}
-
-.family-resident-select > .sharedcare-icon {
-  width: 18px;
-  height: 18px;
-  color: #51627e;
+  min-height: 50px;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 6px 14px;
 }
 
 .family-resident-select-main,
@@ -1295,8 +1162,13 @@ a {
 }
 
 .family-resident-avatar--small {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
+}
+
+.family-about-card .family-resident-avatar {
+  width: 52px;
+  height: 52px;
 }
 
 .family-resident-avatar img {
@@ -1305,102 +1177,46 @@ a {
   object-fit: cover;
 }
 
-.family-visit-type-group {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.family-visit-type-group legend {
-  margin: 0 0 10px;
-  color: #111111;
-  font-size: 0.95rem;
-  font-weight: 650;
-}
-
-.family-visit-type-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.family-visit-type-card {
-  position: relative;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  min-height: 68px;
-  padding: 12px;
-  border: 1px solid #d4dee9;
-  border-radius: 12px;
-  background: #ffffff;
-  cursor: pointer;
-  transition: border-color 0.18s ease, background 0.18s ease;
-}
-
-.family-visit-type-card input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.family-visit-type-card.is-selected {
-  border-color: var(--brand);
-  background: #f4f7ff;
-}
-
-.family-visit-type-card:focus-within {
-  outline: 2px solid rgba(51, 102, 255, 0.18);
-  outline-offset: 2px;
-}
-
-.family-visit-type-icon,
 .family-guideline-icon,
 .family-request-icon {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
   background: #eef3fb;
   color: #365bcb;
 }
 
-.family-visit-type-icon .sharedcare-icon,
 .family-guideline-icon .sharedcare-icon,
 .family-request-icon .sharedcare-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.family-visit-type-card strong {
-  display: block;
-  color: #23385e;
-  font-size: 0.92rem;
-  font-weight: 750;
-  line-height: 1.2;
-}
-
-.family-visit-type-card small {
-  display: block;
-  margin-top: 4px;
-  color: #556274;
-  font-size: 0.82rem;
-  font-weight: 500;
-  line-height: 1.25;
+  width: 17px;
+  height: 17px;
 }
 
 .family-visit-notes-wrap {
   position: relative;
-  align-items: stretch;
+  display: block;
+  width: 100%;
+  color: #51627e;
+}
+
+.family-visit-notes-wrap textarea {
+  display: block;
+  width: 100%;
+  border: 1px solid #cfd8e6;
+  border-radius: 12px;
+  background: #ffffff;
+  min-height: 74px;
+  padding: 10px 14px 26px;
+  resize: none;
 }
 
 .family-visit-notes-wrap small {
   position: absolute;
-  right: 14px;
-  bottom: 10px;
+  right: 12px;
+  bottom: 8px;
   color: #556274;
   font-size: 0.78rem;
   font-weight: 700;
@@ -1409,10 +1225,10 @@ a {
 .family-visit-note {
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr);
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-  min-height: 46px;
-  padding: 10px 14px;
+  min-height: 36px;
+  padding: 7px 12px;
   border: 1px solid rgba(51, 102, 255, 0.22);
   border-radius: 12px;
   background: #f4f8ff;
@@ -1443,7 +1259,7 @@ a {
   justify-content: center;
   gap: 10px;
   width: 100%;
-  min-height: 52px;
+  min-height: 44px;
   border: 1px solid rgba(51, 102, 255, 0.22);
   border-radius: 12px;
   background: var(--brand);
@@ -1472,15 +1288,19 @@ a {
 
 .family-visit-status {
   margin: 0;
-  min-height: 1.2rem;
+  min-height: 0;
 }
 
 .family-visit-info-panel {
   border-left: 1px solid #e4eaf2;
+  border-radius: 0 20px 20px 0;
   background: #fbfdff;
 }
 
-.family-about-card,
+.family-about-card {
+  padding: 24px;
+}
+
 .family-guidelines-card {
   padding: 24px;
 }
@@ -1504,15 +1324,15 @@ a {
 }
 
 .family-about-resident {
-  margin-top: 18px;
+  margin-top: 16px;
 }
 
 .family-profile-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 32px;
-  margin-top: 10px;
+  min-height: 28px;
+  margin-top: 8px;
   padding: 0 14px;
   border: 1px solid rgba(51, 102, 255, 0.5);
   border-radius: 9px;
@@ -1530,10 +1350,10 @@ a {
 
 .family-welcome-callout {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  gap: 12px;
-  margin-top: 22px;
-  padding: 14px;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
   border: 1px solid rgba(67, 180, 47, 0.28);
   border-radius: 12px;
   background: #f0fbef;
@@ -1541,8 +1361,8 @@ a {
 }
 
 .family-welcome-callout .sharedcare-icon {
-  width: 22px;
-  height: 22px;
+  width: 19px;
+  height: 19px;
   margin-top: 1px;
 }
 
@@ -1560,7 +1380,7 @@ a {
 }
 
 .family-welcome-callout span {
-  margin-top: 4px;
+  margin-top: 2px;
   color: #2f3d32;
   font-size: 0.88rem;
   font-weight: 500;
@@ -1568,16 +1388,16 @@ a {
 
 .family-guidelines-list {
   display: grid;
-  gap: 16px;
-  margin: 18px 0 22px;
+  gap: 14px;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .family-guidelines-list li {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
   align-items: start;
 }
 
@@ -1594,39 +1414,10 @@ a {
 }
 
 .family-guidelines-list small {
-  margin-top: 2px;
+  margin-top: 1px;
   color: #556274;
   font-size: 0.86rem;
   font-weight: 500;
-}
-
-.family-policy-button {
-  display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) 18px;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 54px;
-  padding: 0 14px;
-  border: 1px solid rgba(51, 102, 255, 0.24);
-  border-radius: 12px;
-  background: #ffffff;
-  color: var(--brand);
-  font-size: 0.95rem;
-  font-weight: 750;
-  text-align: left;
-  cursor: pointer;
-}
-
-.family-policy-button .sharedcare-icon {
-  width: 19px;
-  height: 19px;
-}
-
-.family-policy-button:hover,
-.family-policy-button:focus-visible {
-  background: #f4f7ff;
-  outline: none;
 }
 
 .family-visit-requests {
@@ -1875,7 +1666,7 @@ a {
 }
 
 .family-log-metric h2 {
-  color: #24304a;
+  color: #111111;
   font-size: 0.95rem;
   font-weight: 750;
 }
@@ -1884,7 +1675,7 @@ a {
   margin-top: 3px;
   color: #222222;
   font-size: 0.98rem;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.3;
 }
 
@@ -2010,8 +1801,8 @@ a {
 }
 
 .family-log-card--featured {
-  border-color: #eadcc6;
-  background: #fff4df;
+  border-color: #dbe3ee;
+  background: #ffffff;
 }
 
 .family-log-card-topline {
@@ -3080,7 +2871,16 @@ a {
   appearance: none;
 }
 
+.daily-logs-filter-group .daily-logs-select {
+  font-family: inherit;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 300;
+}
+
 .daily-logs-search-input::placeholder {
+  font-family: inherit;
+  font-size: 1rem;
   color: rgba(0, 0, 0, 0.45);
   font-weight: 300;
 }
@@ -4955,24 +4755,6 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .family-dashboard-panel {
-    padding: 32px;
-  }
-
-  .family-dashboard-summary {
-    grid-template-columns: 104px minmax(0, 1fr);
-  }
-
-  .family-status-summary {
-    grid-column: 1 / -1;
-    justify-self: stretch;
-    text-align: left;
-  }
-
-  .family-actions-grid {
-    gap: 28px;
-  }
-
   .detail-card--medications,
   .detail-card--personal {
     grid-column: auto;
@@ -5067,10 +4849,7 @@ a {
   .family-visit-info-panel {
     border-top: 1px solid #e4eaf2;
     border-left: 0;
-  }
-
-  .family-visit-type-options {
-    grid-template-columns: 1fr;
+    border-radius: 0 0 20px 20px;
   }
 
   .family-visit-request-card {
@@ -5091,12 +4870,6 @@ a {
 
   .family-visit-submit {
     margin-top: 0;
-  }
-
-  .family-avatar {
-    width: 96px;
-    height: 96px;
-    font-size: 1.85rem;
   }
 
   .hero,
@@ -5228,15 +5001,12 @@ a {
     display: grid;
   }
 
-  .family-dashboard-panel,
   .family-placeholder-panel,
   .family-visit-form,
   .family-visit-requests {
     padding: 22px;
   }
 
-  .family-dashboard-summary,
-  .family-actions-grid,
   .family-log-detail-grid {
     grid-template-columns: 1fr;
   }
@@ -5250,24 +5020,6 @@ a {
 
   .family-log-summary-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .family-dashboard-summary {
-    gap: 18px;
-    padding-bottom: 22px;
-  }
-
-  .family-dashboard-panel {
-    gap: 24px;
-    min-height: 0;
-  }
-
-  .family-status-summary {
-    padding: 16px;
-  }
-
-  .family-scheduling-header {
-    grid-template-columns: 1fr;
   }
 
   .family-visit-inline-fields {
@@ -5297,10 +5049,6 @@ a {
 
   .family-log-previous-details {
     grid-template-columns: 1fr;
-  }
-
-  .family-action-button {
-    min-height: 72px;
   }
 
   .detail-summary {

@@ -1,21 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import {
   CalendarIcon,
   CheckIcon,
   ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   ClockIcon,
-  DocumentIcon,
-  GiftVisitIcon,
   InfoIcon,
   ShieldIcon,
   UserGroupVisitIcon,
-  UserIcon,
-  VideoVisitIcon
+  UserIcon
 } from "../components/layout/icons";
 import { familyData } from "../data/mockData";
 import { db } from "../lib/firebase";
@@ -38,27 +33,6 @@ const statusLabelByValue = {
   approved: "Approved",
   declined: "Declined"
 };
-
-const visitTypes = [
-  {
-    value: "in-person",
-    title: "In-Person Visit",
-    description: "At the facility",
-    icon: UserGroupVisitIcon
-  },
-  {
-    value: "video",
-    title: "Video Visit",
-    description: "Virtual visit",
-    icon: VideoVisitIcon
-  },
-  {
-    value: "special-occasion",
-    title: "Special Occasion",
-    description: "Birthday, holiday, etc.",
-    icon: GiftVisitIcon
-  }
-];
 
 const timeOptions = [
   "9:00 AM - 10:00 AM",
@@ -116,7 +90,6 @@ function getFormattedVisitDate(value) {
 }
 
 export default function FamilySchedulingPage() {
-  const navigate = useNavigate();
   const { visitor } = familyData;
   const [resident, setResident] = useState(() => getFallbackFamilyResident(familyUserId));
   const [statusMessage, setStatusMessage] = useState("");
@@ -128,8 +101,7 @@ export default function FamilySchedulingPage() {
   const [formState, setFormState] = useState({
     visitorName: visitor.name,
     date: "",
-    time: timeOptions[3],
-    visitType: visitTypes[0].value,
+    time: "",
     notes: ""
   });
 
@@ -195,7 +167,6 @@ export default function FamilySchedulingPage() {
 
     if (Object.values(nextErrors).some(Boolean)) {
       setErrors(nextErrors);
-      setStatusMessage("Add the required visit details before submitting.");
       return;
     }
 
@@ -215,7 +186,7 @@ export default function FamilySchedulingPage() {
         visitorName: formState.visitorName.trim() || visitor.name,
         requestedDate: formState.date.trim(),
         requestedTime: formState.time.trim(),
-        visitType: formState.visitType,
+        visitType: "in-person",
         notes: formState.notes
       });
       setFormState((currentState) => ({
@@ -258,25 +229,16 @@ export default function FamilySchedulingPage() {
 
   return (
     <FamilyAppShell>
-      <section className="family-scheduling-header">
-        <button
-          className="family-scheduling-back"
-          type="button"
-          onClick={() => navigate("/family")}
-        >
-          <ChevronLeftIcon />
-          <span>Back to Dashboard</span>
-        </button>
-        <div className="family-scheduling-title-group">
-          <h1 className="page-title page-title--compact">Request a New Visit</h1>
-          <p>Schedule a visit with your loved one.</p>
-        </div>
-      </section>
+      <div className="family-scheduling-page">
+        <section className="family-scheduling-header">
+          <p className="eyebrow">Scheduling</p>
+          <h1 className="page-title">Request a New Visit</h1>
+        </section>
 
-      <section className="family-visit-shell" aria-labelledby="family-visit-title">
+        <section className="family-visit-shell" aria-labelledby="family-visit-title">
         <form className="family-visit-form" onSubmit={handleSubmit}>
           <label className="family-visit-field family-visit-field--resident">
-            <span>Select Resident</span>
+            <span>Resident</span>
             <span className="family-resident-select" aria-label={`${resident.name}, ${resident.room}`}>
               <span className="family-resident-select-main">
                 <span className="family-resident-avatar family-resident-avatar--small">
@@ -287,11 +249,10 @@ export default function FamilySchedulingPage() {
                   <small>{resident.room}</small>
                 </span>
               </span>
-              <ChevronDownIcon />
             </span>
           </label>
 
-          <label className="family-visit-field">
+          <label className="family-visit-field family-visit-field--with-message">
             <span>Visitor Name</span>
             <span className="family-visit-input-wrap">
               <UserIcon />
@@ -302,33 +263,48 @@ export default function FamilySchedulingPage() {
                 aria-invalid={errors.visitorName ? "true" : "false"}
               />
             </span>
-            {errors.visitorName ? <span className="family-visit-field-error">{errors.visitorName}</span> : null}
+            <span
+              className={`family-visit-field-error${errors.visitorName ? "" : " is-empty"}`}
+              aria-hidden={errors.visitorName ? "false" : "true"}
+            >
+              {errors.visitorName || "No visitor name error"}
+            </span>
           </label>
 
           <div className="family-visit-inline-fields">
-            <label className="family-visit-field">
+            <label className="family-visit-field family-visit-field--with-message">
               <span>Visit Date</span>
               <span className="family-visit-input-wrap">
                 <CalendarIcon />
                 <input
+                  className={formState.date ? undefined : "family-visit-placeholder-value"}
                   type="date"
                   value={formState.date}
                   onChange={(event) => updateField("date", event.target.value)}
                   aria-invalid={errors.date ? "true" : "false"}
                 />
               </span>
-              {errors.date ? <span className="family-visit-field-error">{errors.date}</span> : null}
+              <span
+                className={`family-visit-field-error${errors.date ? "" : " is-empty"}`}
+                aria-hidden={errors.date ? "false" : "true"}
+              >
+                {errors.date || "No visit date error"}
+              </span>
             </label>
 
-            <label className="family-visit-field">
+            <label className="family-visit-field family-visit-field--with-message">
               <span>Visit Time</span>
               <span className="family-visit-input-wrap family-visit-input-wrap--select">
                 <ClockIcon />
                 <select
+                  className={formState.time ? undefined : "family-visit-placeholder-value"}
                   value={formState.time}
                   onChange={(event) => updateField("time", event.target.value)}
                   aria-invalid={errors.time ? "true" : "false"}
                 >
+                  <option value="" disabled>
+                    Select time
+                  </option>
                   {timeOptions.map((timeOption) => (
                     <option key={timeOption} value={timeOption}>
                       {timeOption}
@@ -337,41 +313,14 @@ export default function FamilySchedulingPage() {
                 </select>
                 <ChevronDownIcon />
               </span>
-              {errors.time ? <span className="family-visit-field-error">{errors.time}</span> : null}
+              <span
+                className={`family-visit-field-error${errors.time ? "" : " is-empty"}`}
+                aria-hidden={errors.time ? "false" : "true"}
+              >
+                {errors.time || "No visit time error"}
+              </span>
             </label>
           </div>
-
-          <fieldset className="family-visit-type-group">
-            <legend>Visit Type</legend>
-            <div className="family-visit-type-options">
-              {visitTypes.map((visitType) => {
-                const VisitIcon = visitType.icon;
-                const isSelected = formState.visitType === visitType.value;
-
-                return (
-                  <label
-                    key={visitType.value}
-                    className={`family-visit-type-card${isSelected ? " is-selected" : ""}`}
-                  >
-                    <input
-                      type="radio"
-                      name="visitType"
-                      value={visitType.value}
-                      checked={isSelected}
-                      onChange={(event) => updateField("visitType", event.target.value)}
-                    />
-                    <span className="family-visit-type-icon">
-                      <VisitIcon />
-                    </span>
-                    <span>
-                      <strong>{visitType.title}</strong>
-                      <small>{visitType.description}</small>
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          </fieldset>
 
           <label className="family-visit-field">
             <span>Add a Note (Optional)</span>
@@ -398,9 +347,11 @@ export default function FamilySchedulingPage() {
             {isSubmitting ? "Submitting..." : "Submit Visit Request"}
           </button>
 
-          <p className="status-message family-visit-status" aria-live="polite">
-            {statusMessage}
-          </p>
+          {statusMessage ? (
+            <p className="status-message family-visit-status" aria-live="polite">
+              {statusMessage}
+            </p>
+          ) : null}
         </form>
 
         <aside className="family-visit-info-panel" aria-label="Resident and visiting information">
@@ -449,14 +400,10 @@ export default function FamilySchedulingPage() {
                 );
               })}
             </ul>
-            <button className="family-policy-button" type="button">
-              <DocumentIcon />
-              <span>View Full Visiting Policy</span>
-              <ChevronRightIcon />
-            </button>
           </section>
         </aside>
-      </section>
+        </section>
+      </div>
 
       <section className="family-visit-requests" aria-labelledby="family-visit-requests-title">
         <div className="family-visit-requests-header">

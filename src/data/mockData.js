@@ -136,8 +136,7 @@ export const residentsPageData = {
 
 export const familyData = {
   navItems: [
-    { id: "family-dashboard", label: "Dashboard", href: "/family", icon: "home" },
-    { id: "family-daily-logs", label: "Daily Logs", href: "/family/daily-logs", icon: "logs" },
+    { id: "family-daily-logs", label: "Overview", href: "/family/daily-logs", icon: "logs" },
     { id: "family-scheduling", label: "Scheduling", href: "/family/scheduling", icon: "calendar" },
     { id: "family-messages", label: "Messages", href: "/family/messages", icon: "messages" }
   ],

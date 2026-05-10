@@ -43,6 +43,10 @@ function getLogTimestamp(entry) {
   return entry.createdAt ?? entry.date;
 }
 
+function getResidentFirstName(name) {
+  return name.split(" ")[0] || name;
+}
+
 function formatLogDate(value) {
   if (!value) {
     return "Date not shared yet";
@@ -484,8 +488,8 @@ export default function FamilyDailyLogsPage() {
     <FamilyAppShell>
       <section className="family-logs-header">
         <div>
-          <p className="eyebrow">Daily Logs</p>
-          <h1 className="page-title page-title--compact">Past Updates</h1>
+          <p className="eyebrow">Overview</p>
+          <h1 className="page-title page-title--compact">{getResidentFirstName(resident.name)}&apos;s Daily Overview</h1>
           <p className="family-logs-resident">
             {resident.name} · {resident.room}
           </p>

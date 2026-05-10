@@ -5,8 +5,8 @@ import { familyData } from "../data/mockData";
 
 const pageCopy = {
   dailyLogs: {
-    eyebrow: "Daily Logs",
-    title: "Past Updates",
+    eyebrow: "Overview",
+    title: "Overview",
     description:
       "Family-friendly daily updates will appear here with simple summaries from the care team."
   },
