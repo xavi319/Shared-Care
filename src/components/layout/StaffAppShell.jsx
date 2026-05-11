@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 
 import {
   dashboardData,
-  getCanonicalDailyLogResidentId
+  getCanonicalDailyLogResidentId,
+  getDailyLogDateKey,
+  getDailyLogRequiredDate,
+  loadDailyLogEntries
 } from "../../data/mockData";
 import { db } from "../../lib/firebase";
 import { listenToConversations } from "../../services/messageService";
@@ -15,7 +18,18 @@ const assignedDailyLogResidentIds = ["beth-adams", "edgar-callahan", "lilian-men
 );
 
 function getPendingDailyLogsCount() {
-  return assignedDailyLogResidentIds.length;
+  const requiredDate = getDailyLogRequiredDate();
+  const entries = loadDailyLogEntries();
+
+  return assignedDailyLogResidentIds.filter((residentId) => {
+    const requiredEntries = entries.filter(
+      (entry) =>
+        getCanonicalDailyLogResidentId(entry.residentId) === residentId &&
+        getDailyLogDateKey(entry.createdAt ?? entry.date) === requiredDate
+    );
+
+    return !requiredEntries.some((entry) => entry.status === "completed");
+  }).length;
 }
 
 export function StaffAppShell({ children, onStubNavigate }) {

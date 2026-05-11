@@ -163,7 +163,7 @@ function getLogRows(entries, requiredDate) {
         reportStatus: "missing",
         actionTone: "attention"
       };
-      const rowStatus = isAssignedToSarah ? "pending" : "completed";
+      const rowStatus = isAssignedToSarah ? getRowStatus(entry) : "completed";
 
       return {
         ...entry,
@@ -220,18 +220,20 @@ function getVisibleRows(rows, filters) {
 function getGroupedRows(rows) {
   const assignedRows = rows.filter((row) => row.group === "assigned");
   const otherRows = rows.filter((row) => row.group === "other");
+  const assignedPendingCount = assignedRows.filter((row) => row.rowStatus !== "completed").length;
+  const otherSubmittedCount = otherRows.filter((row) => row.rowStatus === "completed").length;
 
   return [
     {
       id: "assigned",
       label: `Assigned to ${assignedCaregiverName}`,
-      badge: `${assignedRows.length} pending`,
+      badge: `${assignedPendingCount} pending`,
       rows: assignedRows
     },
     {
       id: "other",
       label: "Other residents",
-      badge: `${otherRows.length} submitted`,
+      badge: `${otherSubmittedCount} submitted`,
       rows: otherRows
     }
   ].filter((section) => section.rows.length);
