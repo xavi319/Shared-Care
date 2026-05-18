@@ -1,27 +1,55 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
+import { useAuth } from "../components/auth/AuthProvider";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
-import { currentDemoStaffName, schedulingPageData } from "../data/mockData";
 import { db } from "../lib/firebase";
 import {
+  listenToApprovedVisitRequestsForDate,
   listenToPendingVisitRequests,
   updateVisitRequestStatus
 } from "../services/visitRequestService";
 
 const HOUR_HEIGHT = 80; // px per hour in the calendar grid
 const DAY_START_HOUR = 8; // first hour shown
-const DAY_END_HOUR = DAY_START_HOUR + schedulingPageData.hoursShown;
-const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
-const clampledNowMins = Math.min(Math.max(nowMins, DAY_START_HOUR * 60), DAY_END_HOUR * 60);
-const nowTop = ((clampledNowMins - DAY_START_HOUR * 60) / 60) * HOUR_HEIGHT;
+const HOURS_SHOWN = 10;
+const DAY_END_HOUR = DAY_START_HOUR + HOURS_SHOWN;
+const defaultVisitDurationMinutes = 60;
 
-function timeToMinutes(timeStr) {
+function getLocalToday() {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
+function timeToMinutes(timeStr = "") {
   const [time, period] = timeStr.split(" ");
   let [hours, minutes] = time.split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
+    return DAY_START_HOUR * 60;
+  }
   if (period === "PM" && hours !== 12) hours += 12;
   if (period === "AM" && hours === 12) hours = 0;
   return hours * 60 + minutes;
+}
+
+function minutesToTime(totalMinutes) {
+  const hours24 = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const period = hours24 >= 12 ? "PM" : "AM";
+  const hours12 = hours24 % 12 || 12;
+
+  return `${hours12}:${String(minutes).padStart(2, "0")} ${period}`;
+}
+
+function getVisitTimeRange(requestedTime = "") {
+  const [startTime, endTime] = requestedTime.split(/\s+-\s+/);
+  const startMins = timeToMinutes(startTime);
+  const fallbackStartTime = minutesToTime(startMins);
+  const fallbackEndTime = minutesToTime(startMins + defaultVisitDurationMinutes);
+
+  return {
+    startTime: startTime || fallbackStartTime,
+    endTime: endTime || fallbackEndTime
+  };
 }
 
 function formatDate(date) {
@@ -32,6 +60,14 @@ function formatDate(date) {
   });
 }
 
+function formatCurrentTime(date) {
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: false
+  });
+}
+
 function addDays(date, n) {
   const d = new Date(date);
   d.setDate(d.getDate() + n);
@@ -39,7 +75,11 @@ function addDays(date, n) {
 }
 
 function toDateString(date) {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 function ChevronLeftIcon() {
@@ -54,14 +94,6 @@ function ChevronRightIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-    </svg>
-  );
-}
-
-function BackIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
     </svg>
   );
 }
@@ -88,6 +120,15 @@ function CalendarEvent({ event }) {
       <span className="cal-event-time">
         {event.startTime} - {event.endTime}
       </span>
+    </div>
+  );
+}
+
+function CalendarEmptyState() {
+  return (
+    <div className="cal-empty-state">
+      <p>No visits scheduled.</p>
+      <span>Approved visit requests will appear here.</span>
     </div>
   );
 }
@@ -146,14 +187,20 @@ function PendingCard({ appointment, isUpdating, onAccept, onDecline }) {
 }
 
 export default function SchedulingPage() {
-  const navigate = useNavigate();
-
-  const [currentDate, setCurrentDate] = useState(schedulingPageData.initialDate);
+  const { currentUser } = useAuth();
+  const [todayDate, setTodayDate] = useState(getLocalToday);
+  const [currentDate, setCurrentDate] = useState(getLocalToday);
+  const [now, setNow] = useState(() => new Date());
+  const [scheduledVisits, setScheduledVisits] = useState([]);
+  const [scheduledVisitsStatus, setScheduledVisitsStatus] = useState("loading");
   const [pendingList, setPendingList] = useState([]);
   const [pendingStatus, setPendingStatus] = useState("loading");
   const [updatingRequestIds, setUpdatingRequestIds] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
-  const [events] = useState(schedulingPageData.events);
+
+  const selectedDateKey = toDateString(currentDate);
+  const todayDateKey = toDateString(todayDate);
+  const reviewerName = currentUser?.displayName || currentUser?.email || "Staff";
 
   useEffect(() => {
     if (!db) {
@@ -175,10 +222,52 @@ export default function SchedulingPage() {
     );
   }, []);
 
-  const hours = Array.from(
-    { length: schedulingPageData.hoursShown },
-    (_, i) => DAY_START_HOUR + i
-  );
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      const nextNow = new Date();
+      const nextTodayDate = getLocalToday();
+
+      setNow(nextNow);
+      setTodayDate((previousTodayDate) => {
+        if (toDateString(previousTodayDate) !== toDateString(nextTodayDate)) {
+          setCurrentDate((selectedDate) =>
+            toDateString(selectedDate) === toDateString(previousTodayDate)
+              ? nextTodayDate
+              : selectedDate
+          );
+        }
+
+        return nextTodayDate;
+      });
+    }, 60000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (!db) {
+      setScheduledVisits([]);
+      setScheduledVisitsStatus("error");
+      return undefined;
+    }
+
+    setScheduledVisitsStatus("loading");
+
+    return listenToApprovedVisitRequestsForDate(
+      db,
+      selectedDateKey,
+      (requests) => {
+        setScheduledVisits(requests);
+        setScheduledVisitsStatus("ready");
+      },
+      () => {
+        setScheduledVisits([]);
+        setScheduledVisitsStatus("error");
+      }
+    );
+  }, [selectedDateKey]);
+
+  const hours = Array.from({ length: HOURS_SHOWN }, (_, i) => DAY_START_HOUR + i);
 
   const pendingAppointments = useMemo(
     () =>
@@ -222,7 +311,7 @@ export default function SchedulingPage() {
 
     try {
       setRequestUpdating(id, true);
-      await updateVisitRequestStatus(db, id, "approved", currentDemoStaffName);
+      await updateVisitRequestStatus(db, id, "approved", reviewerName);
       setStatusMessage("Appointment accepted.");
     } catch {
       setStatusMessage("Could not accept appointment. Check your Firebase connection.");
@@ -239,7 +328,7 @@ export default function SchedulingPage() {
 
     try {
       setRequestUpdating(id, true);
-      await updateVisitRequestStatus(db, id, "declined", currentDemoStaffName);
+      await updateVisitRequestStatus(db, id, "declined", reviewerName);
       setStatusMessage("Appointment declined.");
     } catch {
       setStatusMessage("Could not decline appointment. Check your Firebase connection.");
@@ -248,11 +337,34 @@ export default function SchedulingPage() {
     }
   }
 
-   const visibleEvents = events.filter(
-    (e) => e.date === toDateString(currentDate)
+  const visibleEvents = useMemo(
+    () =>
+      scheduledVisits
+        .map((request) => {
+          const { startTime, endTime } = getVisitTimeRange(request.requestedTime);
+
+          return {
+            id: request.id,
+            title: `${request.visitorName || request.familyName || "Visitor"} Visiting`,
+            subtitle: request.residentName || "Resident visit",
+            room: request.residentRoom || "",
+            startTime,
+            endTime
+          };
+        })
+        .sort((firstEvent, secondEvent) =>
+          timeToMinutes(firstEvent.startTime) - timeToMinutes(secondEvent.startTime)
+        ),
+    [scheduledVisits]
   );
 
-  const totalGridHeight = schedulingPageData.hoursShown * HOUR_HEIGHT;
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const showCurrentTimeLine =
+    selectedDateKey === todayDateKey &&
+    nowMins >= DAY_START_HOUR * 60 &&
+    nowMins <= DAY_END_HOUR * 60;
+  const nowTop = ((nowMins - DAY_START_HOUR * 60) / 60) * HOUR_HEIGHT;
+  const totalGridHeight = HOURS_SHOWN * HOUR_HEIGHT;
 
   return (
     <StaffAppShell onStubNavigate={() => {}}>
@@ -261,19 +373,13 @@ export default function SchedulingPage() {
           <p className="eyebrow">Appointments</p>
           <h1 className="page-title">Today's Visits</h1>
         </div>
-        <button
-          className="back-button"
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="Go back"
-        >
-          <BackIcon />
-        </button>
       </div>
 
-      <p className="status-message" aria-live="polite">
-        {statusMessage}
-      </p>
+      {statusMessage ? (
+        <p className="status-message" aria-live="polite">
+          {statusMessage}
+        </p>
+      ) : null}
 
       <div className="visits-layout">
         {/* ── Calendar panel ── */}
@@ -314,12 +420,15 @@ export default function SchedulingPage() {
                 </div>
               ))}
 
-              {/* Current time indicator */}
-              <div
-                className="cal-now-line"
-                style={{ top: nowTop}}
-                aria-hidden="true"
-              />
+              {showCurrentTimeLine ? (
+                <div
+                  className="cal-now-line"
+                  style={{ top: nowTop}}
+                  aria-hidden="true"
+                >
+                  <span className="cal-now-time-label">{formatCurrentTime(now)}</span>
+                </div>
+              ) : null}
 
               {/* Events */}
               <div className="cal-events-column">
@@ -327,6 +436,10 @@ export default function SchedulingPage() {
                   <CalendarEvent key={event.id} event={event} />
                 ))}
               </div>
+
+              {scheduledVisitsStatus === "ready" && visibleEvents.length === 0 ? (
+                <CalendarEmptyState />
+              ) : null}
             </div>
           </div>
         </section>

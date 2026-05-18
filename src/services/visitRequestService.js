@@ -116,6 +116,30 @@ export function listenToPendingVisitRequests(db, onNext, onError) {
   );
 }
 
+export function listenToApprovedVisitRequestsForDate(db, requestedDate, onNext, onError) {
+  if (!db || !requestedDate) {
+    onError?.(new Error("Firebase is not configured."));
+    return () => {};
+  }
+
+  const visitRequestsQuery = query(
+    collection(db, visitRequestsCollectionName),
+    where("requestedDate", "==", requestedDate)
+  );
+
+  return onSnapshot(
+    visitRequestsQuery,
+    (snapshot) => {
+      const approvedRequests = snapshot.docs
+        .map(mapVisitRequestDocument)
+        .filter((request) => request.status === "approved");
+
+      onNext(sortVisitRequestsByRequestedTime(approvedRequests));
+    },
+    onError
+  );
+}
+
 export function listenToApprovedVisitRequests(db, onNext, onError) {
   if (!db) {
     onError?.(new Error("Firebase is not configured."));
@@ -131,6 +155,12 @@ export function listenToApprovedVisitRequests(db, onNext, onError) {
     visitRequestsQuery,
     (snapshot) => onNext(sortVisitRequestsByCreatedAt(snapshot.docs.map(mapVisitRequestDocument))),
     onError
+  );
+}
+
+function sortVisitRequestsByRequestedTime(requests) {
+  return [...requests].sort((firstRequest, secondRequest) =>
+    `${firstRequest.requestedTime || ""}`.localeCompare(`${secondRequest.requestedTime || ""}`)
   );
 }
 

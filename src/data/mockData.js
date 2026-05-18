@@ -5,8 +5,8 @@ export const dashboardData = {
   navItems: [
     { id: "dashboard", label: "Dashboard", href: "/", icon: "home" },
     { id: "daily-logs", label: "Daily Logs", href: "/daily-logs", icon: "logs" },
-    { id: "scheduling", label: "Scheduling", href: "/scheduling", icon: "calendar" },
     { id: "residents", label: "Residents", href: "/residents", icon: "residents" },
+    { id: "scheduling", label: "Scheduling", href: "/scheduling", icon: "calendar" },
     { id: "messages", label: "Messages", href: "/messages", icon: "messages" }
   ],
   stats: [

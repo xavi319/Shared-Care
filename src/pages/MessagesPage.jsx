@@ -57,14 +57,6 @@ function ComposeIcon() {
   );
 }
 
-function BackIcon() {
-  return (
-    <svg className="messages-back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-    </svg>
-  );
-}
-
 function ImageIcon() {
   return (
     <svg className="attach-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
@@ -605,14 +597,6 @@ export default function MessagesPage() {
               </p>
             ) : null}
           </div>
-          <button
-            className="messages-back-button"
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-          >
-            <BackIcon />
-          </button>
         </div>
 
         <div className="messages-layout">
