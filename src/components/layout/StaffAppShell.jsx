@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   dashboardData,
@@ -33,6 +34,7 @@ function getPendingDailyLogsCount() {
 }
 
 export function StaffAppShell({ children, onStubNavigate }) {
+  const navigate = useNavigate();
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const pendingDailyLogsCount = getPendingDailyLogsCount();
 
@@ -81,6 +83,9 @@ export function StaffAppShell({ children, onStubNavigate }) {
       <div className="dashboard-shell">
         <aside className="sidebar">
           <SidebarNav items={navItems} onStubNavigate={onStubNavigate} />
+          <button className="view-mode-toggle sidebar-view-mode-toggle" type="button" onClick={() => navigate("/family")}>
+            Dev: Family View
+          </button>
         </aside>
         <main className="content">{children}</main>
       </div>

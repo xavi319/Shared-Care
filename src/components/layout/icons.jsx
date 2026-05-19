@@ -1,98 +1,102 @@
 import {
-  ArrowsUpDownIcon as HeroArrowsUpDownIcon,
-  CalendarDaysIcon,
-  ChartBarIcon as HeroChartBarIcon,
-  ChatBubbleLeftRightIcon,
-  ChevronLeftIcon as HeroChevronLeftIcon,
-  ChevronDownIcon as HeroChevronDownIcon,
-  ChevronRightIcon as HeroChevronRightIcon,
-  CheckCircleIcon,
-  ClockIcon as HeroClockIcon,
-  ClipboardDocumentListIcon,
-  DocumentTextIcon,
-  GiftIcon,
-  HeartIcon,
-  HomeIcon,
-  InboxStackIcon,
-  InformationCircleIcon,
-  MagnifyingGlassIcon,
-  ShieldCheckIcon,
-  UserCircleIcon,
-  UserGroupIcon,
-  VideoCameraIcon,
-  UsersIcon
-} from "@heroicons/react/24/outline";
+  ArrowUpDown,
+  CalendarDays,
+  CalendarHeart,
+  ChartBar,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  Clock,
+  ClipboardList,
+  FileText,
+  Gift,
+  Heart,
+  Home,
+  Inbox,
+  Info,
+  MessageCircle,
+  Search,
+  ShieldCheck,
+  UserCircle,
+  UsersRound,
+  Video
+} from "lucide-react";
 
 function withDefaultClassName(className) {
   return className ? `sharedcare-icon ${className}` : "sharedcare-icon";
 }
 
+function LucideIcon({ icon: Icon, className }) {
+  return <Icon className={withDefaultClassName(className)} strokeWidth={2.25} aria-hidden="true" />;
+}
+
 export function InboxIcon({ className }) {
-  return <InboxStackIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={Inbox} className={className} />;
 }
 
 export function SearchIcon({ className }) {
-  return <MagnifyingGlassIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={Search} className={className} />;
 }
 
 export function ChevronRightIcon({ className }) {
-  return <HeroChevronRightIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={ChevronRight} className={className} />;
 }
 
 export function ChevronDownIcon({ className }) {
-  return <HeroChevronDownIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={ChevronDown} className={className} />;
 }
 
 export function ChevronLeftIcon({ className }) {
-  return <HeroChevronLeftIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={ChevronLeft} className={className} />;
 }
 
 export function CalendarIcon({ className }) {
-  return <CalendarDaysIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={CalendarDays} className={className} />;
 }
 
 export function CheckIcon({ className }) {
-  return <CheckCircleIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={CircleCheck} className={className} />;
 }
 
 export function ClockIcon({ className }) {
-  return <HeroClockIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={Clock} className={className} />;
 }
 
 export function DocumentIcon({ className }) {
-  return <DocumentTextIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={FileText} className={className} />;
 }
 
 export function GiftVisitIcon({ className }) {
-  return <GiftIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={Gift} className={className} />;
 }
 
 export function InfoIcon({ className }) {
-  return <InformationCircleIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={Info} className={className} />;
 }
 
 export function ShieldIcon({ className }) {
-  return <ShieldCheckIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={ShieldCheck} className={className} />;
 }
 
 export function UserIcon({ className }) {
-  return <UserCircleIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={UserCircle} className={className} />;
 }
 
 export function UserGroupVisitIcon({ className }) {
-  return <UserGroupIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={UsersRound} className={className} />;
 }
 
 export function VideoVisitIcon({ className }) {
-  return <VideoCameraIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={Video} className={className} />;
 }
 
 export function ChartIcon({ className }) {
-  return <HeroChartBarIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={ChartBar} className={className} />;
 }
 
 export function SortIcon({ className }) {
-  return <HeroArrowsUpDownIcon className={withDefaultClassName(className)} aria-hidden="true" />;
+  return <LucideIcon icon={ArrowUpDown} className={className} />;
 }
 
 export function NavIcon({ icon, className }) {
@@ -100,15 +104,15 @@ export function NavIcon({ icon, className }) {
 
   switch (icon) {
     case "home":
-      return <HomeIcon className={iconClassName} aria-hidden="true" />;
+      return <Home className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     case "calendar":
-      return <CalendarDaysIcon className={iconClassName} aria-hidden="true" />;
+      return <CalendarDays className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     case "logs":
-      return <ClipboardDocumentListIcon className={iconClassName} aria-hidden="true" />;
+      return <ClipboardList className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     case "residents":
-      return <UsersIcon className={iconClassName} aria-hidden="true" />;
+      return <UsersRound className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     case "messages":
-      return <ChatBubbleLeftRightIcon className={iconClassName} aria-hidden="true" />;
+      return <MessageCircle className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     default:
       return null;
   }
@@ -119,13 +123,13 @@ export function StatIcon({ icon, className }) {
 
   switch (icon) {
     case "logs":
-      return <ClipboardDocumentListIcon className={iconClassName} aria-hidden="true" />;
+      return <ClipboardList className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     case "residents":
-      return <UsersIcon className={iconClassName} aria-hidden="true" />;
+      return <UsersRound className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     case "visits":
-      return <HeartIcon className={iconClassName} aria-hidden="true" />;
+      return <CalendarHeart className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     case "messages":
-      return <ChatBubbleLeftRightIcon className={iconClassName} aria-hidden="true" />;
+      return <MessageCircle className={iconClassName} strokeWidth={2.25} aria-hidden="true" />;
     default:
       return null;
   }

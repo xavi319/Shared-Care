@@ -1,24 +1,22 @@
 import { useState } from "react";
 import {
-  FaChevronRight,
-  FaClipboardList,
-  FaClock,
-  FaEnvelope,
-  FaFileMedical,
-  FaHeartPulse,
-  FaHandsHolding,
-  FaLocationDot,
-  FaPersonWalking,
-  FaPhone,
-  FaPills,
-  FaRegCalendarDays,
-  FaRegFaceSmile,
-  FaRegMessage,
-  FaRegNoteSticky,
-  FaRegUser,
-  FaShieldHalved,
-  FaUtensils
-} from "react-icons/fa6";
+  Activity,
+  Bed,
+  CalendarDays,
+  ChevronRight,
+  Clock,
+  Contact,
+  HandHeart,
+  HeartPulse,
+  Mail,
+  Phone,
+  Pill,
+  ShieldCheck,
+  Smile,
+  StickyNote,
+  UserRound,
+  Utensils
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { StaffAppShell } from "../components/layout/StaffAppShell";
@@ -182,134 +180,102 @@ export default function ResidentDetailPage() {
               <h2 className="detail-name">{resident.resident.name}</h2>
               <div className="detail-resident-meta">
                 <span>
-                  <FaLocationDot aria-hidden="true" />
+                  <Bed aria-hidden="true" />
                   {resident.resident.room}
                 </span>
                 <span aria-hidden="true">•</span>
                 <span className="resident-status-pill">Active Resident</span>
               </div>
               <p className="detail-update-line">
-                <FaClock aria-hidden="true" />
+                <Clock aria-hidden="true" />
                 {isLatestDailyLogFinal ? "Daily log finalized:" : "Daily log draft saved:"} <strong>{latestDailyLogTime}</strong>
               </p>
               <p className="detail-updated-by">
                 {isLatestDailyLogFinal ? "Finalized" : "Pending final submission"} by{" "}
                 <button type="button" onClick={() => handleAction("caregiver profile")}>{latestDailyLogStaff}</button>
               </p>
+            </div>
 
-              <div className="detail-primary-inline">
-                <p>Primary Contact</p>
-                <div className="relative-card-body">
-                  <div className="relative-avatar" aria-hidden="true">
-                    {primaryRelativeImage ? (
-                      <img src={primaryRelativeImage} alt="" />
-                    ) : (
-                      getInitials(resident.primaryRelative.name)
-                    )}
-                  </div>
-                  <div>
-                    <p className="relative-name">
-                      {resident.primaryRelative.name} <span>({resident.primaryRelative.relation})</span>
-                    </p>
-                    <p className="relative-meta">
-                      <FaPhone aria-hidden="true" />
-                      {primaryContactDetails.phone}
-                    </p>
-                  </div>
+            <div className="detail-primary-inline">
+              <p>Primary Contact</p>
+              <div className="relative-card-body">
+                <div className="relative-avatar" aria-hidden="true">
+                  {primaryRelativeImage ? (
+                    <img src={primaryRelativeImage} alt="" />
+                  ) : (
+                    getInitials(resident.primaryRelative.name)
+                  )}
+                </div>
+                <div>
+                  <p className="relative-name">
+                    {resident.primaryRelative.name} <span>({resident.primaryRelative.relation})</span>
+                  </p>
+                  <p className="relative-meta">
+                    <Phone aria-hidden="true" />
+                    {primaryContactDetails.phone}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="detail-actions">
-              {[
-                { label: "Daily Log Summaries", tone: "neutral", icon: FaClipboardList },
-                { label: "Message Family", tone: "message", icon: FaRegMessage },
-                { label: "Schedule Visit", tone: "schedule", icon: FaRegCalendarDays },
-                { label: "Medical Charts", tone: "dark", icon: FaFileMedical }
-              ].map((action) => {
-                const ActionIcon = action.icon;
-                return (
-                  <button
-                    key={action.label}
-                    className={`detail-action-card detail-action-card--${action.tone}`}
-                    type="button"
-                    onClick={() => handleAction(action.label)}
-                  >
-                    <ActionIcon aria-hidden="true" />
-                    <span className="detail-action-label">{action.label}</span>
-                    <FaChevronRight className="detail-action-arrow" aria-hidden="true" />
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           <div className="detail-grid">
             <article className="detail-card detail-card--daily-log">
               <div className="detail-card-heading-row">
-                <DetailSectionTitle icon={FaRegCalendarDays}>Latest Daily Log</DetailSectionTitle>
-                <div className="daily-log-card-meta">
-                  <span className={`daily-log-state-pill${isLatestDailyLogFinal ? " is-final" : " is-draft"}`}>
-                    {latestDailyLogStateLabel}
-                  </span>
-                  <p>{latestDailyLogMeta}</p>
-                </div>
+                <DetailSectionTitle icon={CalendarDays}>Latest Daily Log</DetailSectionTitle>
               </div>
-              <div className="daily-log-snapshot-grid">
+              <dl className="detail-meta daily-log-meta-list">
                 {[
                   {
                     label: "Mood",
                     value: getCareValue(latestDailyLog?.mood ?? latestDailyLog?.status),
-                    icon: FaRegFaceSmile,
-                    tone: "mood"
+                    icon: Smile
                   },
                   {
                     label: "Meals",
                     value: getCareValue(latestDailyLog?.meals),
-                    icon: FaUtensils,
-                    tone: "meals"
+                    icon: Utensils
                   },
                   {
                     label: "Activity",
                     value: getActivityLabel(latestDailyLog?.activityEngagement),
-                    icon: FaPersonWalking,
-                    tone: "activity"
+                    icon: Activity
                   },
                   {
                     label: "Assistance",
                     value: getCareValue(latestDailyLog?.assistanceLevel),
-                    icon: FaHandsHolding,
-                    tone: "assistance"
+                    icon: HandHeart
                   },
                   {
                     label: "Safety",
                     value: getSafetyLabel(latestDailyLog?.safety),
-                    icon: FaShieldHalved,
-                    tone: "safety"
+                    icon: ShieldCheck
                   }
                 ].map((item) => {
                   const ItemIcon = item.icon;
 
                   return (
-                    <div key={item.label} className={`daily-log-snapshot-item daily-log-snapshot-item--${item.tone}`}>
-                      <ItemIcon aria-hidden="true" />
-                      <strong>{item.label}</strong>
-                      <span>{item.value}</span>
+                    <div key={item.label} className="detail-meta-row daily-log-meta-row">
+                      <dt>
+                        <ItemIcon aria-hidden="true" />
+                        {item.label}
+                      </dt>
+                      <dd>{item.value}</dd>
                     </div>
                   );
                 })}
-              </div>
-              <div className="daily-log-summary-row">
-                <div className="daily-log-summary-title">
-                  <FaRegNoteSticky aria-hidden="true" />
-                  <strong>Summary</strong>
-                </div>
-                <p>{latestDailyLog?.summary ?? latestDailyLog?.notes ?? "No summary recorded."}</p>
+              </dl>
+              <div className="daily-log-card-meta">
+                <span className={`daily-log-state-pill${isLatestDailyLogFinal ? " is-final" : " is-draft"}`}>
+                  {latestDailyLogStateLabel}
+                </span>
+                <p>{latestDailyLogMeta}</p>
               </div>
             </article>
 
             <article className="detail-card detail-card--identity">
-              <DetailSectionTitle icon={FaRegUser}>Identity</DetailSectionTitle>
+              <DetailSectionTitle icon={UserRound}>Identity</DetailSectionTitle>
               <dl className="detail-meta">
                 <div className="detail-meta-row">
                   <dt>Resident ID</dt>
@@ -339,7 +305,7 @@ export default function ResidentDetailPage() {
             </article>
 
             <article className="detail-card detail-card--relative">
-              <DetailSectionTitle icon={FaRegUser}>Primary Contact</DetailSectionTitle>
+              <DetailSectionTitle icon={Contact}>Primary Contact</DetailSectionTitle>
               <div className="relative-card-body">
                 <div className="relative-avatar" aria-hidden="true">
                   {primaryRelativeImage ? (
@@ -353,11 +319,11 @@ export default function ResidentDetailPage() {
                     {resident.primaryRelative.name} <span>({resident.primaryRelative.relation})</span>
                   </p>
                   <p className="relative-meta">
-                    <FaPhone aria-hidden="true" />
+                    <Phone aria-hidden="true" />
                     {primaryContactDetails.phone}
                   </p>
                   <p className="relative-meta">
-                    <FaEnvelope aria-hidden="true" />
+                    <Mail aria-hidden="true" />
                     {primaryContactDetails.email}
                   </p>
                 </div>
@@ -366,7 +332,7 @@ export default function ResidentDetailPage() {
             </article>
 
             <article className="detail-card detail-card--medications">
-              <DetailSectionTitle icon={FaPills}>Medications</DetailSectionTitle>
+              <DetailSectionTitle icon={Pill}>Medications</DetailSectionTitle>
               <ul className="detail-list">
                 {resident.medications.map((medication) => (
                   <li key={medication}>{medication}</li>
@@ -374,12 +340,12 @@ export default function ResidentDetailPage() {
               </ul>
               <button className="detail-card-link" type="button" onClick={() => handleAction("all medications")}>
                 View all medications
-                <FaChevronRight aria-hidden="true" />
+                <ChevronRight aria-hidden="true" />
               </button>
             </article>
 
             <article className="detail-card detail-card--personal">
-              <DetailSectionTitle icon={FaRegNoteSticky}>Personal Notes</DetailSectionTitle>
+              <DetailSectionTitle icon={StickyNote}>Personal Notes</DetailSectionTitle>
               <ul className="detail-list">
                 {resident.personalNotes.map((note) => (
                   <li key={note}>{note}</li>
@@ -388,7 +354,7 @@ export default function ResidentDetailPage() {
             </article>
 
             <article className="detail-card detail-card--diagnoses">
-              <DetailSectionTitle icon={FaHeartPulse}>Diagnoses</DetailSectionTitle>
+              <DetailSectionTitle icon={HeartPulse}>Diagnoses</DetailSectionTitle>
               <ul className="detail-list">
                 {resident.diagnoses.map((diagnosis) => (
                   <li key={diagnosis}>{diagnosis}</li>
@@ -396,7 +362,7 @@ export default function ResidentDetailPage() {
               </ul>
               <button className="detail-card-link" type="button" onClick={() => handleAction("all diagnoses")}>
                 View all diagnoses
-                <FaChevronRight aria-hidden="true" />
+                <ChevronRight aria-hidden="true" />
               </button>
             </article>
           </div>

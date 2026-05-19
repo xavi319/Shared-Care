@@ -1,15 +1,15 @@
 import { useState } from "react";
 import {
-  FaBed,
-  FaChevronLeft,
-  FaFloppyDisk,
-  FaHandHoldingHeart,
-  FaPeopleGroup,
-  FaRegClipboard,
-  FaRegFaceSmile,
-  FaShieldHalved,
-  FaUtensils
-} from "react-icons/fa6";
+  Bed,
+  ChevronLeft,
+  HandHeart,
+  Save,
+  ShieldCheck,
+  Smile,
+  StickyNote,
+  UsersRound,
+  Utensils
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { StaffAppShell } from "../components/layout/StaffAppShell";
@@ -45,27 +45,27 @@ function getTimestampLabel(dateKey = getDailyLogRequiredDate()) {
 const fieldConfig = {
   mood: {
     title: "Mood",
-    icon: FaRegFaceSmile,
+    icon: Smile,
     tone: "blue"
   },
   meals: {
     title: "Meals",
-    icon: FaUtensils,
+    icon: Utensils,
     tone: "green"
   },
   activityEngagement: {
     title: "Activity & Engagement",
-    icon: FaPeopleGroup,
+    icon: UsersRound,
     tone: "purple"
   },
   assistanceLevel: {
     title: "Assistance Level",
-    icon: FaHandHoldingHeart,
+    icon: HandHeart,
     tone: "orange"
   },
   safety: {
     title: "Safety",
-    icon: FaShieldHalved,
+    icon: ShieldCheck,
     tone: "red"
   }
 };
@@ -260,7 +260,7 @@ export default function DailyLogSubmissionPage() {
 
         <div className="daily-log-submit-header-actions">
           <div className="daily-log-room-card">
-            <FaBed aria-hidden="true" />
+            <Bed aria-hidden="true" />
             <span>Room {resident.room.replace("Room ", "")}</span>
           </div>
           <button
@@ -269,7 +269,7 @@ export default function DailyLogSubmissionPage() {
             onClick={() => navigate("/daily-logs")}
             aria-label="Back to daily logs"
           >
-            <FaChevronLeft aria-hidden="true" />
+            <ChevronLeft aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -338,7 +338,7 @@ export default function DailyLogSubmissionPage() {
 
         <aside className="daily-log-submit-sidebar">
           <h2 className="daily-log-sidebar-title">
-            <FaRegClipboard className="daily-log-section-icon" aria-hidden="true" />
+            <StickyNote className="daily-log-section-icon" aria-hidden="true" />
             <span>Notes & Summary</span>
           </h2>
           <label className="daily-log-notes-label" htmlFor="daily-log-notes">
@@ -359,7 +359,7 @@ export default function DailyLogSubmissionPage() {
           </p>
           <QuickOverview formState={formState} />
           <button className="daily-log-submit-button" type="submit">
-            <FaFloppyDisk aria-hidden="true" />
+            <Save aria-hidden="true" />
             Update daily log
           </button>
           <button className="daily-log-cancel-button" type="button" onClick={() => navigate("/daily-logs")}>
