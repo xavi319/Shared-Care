@@ -65,6 +65,12 @@ input {
   font: inherit;
 }
 
+input::placeholder,
+textarea::placeholder {
+  font-family: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  font-weight: 300;
+}
+
 a {
   color: inherit;
 }
@@ -852,9 +858,8 @@ a {
 .family-sidebar-heading {
   display: grid;
   gap: 10px;
-  margin-bottom: 16px;
-  padding: 0 10px 14px;
-  border-bottom: 1px solid #e1e8f2;
+  margin-top: auto;
+  padding: 0 10px 12px;
 }
 
 .family-sidebar-kicker {
@@ -1044,6 +1049,7 @@ a {
 .family-visit-field input.family-visit-placeholder-value,
 .family-visit-field select.family-visit-placeholder-value {
   color: rgba(0, 0, 0, 0.45);
+  font-family: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
   font-size: 1rem;
   font-weight: 300;
 }
@@ -1598,22 +1604,22 @@ a {
 .family-logs-stack {
   display: grid;
   gap: 18px;
-  width: min(100%, 1240px);
+  width: min(100%, 1320px);
 }
 
 .family-log-summary-row {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .family-log-metric {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 14px;
-  min-height: 78px;
-  padding: 14px 16px;
+  gap: 18px;
+  min-height: 104px;
+  padding: 18px 22px;
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   background: #ffffff;
@@ -1630,8 +1636,8 @@ a {
 }
 
 .family-log-metric-icon {
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
 }
 
 .family-log-metric-icon svg {
@@ -1647,8 +1653,9 @@ a {
   position: absolute;
   inset: 50% auto auto 50%;
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
+  color: inherit;
   transform: translate(-50%, -50%);
 }
 
@@ -1715,6 +1722,12 @@ a {
 .family-log-metric-icon--assistance {
   background: #fff0de;
   color: #c08d52;
+}
+
+.family-log-detail-icon--safety,
+.family-log-metric-icon--safety {
+  background: #e9f8e5;
+  color: #43b42f;
 }
 
 .family-logs-controls {
@@ -1859,24 +1872,28 @@ a {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
-  min-height: 74px;
-  padding: 12px 14px;
+  gap: 18px;
+  min-height: 104px;
+  padding: 18px 22px;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #f8fbff;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.family-log-detail--wide {
+  grid-column: 1 / -1;
 }
 
 .family-log-detail-icon {
-  width: 36px;
-  height: 36px;
+  width: 54px;
+  height: 54px;
 }
 
-.family-log-detail span,
+.family-log-detail > div > span,
 .family-log-notes h3 {
   display: block;
   margin: 0 0 4px;
-  color: #556274;
+  color: #111111;
   font-size: 0.84rem;
   font-weight: 700;
 }
@@ -2920,17 +2937,21 @@ a {
 .daily-log-state-pill {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 24px;
-  padding: 0 12px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
   border-radius: 999px;
-  font-size: 0.86rem;
-  font-weight: 300;
+  font-size: 0.78rem;
+  font-weight: 700;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .daily-log-state-pill.is-draft {
-  background: #fff6e6;
-  color: #7a5522;
+  background: #ffffff;
+  border-color: #eadcc8;
+  color: #68778a;
 }
 
 .daily-log-state-pill.is-final {
@@ -3831,6 +3852,12 @@ a {
   font-weight: 500;
   line-height: 1.45;
   resize: vertical;
+}
+
+.daily-log-notes-input::placeholder {
+  color: #777777;
+  font-family: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  font-weight: 300;
 }
 
 .daily-log-notes-input:focus-visible {
@@ -5248,8 +5275,8 @@ a {
     grid-template-columns: repeat(2, minmax(0, auto));
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 0 2px 12px;
+    margin-top: 14px;
+    padding: 0 2px;
   }
 
   .family-visit-fields {

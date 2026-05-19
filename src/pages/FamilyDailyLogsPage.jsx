@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  FaCircleExclamation,
-  FaChevronDown,
-  FaChevronRight,
-  FaHandHoldingHeart,
-  FaPeopleGroup,
-  FaRegCircleCheck,
-  FaRegCircleUser,
-  FaRegClock,
-  FaRegFaceSmile,
-  FaRegNoteSticky,
-  FaUtensils
-} from "react-icons/fa6";
-
+  AlertIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  HandHeartIcon,
+  NoteIcon,
+  ShieldIcon,
+  SmileIcon,
+  UserIcon,
+  UsersIcon,
+  UtensilsIcon
+} from "../components/layout/icons";
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import {
   currentDemoStaffName,
@@ -199,6 +199,37 @@ function getAssistanceSummary(assistanceLevel) {
   return assistanceTextByValue[assistanceLevel] ?? assistanceLevel ?? "Not shared";
 }
 
+function getSafetySentence(residentName, safety) {
+  if (!safety || safety === "No safety concerns") {
+    return `No safety concerns were noted for ${residentName} today.`;
+  }
+
+  const safetyTextByValue = {
+    Fall: `${residentName} had a fall noted today. The care team is aware.`,
+    "Near fall": `${residentName} had a near fall noted today. The care team is aware.`,
+    "Injury observed": `An injury was observed for ${residentName} today. The care team is aware.`,
+    "Medication refused": `${residentName} refused medication today. The care team is aware.`
+  };
+
+  return safetyTextByValue[safety] ?? `${residentName}'s safety update: ${safety}.`;
+}
+
+function getSafetySummary(safety) {
+  const safetyTextByValue = {
+    "No safety concerns": "No concerns",
+    Fall: "Fall noted",
+    "Near fall": "Near fall",
+    "Injury observed": "Injury noted",
+    "Medication refused": "Medication refused"
+  };
+
+  return safetyTextByValue[safety] ?? safety ?? "No concerns";
+}
+
+function getSafetyTone(safety) {
+  return !safety || safety === "No safety concerns" ? "safety" : "concern";
+}
+
 function getSummarySentence(entry, residentName) {
   if (entry.summary) {
     return entry.summary;
@@ -246,7 +277,7 @@ function getOverallTone(entry) {
 }
 
 function getOverallIcon(entry) {
-  return isNegativeMood(entry.mood) ? FaCircleExclamation : FaRegCircleCheck;
+  return isNegativeMood(entry.mood) ? AlertIcon : CheckIcon;
 }
 
 function SummaryMetric({ icon: Icon, label, value, tone }) {
@@ -271,26 +302,33 @@ function FamilyUpdateCard({ entry, residentName }) {
     {
       label: "Mood",
       value: getMoodSentence(residentName, entry.mood),
-      icon: FaRegFaceSmile,
+      icon: SmileIcon,
       tone: getMoodTone(entry.mood)
     },
     {
       label: "Meals",
       value: getMealSentence(residentName, entry.meals),
-      icon: FaUtensils,
+      icon: UtensilsIcon,
       tone: "meals"
     },
     {
       label: "Activity & Engagement",
       value: getActivitySentence(residentName, entry.activityEngagement),
-      icon: FaPeopleGroup,
+      icon: UsersIcon,
       tone: "activity"
     },
     {
       label: "Assistance Level",
       value: getAssistanceSentence(residentName, entry.assistanceLevel),
-      icon: FaHandHoldingHeart,
+      icon: HandHeartIcon,
       tone: "assistance"
+    },
+    {
+      label: "Safety",
+      value: getSafetySentence(residentName, entry.safety),
+      icon: ShieldIcon,
+      tone: getSafetyTone(entry.safety),
+      isWide: true
     }
   ];
 
@@ -298,11 +336,11 @@ function FamilyUpdateCard({ entry, residentName }) {
     <article className="family-log-card family-log-card--featured">
       <div className="family-log-card-topline">
         <p className="family-log-date">
-          <FaRegClock aria-hidden="true" />
+          <ClockIcon />
           {formatLogDate(getLogTimestamp(entry))}
         </p>
         <p className="family-log-staff">
-          <FaRegCircleUser aria-hidden="true" />
+          <UserIcon />
           Updated by {staffName}
         </p>
       </div>
@@ -311,7 +349,7 @@ function FamilyUpdateCard({ entry, residentName }) {
 
       <div className="family-log-detail-grid">
         {detailItems.map((item) => (
-          <div key={item.label} className="family-log-detail">
+          <div key={item.label} className={`family-log-detail${item.isWide ? " family-log-detail--wide" : ""}`}>
             <span className={`family-log-detail-icon family-log-detail-icon--${item.tone}`}>
               <item.icon aria-hidden="true" />
             </span>
@@ -325,7 +363,7 @@ function FamilyUpdateCard({ entry, residentName }) {
 
       {notesText ? (
         <div className="family-log-notes">
-          <FaRegNoteSticky aria-hidden="true" />
+          <NoteIcon />
           <div>
             <h3>Notes</h3>
             <p>{notesText}</p>
@@ -353,7 +391,7 @@ function FamilyLogsControls({ updateCount }) {
       <div className="family-logs-sort">
         <span>{updateCount} updates</span>
         <span>Newest first</span>
-        <FaChevronDown aria-hidden="true" />
+        <ChevronDownIcon />
       </div>
     </div>
   );
@@ -366,7 +404,8 @@ function PreviousUpdateItem({ entry, residentName, isExpanded, onToggle }) {
     ["Mood", getMoodSummary(entry.mood)],
     ["Meals", getMealSummary(entry.meals)],
     ["Activity", getActivitySummary(entry.activityEngagement)],
-    ["Assistance", getAssistanceSummary(entry.assistanceLevel)]
+    ["Assistance", getAssistanceSummary(entry.assistanceLevel)],
+    ["Safety", getSafetySummary(entry.safety)]
   ];
 
   return (
@@ -387,7 +426,7 @@ function PreviousUpdateItem({ entry, residentName, isExpanded, onToggle }) {
           )}
         </span>
         <span className="family-log-previous-summary">{summary}</span>
-        <FaChevronRight aria-hidden="true" />
+        <ChevronRightIcon />
       </button>
       {isExpanded ? (
         <div className="family-log-previous-details">
@@ -460,26 +499,32 @@ export default function FamilyDailyLogsPage() {
         {
           label: "Mood",
           value: getMoodSummary(latestLog.mood),
-          icon: FaRegFaceSmile,
+          icon: SmileIcon,
           tone: getMoodTone(latestLog.mood)
         },
         {
           label: "Meals",
           value: getMealSummary(latestLog.meals),
-          icon: FaUtensils,
+          icon: UtensilsIcon,
           tone: "meals"
         },
         {
           label: "Activity",
           value: getActivitySummary(latestLog.activityEngagement),
-          icon: FaPeopleGroup,
+          icon: UsersIcon,
           tone: "activity"
         },
         {
           label: "Assistance",
           value: getAssistanceSummary(latestLog.assistanceLevel),
-          icon: FaHandHoldingHeart,
+          icon: HandHeartIcon,
           tone: "assistance"
+        },
+        {
+          label: "Safety",
+          value: getSafetySummary(latestLog.safety),
+          icon: ShieldIcon,
+          tone: getSafetyTone(latestLog.safety)
         }
       ]
     : [];

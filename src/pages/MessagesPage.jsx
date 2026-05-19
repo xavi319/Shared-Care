@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FaCheck, FaCheckDouble } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { FamilyAppShell } from "../components/layout/FamilyAppShell";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
+import {
+  AttachIcon,
+  CheckDoubleIcon,
+  CheckMarkIcon,
+  ComposeIcon,
+  SearchIcon,
+  SendIcon,
+  UserRoundIcon
+} from "../components/layout/icons";
 import { getDailyLogEntryByResidentId, messagesData } from "../data/mockData";
 import { db } from "../lib/firebase";
 import { listenToDailyLogsForResident } from "../services/dailyLogService";
@@ -28,52 +36,6 @@ const familyUser = {
 
 const robertAdamsConversationId = "contact-robert-adams";
 const sarahProfileImage = "/images/sarah-profile.jpg";
-
-function ProfileIcon() {
-  return (
-    <svg className="chat-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <circle cx="12" cy="8" r="3.25" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 20a6.5 6.5 0 0113 0" />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg className="messages-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <circle cx="11" cy="11" r="7" />
-      <path strokeLinecap="round" d="M20 20l-3-3" />
-    </svg>
-  );
-}
-
-function ComposeIcon() {
-  return (
-    <svg className="compose-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round"
-        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"
-      />
-    </svg>
-  );
-}
-
-function ImageIcon() {
-  return (
-    <svg className="attach-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round"
-        d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"
-      />
-    </svg>
-  );
-}
-
-function SendIcon() {
-  return (
-    <svg className="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-    </svg>
-  );
-}
 
 function getInitials(name) {
   return String(name || "")
@@ -361,7 +323,7 @@ function ChatBubble({ message, currentUser }) {
       </div>
       <p className="chat-bubble-time">
         {formatMessageTimestamp(message.createdAt)}
-        {isOutgoing ? <FaCheckDouble className="message-read-check" aria-hidden="true" /> : null}
+        {isOutgoing ? <CheckDoubleIcon className="message-read-check" /> : null}
       </p>
     </div>
   );
@@ -393,7 +355,7 @@ function ResidentContextStrip({ contact, latestDailyLog }) {
         {mealLabel ? (
           <span className={isConfirmedAteWell ? "resident-context-meals is-confirmed" : "resident-context-meals"}>
             {mealLabel}
-            {isConfirmedAteWell ? <FaCheck className="resident-context-check" aria-hidden="true" /> : null}
+            {isConfirmedAteWell ? <CheckMarkIcon className="resident-context-check" /> : null}
           </span>
         ) : null}
       </p>
@@ -604,7 +566,7 @@ export default function MessagesPage() {
           <aside className="messages-sidebar" aria-label="Contacts list">
             <div className="sidebar-top">
               <div className="messages-search-wrapper">
-                <SearchIcon />
+                <SearchIcon className="messages-search-icon" />
                 <input
                   className="messages-search-input"
                   type="search"
@@ -615,7 +577,7 @@ export default function MessagesPage() {
                 />
               </div>
               <button className="compose-button" type="button" aria-label="Compose new message">
-                <ComposeIcon />
+                <ComposeIcon className="compose-icon" />
               </button>
             </div>
 
@@ -674,7 +636,7 @@ export default function MessagesPage() {
                     onClick={() => navigate(getResidentProfilePath(activeContact))}
                     aria-label={`Open ${activeContact.residentName} resident profile`}
                   >
-                    <ProfileIcon />
+                    <UserRoundIcon className="chat-action-icon" />
                     <span>Resident Profile</span>
                   </button>
                 </div>
@@ -703,7 +665,7 @@ export default function MessagesPage() {
                 <p className="chat-privacy-note">Messages are visible to authorized staff and family only.</p>
                 <div className="chat-reply-bar">
                   <button className="reply-attach-button" type="button" aria-label="Attach file">
-                    <ImageIcon />
+                    <AttachIcon className="attach-icon" />
                   </button>
                   <input
                     className="reply-input"
@@ -722,7 +684,7 @@ export default function MessagesPage() {
                     aria-label="Send reply"
                     disabled={!db || !replyText.trim()}
                   >
-                    <SendIcon />
+                    <SendIcon className="send-icon" />
                   </button>
                 </div>
               </div>

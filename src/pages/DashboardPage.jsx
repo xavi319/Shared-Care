@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { FaCheck } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
 import { StatCard } from "../components/dashboard/StatCard";
-import { ChevronRightIcon } from "../components/layout/icons";
+import { CheckMarkIcon, ChevronRightIcon } from "../components/layout/icons";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
 import {
   checklistStorageKey,
@@ -693,7 +692,7 @@ export default function DashboardPage() {
                         aria-label={`${item.completed ? "Mark as incomplete" : "Mark as complete"}: ${item.label} for ${group.name}`}
                       >
                         <span className={`task-circle${item.completed ? " is-checked" : ""}`}>
-                          {item.completed ? <FaCheck aria-hidden="true" /> : null}
+                          {item.completed ? <CheckMarkIcon /> : null}
                         </span>
                       </button>
                       <div>

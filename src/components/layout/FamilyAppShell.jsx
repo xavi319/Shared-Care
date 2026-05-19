@@ -47,13 +47,13 @@ export function FamilyAppShell({ children }) {
       <TopBar />
       <div className="dashboard-shell">
         <aside className="sidebar">
+          <SidebarNav items={navItems} />
           <div className="family-sidebar-heading">
             <p className="family-sidebar-kicker">Family View</p>
             <button className="view-mode-toggle" type="button" onClick={() => navigate("/")}>
               Dev: Staff View
             </button>
           </div>
-          <SidebarNav items={navItems} />
         </aside>
         <main className="content family-content">{children}</main>
       </div>

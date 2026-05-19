@@ -3,23 +3,35 @@ import {
   CalendarDays,
   CalendarHeart,
   ChartBar,
+  Check,
+  CheckCheck,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  CircleAlert,
   CircleCheck,
   Clock,
   ClipboardList,
   FileText,
   Gift,
+  HandHeart,
   Heart,
   Home,
   Inbox,
   Info,
   MessageCircle,
+  Paperclip,
+  PencilLine,
   Search,
+  Send,
   ShieldCheck,
+  Smile,
+  StickyNote,
   UserCircle,
+  UserRound,
+  Users,
   UsersRound,
+  Utensils,
   Video
 } from "lucide-react";
 
@@ -59,6 +71,18 @@ export function CheckIcon({ className }) {
   return <LucideIcon icon={CircleCheck} className={className} />;
 }
 
+export function CheckMarkIcon({ className }) {
+  return <LucideIcon icon={Check} className={className} />;
+}
+
+export function CheckDoubleIcon({ className }) {
+  return <LucideIcon icon={CheckCheck} className={className} />;
+}
+
+export function AlertIcon({ className }) {
+  return <LucideIcon icon={CircleAlert} className={className} />;
+}
+
 export function ClockIcon({ className }) {
   return <LucideIcon icon={Clock} className={className} />;
 }
@@ -67,8 +91,24 @@ export function DocumentIcon({ className }) {
   return <LucideIcon icon={FileText} className={className} />;
 }
 
+export function NoteIcon({ className }) {
+  return <LucideIcon icon={StickyNote} className={className} />;
+}
+
+export function SmileIcon({ className }) {
+  return <LucideIcon icon={Smile} className={className} />;
+}
+
+export function UtensilsIcon({ className }) {
+  return <LucideIcon icon={Utensils} className={className} />;
+}
+
 export function GiftVisitIcon({ className }) {
   return <LucideIcon icon={Gift} className={className} />;
+}
+
+export function HandHeartIcon({ className }) {
+  return <LucideIcon icon={HandHeart} className={className} />;
 }
 
 export function InfoIcon({ className }) {
@@ -83,6 +123,14 @@ export function UserIcon({ className }) {
   return <LucideIcon icon={UserCircle} className={className} />;
 }
 
+export function UserRoundIcon({ className }) {
+  return <LucideIcon icon={UserRound} className={className} />;
+}
+
+export function UsersIcon({ className }) {
+  return <LucideIcon icon={Users} className={className} />;
+}
+
 export function UserGroupVisitIcon({ className }) {
   return <LucideIcon icon={UsersRound} className={className} />;
 }
@@ -93,6 +141,18 @@ export function VideoVisitIcon({ className }) {
 
 export function ChartIcon({ className }) {
   return <LucideIcon icon={ChartBar} className={className} />;
+}
+
+export function ComposeIcon({ className }) {
+  return <LucideIcon icon={PencilLine} className={className} />;
+}
+
+export function AttachIcon({ className }) {
+  return <LucideIcon icon={Paperclip} className={className} />;
+}
+
+export function SendIcon({ className }) {
+  return <LucideIcon icon={Send} className={className} />;
 }
 
 export function SortIcon({ className }) {

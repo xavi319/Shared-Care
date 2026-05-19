@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
@@ -27,7 +27,7 @@ export default function App() {
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/scheduling" element={<SchedulingPage />} />
         <Route path="/family" element={<FamilyDailyLogsPage />} />
-        <Route path="/family/daily-logs" element={<FamilyDailyLogsPage />} />
+        <Route path="/family/daily-logs" element={<Navigate to="/family" replace />} />
         <Route path="/family/scheduling" element={<FamilySchedulingPage />} />
         <Route path="/family/messages" element={<MessagesPage />} />
       </Route>
