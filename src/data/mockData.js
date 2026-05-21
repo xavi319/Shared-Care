@@ -830,6 +830,39 @@ export const schedulingPageData = {
       notes: "Wants to stop by and visit his father in the morning.",
     },
   ],
+
+  mockVisitRequests: [
+    {
+      id: "mock-approved-maria-mendoza-2026-05-21",
+      residentId: "lilian-mendoza",
+      residentName: "Lilian Mendoza",
+      residentRoom: "Room 252",
+      familyUserId: "family_maria_mendoza",
+      familyName: "Maria Mendoza",
+      visitorName: "Maria Mendoza",
+      requestedDate: "2026-05-21",
+      requestedTime: "1:00 PM - 2:00 PM",
+      visitType: "in-person",
+      notes: "Scheduled visit with Lilian Mendoza.",
+      status: "approved",
+      reviewedBy: "Staff"
+    },
+    {
+      id: "mock-pending-megan-callahan-2026-05-21",
+      residentId: "edgar-callahan",
+      residentName: "Edgar Callahan",
+      residentRoom: "Room 204",
+      familyUserId: "family_megan_callahan",
+      familyName: "Megan Callahan",
+      visitorName: "Megan Callahan",
+      requestedDate: "2026-05-21",
+      requestedTime: "3:30 PM - 4:30 PM",
+      visitType: "in-person",
+      notes: "Would like to visit Edgar in the afternoon.",
+      status: "pending",
+      reviewedBy: ""
+    }
+  ],
 };
  
 export const checklistStorageKey = "sharedcare-dashboard-checklist";

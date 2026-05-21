@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../components/auth/AuthProvider";
 import { ChevronLeftIcon, ChevronRightIcon } from "../components/layout/icons";
 import { StaffAppShell } from "../components/layout/StaffAppShell";
+import { schedulingPageData } from "../data/mockData";
 import { db } from "../lib/firebase";
 import {
   listenToApprovedVisitRequestsForDate,
@@ -118,6 +119,16 @@ function CalendarEmptyState() {
   );
 }
 
+function isRemovedVisitRequest(request) {
+  const visitorName = request.visitorName || request.familyName || "";
+
+  return (
+    request.requestedDate === "2026-05-21" &&
+    request.requestedTime === "3:30 PM - 4:30 PM" &&
+    visitorName === "Robert Adams"
+  );
+}
+
 function PendingCard({ appointment, isUpdating, onAccept, onDecline }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -186,6 +197,18 @@ export default function SchedulingPage() {
   const selectedDateKey = toDateString(currentDate);
   const todayDateKey = toDateString(todayDate);
   const reviewerName = currentUser?.displayName || currentUser?.email || "Staff";
+  const mockApprovedVisits = useMemo(
+    () =>
+      schedulingPageData.mockVisitRequests.filter(
+        (request) => request.status === "approved" && request.requestedDate === selectedDateKey
+      ),
+    [selectedDateKey]
+  );
+  const mockPendingVisits = useMemo(
+    () =>
+      schedulingPageData.mockVisitRequests.filter((request) => request.status === "pending"),
+    []
+  );
 
   useEffect(() => {
     if (!db) {
@@ -256,7 +279,7 @@ export default function SchedulingPage() {
 
   const pendingAppointments = useMemo(
     () =>
-      pendingList.map((request) => ({
+      [...mockPendingVisits, ...pendingList].filter((request) => !isRemovedVisitRequest(request)).map((request) => ({
         id: request.id,
         name: request.visitorName || request.familyName,
         relation: request.residentName,
@@ -265,7 +288,7 @@ export default function SchedulingPage() {
         time: request.requestedTime,
         notes: request.notes
       })),
-    [pendingList]
+    [mockPendingVisits, pendingList]
   );
 
   function formatHourLabel(hour) {
@@ -325,6 +348,8 @@ export default function SchedulingPage() {
   const visibleEvents = useMemo(
     () =>
       scheduledVisits
+        .filter((request) => !isRemovedVisitRequest(request))
+        .concat(mockApprovedVisits)
         .map((request) => {
           const { startTime, endTime } = getVisitTimeRange(request.requestedTime);
 
@@ -340,7 +365,7 @@ export default function SchedulingPage() {
         .sort((firstEvent, secondEvent) =>
           timeToMinutes(firstEvent.startTime) - timeToMinutes(secondEvent.startTime)
         ),
-    [scheduledVisits]
+    [mockApprovedVisits, scheduledVisits]
   );
 
   const nowMins = now.getHours() * 60 + now.getMinutes();
@@ -433,11 +458,11 @@ export default function SchedulingPage() {
         <aside className="pending-panel" aria-label="Pending appointments">
           <h2 className="pending-panel-title">Pending Appointments</h2>
 
-          {pendingStatus === "loading" ? (
+          {pendingStatus === "loading" && pendingAppointments.length === 0 ? (
             <p className="pending-panel-empty">Loading pending appointments...</p>
           ) : null}
 
-          {pendingStatus === "error" ? (
+          {pendingStatus === "error" && pendingAppointments.length === 0 ? (
             <p className="pending-panel-empty">
               Pending appointments are unavailable right now.
             </p>
@@ -447,7 +472,7 @@ export default function SchedulingPage() {
             <p className="pending-panel-empty">No pending appointments.</p>
           ) : null}
 
-          {pendingStatus === "ready" && pendingAppointments.length ? (
+          {pendingAppointments.length ? (
             <ul className="pending-list">
               {pendingAppointments.map((appt) => (
                 <li key={appt.id}>
