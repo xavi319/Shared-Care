@@ -2860,6 +2860,34 @@ a {
   grid-column: 2;
 }
 
+.information-redacted {
+  background-color: #d1d5db;
+  border-radius: 6px;
+  min-height: 1em;
+}
+
+.resident-information-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #d6dee9;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--brand);
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.resident-information-toggle:hover {
+  background: #edf4fb;
+  outline: none;
+}
+
 .detail-card-title {
   display: flex;
   align-items: center;

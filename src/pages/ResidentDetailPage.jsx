@@ -129,6 +129,8 @@ export default function ResidentDetailPage() {
     ? `Finalized ${latestDailyLogTime} by ${latestDailyLogStaff}`
     : `Draft saved ${latestDailyLogTime} by ${latestDailyLogStaff}`;
   const primaryContactDetails = resident ? getPrimaryContactDetails(resident.primaryRelative) : null;
+  const [showMedications, setShowMedications] = useState(false);
+  const [showDiagnoses, setShowDiagnoses] = useState(false);
 
   if (!resident) {
     return (
@@ -332,13 +334,38 @@ export default function ResidentDetailPage() {
             </article>
 
             <article className="detail-card detail-card--medications">
-              <DetailSectionTitle icon={Pill}>Medications</DetailSectionTitle>
-              <ul className="detail-list">
+              <div className="detail-card-heading-row">
+                <DetailSectionTitle icon={Pill}>Medications</DetailSectionTitle>
+
+                <button
+                  type="button"
+                  className="resident-information-toggle"
+                  onClick={() => setShowMedications((prev) => !prev)}
+                >
+                  {showMedications ? "Hide" : "Show"}
+                </button>
+              </div>
+
+              <ul
+                className="detail-list medications-list"
+                onMouseEnter={() => setShowMedications(true)}
+                onMouseLeave={() => setShowMedications(false)}
+              >
                 {resident.medications.map((medication) => (
-                  <li key={medication}>{medication}</li>
+                  <li
+                    key={medication}
+                    className={!showMedications ? "information-redacted" : ""}
+                  >
+                    {showMedications ? medication : ""}
+                  </li>
                 ))}
               </ul>
-              <button className="detail-card-link" type="button" onClick={() => handleAction("all medications")}>
+
+              <button
+                className="detail-card-link"
+                type="button"
+                onClick={() => handleAction("all medications")}
+              >
                 View all medications
                 <ChevronRight aria-hidden="true" />
               </button>
@@ -354,13 +381,38 @@ export default function ResidentDetailPage() {
             </article>
 
             <article className="detail-card detail-card--diagnoses">
-              <DetailSectionTitle icon={HeartPulse}>Diagnoses</DetailSectionTitle>
-              <ul className="detail-list">
+              <div className="detail-card-heading-row">
+                <DetailSectionTitle icon={HeartPulse}>Diagnoses</DetailSectionTitle>
+
+                <button
+                  type="button"
+                  className="resident-information-toggle"
+                  onClick={() => setShowDiagnoses((prev) => !prev)}
+                >
+                  {showDiagnoses ? "Hide" : "Show"}
+                </button>
+              </div>
+
+              <ul 
+                className="detail-list diagnoses-list"
+                onMouseEnter={() => setShowDiagnoses(true)}
+                onMouseLeave={() => setShowDiagnoses(false)}
+              >
                 {resident.diagnoses.map((diagnosis) => (
-                  <li key={diagnosis}>{diagnosis}</li>
+                  <li
+                    key={diagnosis}
+                    className={!showDiagnoses ? "information-redacted" : ""}
+                  >
+                    {showDiagnoses ? diagnosis : ""}
+                  </li>
                 ))}
               </ul>
-              <button className="detail-card-link" type="button" onClick={() => handleAction("all diagnoses")}>
+
+              <button
+                className="detail-card-link"
+                type="button"
+                onClick={() => handleAction("all diagnoses")}
+              >
                 View all diagnoses
                 <ChevronRight aria-hidden="true" />
               </button>
